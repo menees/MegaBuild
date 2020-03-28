@@ -1,0 +1,3 @@
+using MegaBuild;
+
+[assembly: MegaBuildExtension]

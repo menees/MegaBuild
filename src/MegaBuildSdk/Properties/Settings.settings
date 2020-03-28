@@ -1,0 +1,31 @@
+﻿<?xml version='1.0' encoding='utf-8'?>
+<SettingsFile xmlns="http://schemas.microsoft.com/VisualStudio/2004/01/settings" CurrentProfile="(Default)" GeneratedClassNamespace="MegaBuild.Properties" GeneratedClassName="Settings">
+  <Profiles />
+  <Settings>
+    <Setting Name="ExecutableStep_ErrorRegexs" Type="System.Collections.Specialized.StringCollection" Scope="Application">
+      <Value Profile="(Default)">&lt;?xml version="1.0" encoding="utf-16"?&gt;
+&lt;ArrayOfString xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema"&gt;
+  &lt;string&gt;\:\s*Error\s&lt;/string&gt;
+  &lt;string&gt;\:\s*fatal error\s&lt;/string&gt;
+  &lt;string&gt;\:\sINTERNAL COMPILER ERROR\s&lt;/string&gt;
+  &lt;string&gt;\:\sCommand line error\s&lt;/string&gt;
+  &lt;string&gt;^\s*Error\s*\:&lt;/string&gt;
+  &lt;string&gt;^\s*Failed\s&lt;/string&gt;
+&lt;/ArrayOfString&gt;</Value>
+    </Setting>
+    <Setting Name="ExecutableStep_WarningRegexs" Type="System.Collections.Specialized.StringCollection" Scope="Application">
+      <Value Profile="(Default)">&lt;?xml version="1.0" encoding="utf-16"?&gt;
+&lt;ArrayOfString xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema"&gt;
+  &lt;string&gt;\:\s*Warning\s&lt;/string&gt;
+  &lt;string&gt;\:\s*Command line warning\s&lt;/string&gt;
+  &lt;string&gt;^\s*Warning\:&lt;/string&gt;
+&lt;/ArrayOfString&gt;</Value>
+    </Setting>
+    <Setting Name="ExecutableStep_KillTimeoutMilliseconds" Type="System.UInt16" Scope="Application">
+      <Value Profile="(Default)">4000</Value>
+    </Setting>
+    <Setting Name="Project_FinishBuildSleepMilliseconds" Type="System.UInt16" Scope="Application">
+      <Value Profile="(Default)">1000</Value>
+    </Setting>
+  </Settings>
+</SettingsFile>

@@ -1,0 +1,62 @@
+﻿<Project Sdk="Microsoft.NET.Sdk.WindowsDesktop">
+
+	<PropertyGroup>
+		<TargetFrameworks>netcoreapp3.1;net45</TargetFrameworks>
+		<UseWindowsForms>true</UseWindowsForms>
+		<AssemblyTitle>MegaBuild SDK</AssemblyTitle>
+		<Description>Toolkit for developing MegaBuild extension assemblies</Description>
+		<RootNamespace>MegaBuild</RootNamespace>
+	</PropertyGroup>
+
+	<ItemGroup>
+	  <EmbeddedResource Include="Images\CommandStep.ico" />
+	  <EmbeddedResource Include="Images\EmailStep.ico" />
+	  <EmbeddedResource Include="Images\GroupStep.ico" />
+	  <EmbeddedResource Include="Images\MegaBuildStep.ico" />
+	  <EmbeddedResource Include="Images\MSBuildStep.ico" />
+	  <EmbeddedResource Include="Images\OutputStep.ico" />
+	  <EmbeddedResource Include="Images\PowerShellStep.ico" />
+	  <EmbeddedResource Include="Images\SleepStep.ico" />
+	  <EmbeddedResource Include="Images\SoundStep.ico" />
+	  <EmbeddedResource Include="Images\VSStep.ico" />
+	</ItemGroup>
+
+	<ItemGroup>
+		<Compile Update="Properties\Settings.Designer.cs">
+			<AutoGen>True</AutoGen>
+			<DesignTimeSharedInput>True</DesignTimeSharedInput>
+			<DependentUpon>Settings.settings</DependentUpon>
+		</Compile>
+		<None Include="Properties\Settings.settings">
+			<Generator>SettingsSingleFileGenerator</Generator>
+			<LastGenOutput>Settings.Designer.cs</LastGenOutput>
+		</None>
+	</ItemGroup>
+
+	<ItemGroup>
+	  <PackageReference Include="Menees.Windows.Forms" Version="4.9.3" />
+	  <PackageReference Include="Microsoft.VisualStudio.Setup.Configuration.Interop" Version="2.3.2262-g94fae01e" />
+	</ItemGroup>
+
+	<Choose>
+		<When Condition=" '$(TargetFramework)' == 'net45' ">
+			<ItemGroup>
+				<Compile Remove="Classes\JavaScriptUtility.Core.cs" />
+				<Content Include="Classes\JavaScriptUtility.Core.cs">
+					<CopyToOutputDirectory>Never</CopyToOutputDirectory>
+				</Content>
+
+				<Reference Include="Microsoft.JScript" />
+			</ItemGroup>
+		</When>
+		<Otherwise>
+			<ItemGroup>
+				<Compile Remove="Classes\JavaScriptUtility.Framework.cs" />
+				<Content Include="Classes\JavaScriptUtility.Framework.cs">
+					<CopyToOutputDirectory>Never</CopyToOutputDirectory>
+				</Content>
+			</ItemGroup>
+		</Otherwise>
+	</Choose>
+
+</Project>
