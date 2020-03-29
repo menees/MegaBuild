@@ -21,6 +21,10 @@
 
 	<ItemGroup>
 	  <ProjectReference Include="..\MegaBuildSdk\MegaBuildSdk.csproj" />
+	</ItemGroup>
+
+	<!-- SampleStep isn't required for release deployments, but it's nice to have it available for testing in debug builds. -->
+	<ItemGroup Condition="'$(Configuration)'=='Debug'">
 	  <ProjectReference Include="..\SampleStep\SampleStep.csproj" />
 	</ItemGroup>
 
