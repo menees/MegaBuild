@@ -10,12 +10,13 @@
 	</PropertyGroup>
 
 	<ItemGroup>
-	  <PackageReference Include="WindowsAPICodePack-Core" Version="1.1.2">
-	    <NoWarn>NU1701</NoWarn>
-	  </PackageReference>
-	  <PackageReference Include="WindowsAPICodePack-Shell" Version="1.1.1">
-	    <NoWarn>NU1701</NoWarn>
-	  </PackageReference>
+		<!-- I picked these Windows API Code Pack packages because they were the first ones I found that were strongly-named. -->
+		<PackageReference Include="Windows7APICodePack-Core" Version="1.1.0">
+			<NoWarn>NU1701</NoWarn>
+		</PackageReference>
+		<PackageReference Include="Windows7APICodePack-Shell" Version="1.1.0">
+			<NoWarn>NU1701</NoWarn>
+		</PackageReference>
 	</ItemGroup>
 
 	<ItemGroup>
