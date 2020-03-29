@@ -117,10 +117,12 @@ namespace MegaBuild
 			return true;
 		}
 
+		[SuppressMessage("Usage", "CC0022:Should dispose object", Justification = "Caller disposes new controls.")]
+		[SuppressMessage("Reliability", "CA2000:Dispose objects before losing scope", Justification = "Caller disposes new controls.")]
 		public override void GetStepEditorControls(ICollection<StepEditorControl> controls)
 		{
 			base.GetStepEditorControls(controls);
-			controls.Add(new OutputStepCtrl() { Step = this });
+			controls.Add(new OutputStepCtrl { Step = this });
 		}
 
 		#endregion
@@ -130,21 +132,21 @@ namespace MegaBuild
 		protected internal override void Load(XmlKey key)
 		{
 			base.Load(key);
-			this.Message = key.GetValue("Message", this.message);
-			this.IncludeTimestamp = key.GetValue("IncludeTimestamp", this.includeTimestamp);
-			this.IndentOutput = key.GetValue("IndentOutput", this.indentOutput);
-			this.TextColor = key.GetValue("TextColor", this.textColor);
-			this.IsHighlight = key.GetValue("IsHighlight", this.isHighlight);
+			this.Message = key.GetValue(nameof(this.Message), this.message);
+			this.IncludeTimestamp = key.GetValue(nameof(this.IncludeTimestamp), this.includeTimestamp);
+			this.IndentOutput = key.GetValue(nameof(this.IndentOutput), this.indentOutput);
+			this.TextColor = key.GetValue(nameof(this.TextColor), this.textColor);
+			this.IsHighlight = key.GetValue(nameof(this.IsHighlight), this.isHighlight);
 		}
 
 		protected internal override void Save(XmlKey key)
 		{
 			base.Save(key);
-			key.SetValue("Message", this.message);
-			key.SetValue("IncludeTimestamp", this.includeTimestamp);
-			key.SetValue("IndentOutput", this.indentOutput);
-			key.SetValue("TextColor", this.textColor);
-			key.SetValue("IsHighlight", this.isHighlight);
+			key.SetValue(nameof(this.Message), this.message);
+			key.SetValue(nameof(this.IncludeTimestamp), this.includeTimestamp);
+			key.SetValue(nameof(this.IndentOutput), this.indentOutput);
+			key.SetValue(nameof(this.TextColor), this.textColor);
+			key.SetValue(nameof(this.IsHighlight), this.isHighlight);
 		}
 
 		#endregion

@@ -27,22 +27,23 @@ namespace MegaBuild
 
 		private const string CopiedStepFormat = "Menees.MegaBuild.CopiedSteps";
 		private const decimal ProjectVersion = 4M;
-		private int baseIndentLevel;
+		private readonly int baseIndentLevel;
+
+		private readonly StepCollection buildSteps = new StepCollection();
+		private readonly Dictionary<string, string> cachedVariables = new Dictionary<string, string>(StringComparer.CurrentCultureIgnoreCase);
+		private readonly object[] eventHandlerParams;
+		private readonly StepCollection failureSteps = new StepCollection();
 
 		// Build Data
 		private DateTime buildStart;
-		private StepCollection buildSteps = new StepCollection();
 		private Thread buildThread;
-		private Dictionary<string, string> cachedVariables = new Dictionary<string, string>(StringComparer.CurrentCultureIgnoreCase);
 		private string comments = string.Empty;
 
 		// Runtime-only data
 		private System.ComponentModel.Container components;
-		private object[] eventHandlerParams;
 		private ExecutableStep[] executableBuildSteps;
 		private ExecutableStep[] executableFailureSteps;
 		private StepExecuteArgs executeArgs;
-		private StepCollection failureSteps = new StepCollection();
 
 		// Persisted data and options
 		// Note: If you add a data member here, then make sure you
@@ -148,9 +149,11 @@ namespace MegaBuild
 						result = data.GetDataPresent(CopiedStepFormat);
 					}
 				}
+#pragma warning disable CC0004 // Catch block cannot be empty
 				catch (ExternalException)
 				{
 				}
+#pragma warning restore CC0004 // Catch block cannot be empty
 
 				return result;
 			}
@@ -783,23 +786,23 @@ namespace MegaBuild
 					{
 						// Load options first so load errors can be logged correctly (if necessary).
 						XmlKey optionsKey = docKey.GetSubkey("Options", string.Empty);
-						this.overrideVSStepConfigurations = optionsKey.GetValue("OverrideVSStepConfigurations", this.overrideVSStepConfigurations);
+						this.overrideVSStepConfigurations = optionsKey.GetValue(nameof(this.OverrideVSStepConfigurations), this.overrideVSStepConfigurations);
 						this.logOutput = optionsKey.GetValue("LogOutput", this.logOutput);
 						this.overwriteLog = optionsKey.GetValue("OverwriteLog", this.overwriteLog);
 						this.logTimestamp = optionsKey.GetValue("LogTimestamp", this.logTimestamp);
 						this.showComments = optionsKey.GetValue("ShowComments", this.showComments);
 						this.showDebugOutput = optionsKey.GetValue(nameof(this.ShowDebugOutput), this.showDebugOutput);
 						this.logFile = optionsKey.GetValue("LogFile", this.logFile);
-						this.comments = optionsKey.GetValue("Comments", this.comments);
-						this.overrideConfigurations.Load(optionsKey.GetSubkey("OverrideConfigurations", string.Empty));
-						this.overrideVSActions = optionsKey.GetValue("OverrideVSActions", this.overrideVSActions);
-						this.overrideVSVersions = optionsKey.GetValue("OverrideVSVersions", this.overrideVSVersions);
+						this.comments = optionsKey.GetValue(nameof(this.Comments), this.comments);
+						this.overrideConfigurations.Load(optionsKey.GetSubkey(nameof(this.OverrideConfigurations), string.Empty));
+						this.overrideVSActions = optionsKey.GetValue(nameof(this.OverrideVSActions), this.overrideVSActions);
+						this.overrideVSVersions = optionsKey.GetValue(nameof(this.OverrideVSVersions), this.overrideVSVersions);
 						this.overrideVSAction = optionsKey.GetValue("OverrideVSActionValue", this.overrideVSAction);
 						this.overrideVSVersion = optionsKey.GetValue("OverrideVSVersionValue", this.overrideVSVersion);
 						this.variableDefinitions = VariableDefinition.Load(optionsKey);
 
-						this.buildSteps.Load(docKey.GetSubkey("Steps", "BuildSteps"), this, StepCategory.Build);
-						this.failureSteps.Load(docKey.GetSubkey("Steps", "FailureSteps"), this, StepCategory.Failure);
+						this.buildSteps.Load(docKey.GetSubkey("Steps", nameof(this.BuildSteps)), this, StepCategory.Build);
+						this.failureSteps.Load(docKey.GetSubkey("Steps", nameof(this.FailureSteps)), this, StepCategory.Failure);
 					}
 					finally
 					{
@@ -1037,30 +1040,30 @@ namespace MegaBuild
 
 					// Save options
 					XmlKey optionsKey = docKey.GetSubkey("Options", string.Empty);
-					optionsKey.SetValue("OverrideVSStepConfigurations", this.overrideVSStepConfigurations);
+					optionsKey.SetValue(nameof(this.OverrideVSStepConfigurations), this.overrideVSStepConfigurations);
 					optionsKey.SetValue("LogOutput", this.logOutput);
 					optionsKey.SetValue("OverwriteLog", this.overwriteLog);
 					optionsKey.SetValue("LogTimestamp", this.logTimestamp);
 					optionsKey.SetValue("ShowComments", this.showComments);
 					optionsKey.SetValue(nameof(this.ShowDebugOutput), this.showDebugOutput);
 					optionsKey.SetValue("LogFile", this.logFile);
-					optionsKey.SetValue("Comments", this.comments);
-					this.overrideConfigurations.Save(optionsKey.GetSubkey("OverrideConfigurations", string.Empty));
-					optionsKey.SetValue("OverrideVSActions", this.overrideVSActions);
-					optionsKey.SetValue("OverrideVSVersions", this.overrideVSVersions);
+					optionsKey.SetValue(nameof(this.Comments), this.comments);
+					this.overrideConfigurations.Save(optionsKey.GetSubkey(nameof(this.OverrideConfigurations), string.Empty));
+					optionsKey.SetValue(nameof(this.OverrideVSActions), this.overrideVSActions);
+					optionsKey.SetValue(nameof(this.OverrideVSVersions), this.overrideVSVersions);
 					optionsKey.SetValue("OverrideVSActionValue", this.overrideVSAction);
 					optionsKey.SetValue("OverrideVSVersionValue", this.overrideVSVersion);
 					VariableDefinition.Save(optionsKey, this.variableDefinitions);
 
 					// Save steps
-					this.buildSteps.Save(docKey.GetSubkey("Steps", "BuildSteps"));
-					this.failureSteps.Save(docKey.GetSubkey("Steps", "FailureSteps"));
+					this.buildSteps.Save(docKey.GetSubkey("Steps", nameof(this.BuildSteps)));
+					this.failureSteps.Save(docKey.GetSubkey("Steps", nameof(this.FailureSteps)));
 
 					// Get rid of empty nodes.
 					docKey.Prune();
 
 					// Save the XML with each attribute on a separate line to make visually comparing changes easier in source control.
-					XmlWriterSettings settings = new XmlWriterSettings()
+					XmlWriterSettings settings = new XmlWriterSettings
 					{
 						Indent = true,
 						IndentChars = "\t",
@@ -1601,7 +1604,7 @@ namespace MegaBuild
 
 		private void StopBuild(BuildStatus status)
 		{
-			lock (this)
+			lock (this.buildSteps)
 			{
 				if (this.Building)
 				{
@@ -1668,13 +1671,13 @@ namespace MegaBuild
 			{
 				Dictionary<string, VariableDefinition> variables = new Dictionary<string, VariableDefinition>(StringComparer.CurrentCultureIgnoreCase);
 
-				XmlKey variablesKey = optionsKey.GetSubkey("Variables", string.Empty);
+				XmlKey variablesKey = optionsKey.GetSubkey(nameof(Variables), string.Empty);
 				XmlKey[] subKeys = variablesKey.GetSubkeys();
 				foreach (XmlKey subKey in subKeys)
 				{
 					string name = subKey.XmlKeyName;
-					string value = subKey.GetValue("Value", string.Empty);
-					bool expandPath = subKey.GetValue("ExpandPath", true);
+					string value = subKey.GetValue(nameof(Value), string.Empty);
+					bool expandPath = subKey.GetValue(nameof(ExpandPath), true);
 					VariableDefinition definition = new VariableDefinition(name, value, expandPath);
 					variables[name] = definition;
 				}
@@ -1685,12 +1688,12 @@ namespace MegaBuild
 
 			public static void Save(XmlKey optionsKey, List<VariableDefinition> variableDefinitions)
 			{
-				XmlKey variablesKey = optionsKey.GetSubkey("Variables", string.Empty);
+				XmlKey variablesKey = optionsKey.GetSubkey(nameof(Variables), string.Empty);
 				foreach (VariableDefinition definition in variableDefinitions.OrderBy(d => d.Name))
 				{
 					XmlKey subKey = variablesKey.GetSubkey("Variable", definition.Name);
-					subKey.SetValue("Value", definition.Value);
-					subKey.SetValue("ExpandPath", definition.ExpandPath);
+					subKey.SetValue(nameof(Value), definition.Value);
+					subKey.SetValue(nameof(ExpandPath), definition.ExpandPath);
 				}
 			}
 

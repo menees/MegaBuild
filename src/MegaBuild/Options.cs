@@ -50,28 +50,28 @@ namespace MegaBuild
 
 		public static void Load(ISettingsNode node)
 		{
-			SaveChangesBeforeBuild = node.GetValue("SaveChangesBeforeBuild", SaveChangesBeforeBuild);
-			ReloadLastProjectAtStartup = node.GetValue("ReloadLastProjectAtStartup", true);
-			AlwaysOnTop = node.GetValue("AlwaysOnTop", AlwaysOnTop);
-			NeverShowProjectComments = node.GetValue("NeverShowProjectComments", NeverShowProjectComments);
-			ClearOutputBeforeBuild = node.GetValue("ClearOutputBeforeBuild", true);
-			WordWrapOutputWindow = node.GetValue("WordWrapOutputWindow", WordWrapOutputWindow);
-			SwitchTabsOnFailure = node.GetValue("SwitchTabsOnFailure", SwitchTabsOnFailure);
-			ShowProgressInTaskbar = node.GetValue("ShowProgressInTaskbar", true);
-			TimestampFormat = node.GetValue("TimestampFormat", DefaultTimestampFormat);
+			SaveChangesBeforeBuild = node.GetValue(nameof(SaveChangesBeforeBuild), SaveChangesBeforeBuild);
+			ReloadLastProjectAtStartup = node.GetValue(nameof(ReloadLastProjectAtStartup), true);
+			AlwaysOnTop = node.GetValue(nameof(AlwaysOnTop), AlwaysOnTop);
+			NeverShowProjectComments = node.GetValue(nameof(NeverShowProjectComments), NeverShowProjectComments);
+			ClearOutputBeforeBuild = node.GetValue(nameof(ClearOutputBeforeBuild), true);
+			WordWrapOutputWindow = node.GetValue(nameof(WordWrapOutputWindow), WordWrapOutputWindow);
+			SwitchTabsOnFailure = node.GetValue(nameof(SwitchTabsOnFailure), SwitchTabsOnFailure);
+			ShowProgressInTaskbar = node.GetValue(nameof(ShowProgressInTaskbar), true);
+			TimestampFormat = node.GetValue(nameof(TimestampFormat), DefaultTimestampFormat);
 		}
 
 		public static void Save(ISettingsNode node)
 		{
-			node.SetValue("SaveChangesBeforeBuild", SaveChangesBeforeBuild);
-			node.SetValue("ReloadLastProjectAtStartup", ReloadLastProjectAtStartup);
-			node.SetValue("AlwaysOnTop", AlwaysOnTop);
-			node.SetValue("NeverShowProjectComments", NeverShowProjectComments);
-			node.SetValue("ClearOutputBeforeBuild", ClearOutputBeforeBuild);
-			node.SetValue("WordWrapOutputWindow", WordWrapOutputWindow);
-			node.SetValue("SwitchTabsOnFailure", SwitchTabsOnFailure);
-			node.SetValue("ShowProgressInTaskbar", ShowProgressInTaskbar);
-			node.SetValue("TimestampFormat", TimestampFormat);
+			node.SetValue(nameof(SaveChangesBeforeBuild), SaveChangesBeforeBuild);
+			node.SetValue(nameof(ReloadLastProjectAtStartup), ReloadLastProjectAtStartup);
+			node.SetValue(nameof(AlwaysOnTop), AlwaysOnTop);
+			node.SetValue(nameof(NeverShowProjectComments), NeverShowProjectComments);
+			node.SetValue(nameof(ClearOutputBeforeBuild), ClearOutputBeforeBuild);
+			node.SetValue(nameof(WordWrapOutputWindow), WordWrapOutputWindow);
+			node.SetValue(nameof(SwitchTabsOnFailure), SwitchTabsOnFailure);
+			node.SetValue(nameof(ShowProgressInTaskbar), ShowProgressInTaskbar);
+			node.SetValue(nameof(TimestampFormat), TimestampFormat);
 		}
 
 		#endregion

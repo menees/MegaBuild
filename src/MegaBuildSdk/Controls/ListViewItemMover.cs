@@ -110,11 +110,7 @@ namespace MegaBuild
 			if (item != null && item.Index < (this.listView.Items.Count - 1))
 			{
 				this.MoveItem(item, +1);
-				EventHandler eh = this.ItemMovedDown;
-				if (eh != null)
-				{
-					eh(this, e);
-				}
+				this.ItemMovedDown?.Invoke(this, e);
 			}
 		}
 
@@ -124,11 +120,7 @@ namespace MegaBuild
 			if (item != null && item.Index > 0)
 			{
 				this.MoveItem(item, -1);
-				EventHandler eh = this.ItemMovedUp;
-				if (eh != null)
-				{
-					eh(this, e);
-				}
+				this.ItemMovedUp?.Invoke(this, e);
 			}
 		}
 

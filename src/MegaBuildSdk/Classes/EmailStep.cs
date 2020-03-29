@@ -250,11 +250,13 @@ namespace MegaBuild
 			}
 		}
 
+		[SuppressMessage("Usage", "CC0022:Should dispose object", Justification = "Caller disposes new controls.")]
+		[SuppressMessage("Reliability", "CA2000:Dispose objects before losing scope", Justification = "Caller disposes new controls.")]
 		public override void GetStepEditorControls(ICollection<StepEditorControl> controls)
 		{
 			base.GetStepEditorControls(controls);
-			controls.Add(new EmailStepCtrl() { Step = this });
-			controls.Add(new EmailAttachmentsCtrl() { Step = this });
+			controls.Add(new EmailStepCtrl { Step = this });
+			controls.Add(new EmailAttachmentsCtrl { Step = this });
 		}
 
 		#endregion
@@ -264,18 +266,18 @@ namespace MegaBuild
 		protected internal override void Load(XmlKey key)
 		{
 			base.Load(key);
-			this.From = key.GetValue("From", this.from);
-			this.To = key.GetValue("To", this.to);
-			this.CC = key.GetValue("CC", this.cc);
-			this.Subject = key.GetValue("Subject", this.subject);
-			this.Message = key.GetValue("Message", this.message);
-			this.AppendOutput = key.GetValue("AppendOutput", this.appendOutput);
-			this.Priority = key.GetValue("Priority", this.priority);
-			this.SmtpServer = key.GetValue("SmtpServer", this.smtpServer);
+			this.From = key.GetValue(nameof(this.From), this.from);
+			this.To = key.GetValue(nameof(this.To), this.to);
+			this.CC = key.GetValue(nameof(this.CC), this.cc);
+			this.Subject = key.GetValue(nameof(this.Subject), this.subject);
+			this.Message = key.GetValue(nameof(this.Message), this.message);
+			this.AppendOutput = key.GetValue(nameof(this.AppendOutput), this.appendOutput);
+			this.Priority = key.GetValue(nameof(this.Priority), this.priority);
+			this.SmtpServer = key.GetValue(nameof(this.SmtpServer), this.smtpServer);
 
 			// Load attachments
 			this.attachments.Clear();
-			XmlKey attachmentsKey = key.GetSubkey("Attachments", string.Empty);
+			XmlKey attachmentsKey = key.GetSubkey(nameof(this.Attachments), string.Empty);
 			foreach (XmlKey attKey in attachmentsKey.GetSubkeys())
 			{
 				Debug.Assert(attKey.KeyType == "Attachment", "Key type must be Attachment.");
@@ -291,17 +293,17 @@ namespace MegaBuild
 		protected internal override void Save(XmlKey key)
 		{
 			base.Save(key);
-			key.SetValue("From", this.from);
-			key.SetValue("To", this.to);
-			key.SetValue("CC", this.cc);
-			key.SetValue("Subject", this.subject);
-			key.SetValue("Message", this.message);
-			key.SetValue("AppendOutput", this.appendOutput);
-			key.SetValue("Priority", this.priority);
-			key.SetValue("SmtpServer", this.smtpServer);
+			key.SetValue(nameof(this.From), this.from);
+			key.SetValue(nameof(this.To), this.to);
+			key.SetValue(nameof(this.CC), this.cc);
+			key.SetValue(nameof(this.Subject), this.subject);
+			key.SetValue(nameof(this.Message), this.message);
+			key.SetValue(nameof(this.AppendOutput), this.appendOutput);
+			key.SetValue(nameof(this.Priority), this.priority);
+			key.SetValue(nameof(this.SmtpServer), this.smtpServer);
 
 			// Save attachments
-			XmlKey attachmentsKey = key.GetSubkey("Attachments", string.Empty);
+			XmlKey attachmentsKey = key.GetSubkey(nameof(this.Attachments), string.Empty);
 			int numAttachments = this.attachments.Count;
 			for (int i = 0; i < numAttachments; i++)
 			{

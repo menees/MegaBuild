@@ -55,9 +55,11 @@ namespace MegaBuild
 		{
 			foreach (ExecutableStep step in steps)
 			{
-				ListViewItem item = new ListViewItem(new string[] { step.Name, type, step.Description }, step.StepTypeInfo.ImageIndex);
-				item.Tag = step;
-				item.Checked = step.IncludeInBuild;
+				ListViewItem item = new ListViewItem(new string[] { step.Name, type, step.Description }, step.StepTypeInfo.ImageIndex)
+				{
+					Tag = step,
+					Checked = step.IncludeInBuild,
+				};
 				this.List.Items.Add(item);
 			}
 		}

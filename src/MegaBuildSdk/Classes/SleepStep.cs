@@ -87,10 +87,12 @@ namespace MegaBuild
 			return result;
 		}
 
+		[SuppressMessage("Usage", "CC0022:Should dispose object", Justification = "Caller disposes new controls.")]
+		[SuppressMessage("Reliability", "CA2000:Dispose objects before losing scope", Justification = "Caller disposes new controls.")]
 		public override void GetStepEditorControls(ICollection<StepEditorControl> controls)
 		{
 			base.GetStepEditorControls(controls);
-			controls.Add(new SleepStepCtrl() { Step = this });
+			controls.Add(new SleepStepCtrl { Step = this });
 		}
 
 		#endregion

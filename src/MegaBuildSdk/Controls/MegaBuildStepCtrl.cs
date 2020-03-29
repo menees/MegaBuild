@@ -32,7 +32,7 @@ namespace MegaBuild
 
 		#region Public Properties
 
-		public override string DisplayName => "MegaBuild";
+		public override string DisplayName => nameof(MegaBuild);
 
 		public MegaBuildStep Step
 		{

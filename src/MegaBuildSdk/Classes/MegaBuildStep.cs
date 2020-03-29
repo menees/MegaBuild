@@ -15,7 +15,7 @@ namespace MegaBuild
 
 	#endregion
 
-	[StepDisplay("MegaBuild", "Opens and builds another MegaBuild project.", "Images.MegaBuildStep.ico")]
+	[StepDisplay(nameof(MegaBuild), "Opens and builds another MegaBuild project.", "Images.MegaBuildStep.ico")]
 	[MayRequireAdministrator]
 	[SuppressMessage("Microsoft.Performance", "CA1812:AvoidUninstantiatedInternalClasses", Justification = "Called by Reflection.")]
 	internal sealed class MegaBuildStep : ExecutableStep
@@ -148,10 +148,12 @@ namespace MegaBuild
 
 		public override string[] GetCustomVerbs() => new[] { "Open Project", "Open Project In New Instance", "Build Project In New Instance" };
 
+		[SuppressMessage("Usage", "CC0022:Should dispose object", Justification = "Caller disposes new controls.")]
+		[SuppressMessage("Reliability", "CA2000:Dispose objects before losing scope", Justification = "Caller disposes new controls.")]
 		public override void GetStepEditorControls(ICollection<StepEditorControl> controls)
 		{
 			base.GetStepEditorControls(controls);
-			controls.Add(new MegaBuildStepCtrl() { Step = this });
+			controls.Add(new MegaBuildStepCtrl { Step = this });
 		}
 
 		#endregion
@@ -161,23 +163,23 @@ namespace MegaBuild
 		protected internal override void Load(XmlKey key)
 		{
 			base.Load(key);
-			this.ProjectFile = key.GetValue("ProjectFile", this.ProjectFile);
-			this.Exit = key.GetValue("Exit", this.Exit);
-			this.Minimize = key.GetValue("Minimize", this.Minimize);
+			this.ProjectFile = key.GetValue(nameof(this.ProjectFile), this.ProjectFile);
+			this.Exit = key.GetValue(nameof(this.Exit), this.Exit);
+			this.Minimize = key.GetValue(nameof(this.Minimize), this.Minimize);
 
 			// We have to default InProc to false to keep the same
 			// behavior for old, loaded steps.  (However, it will default
 			// to true for added/inserted steps.)
-			this.InProc = key.GetValue("InProc", false);
+			this.InProc = key.GetValue(nameof(this.InProc), false);
 		}
 
 		protected internal override void Save(XmlKey key)
 		{
 			base.Save(key);
-			key.SetValue("ProjectFile", this.ProjectFile);
-			key.SetValue("Exit", this.Exit);
-			key.SetValue("Minimize", this.Minimize);
-			key.SetValue("InProc", this.InProc);
+			key.SetValue(nameof(this.ProjectFile), this.ProjectFile);
+			key.SetValue(nameof(this.Exit), this.Exit);
+			key.SetValue(nameof(this.Minimize), this.Minimize);
+			key.SetValue(nameof(this.InProc), this.InProc);
 		}
 
 		#endregion
@@ -239,7 +241,7 @@ namespace MegaBuild
 			// Note: When you're running in the debugger this will NOT minimize the child process.  But it does work outside the debugger.
 			ProcessWindowStyle windowStyle = this.Minimize ? ProcessWindowStyle.Minimized : ProcessWindowStyle.Normal;
 
-			ExecuteCommandArgs cmdArgs = new ExecuteCommandArgs()
+			ExecuteCommandArgs cmdArgs = new ExecuteCommandArgs
 			{
 				FileName = Application.ExecutablePath,
 				Arguments = args,

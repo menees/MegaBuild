@@ -39,8 +39,10 @@ namespace MegaBuild
 				foreach (StepTypeInfo info in typeInfos)
 				{
 					string[] items = { info.Name, info.Description };
-					ListViewItem item = new ListViewItem(items, info.ImageIndex);
-					item.Tag = info;
+					ListViewItem item = new ListViewItem(items, info.ImageIndex)
+					{
+						Tag = info,
+					};
 					this.List.Items.Add(item);
 				}
 

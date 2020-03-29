@@ -86,9 +86,12 @@ namespace MegaBuild
 						result = string.Compare(extension, ".ps1", true) == 0;
 					}
 				}
+#pragma warning disable CC0004 // Catch block cannot be empty
 				catch (ArgumentException)
 				{
+					// If they haven't set up a valid command yet, it's safest to just return false.
 				}
+#pragma warning restore CC0004 // Catch block cannot be empty
 
 				return result;
 			}
@@ -113,7 +116,7 @@ namespace MegaBuild
 				arguments = "-command " + this.GetExpandedCommand(false);
 			}
 
-			ExecuteCommandArgs cmdArgs = new ExecuteCommandArgs()
+			ExecuteCommandArgs cmdArgs = new ExecuteCommandArgs
 			{
 				FileName = "PowerShell.exe",
 				Arguments = arguments,
@@ -127,7 +130,7 @@ namespace MegaBuild
 			bool result = this.ExecuteCommand(cmdArgs);
 			if (!result)
 			{
-				this.Project.OutputLine("PowerShell returned exit code: " + cmdArgs.ExitCode.ToString(), OutputColors.Heading);
+				this.Project.OutputLine("PowerShell returned exit code: " + cmdArgs.ExitCode, OutputColors.Heading);
 			}
 
 			return result;
@@ -146,10 +149,12 @@ namespace MegaBuild
 		public override string[] GetCustomVerbs()
 			=> this.IsScript ? new string[] { "Edit Script" } : base.GetCustomVerbs();
 
+		[SuppressMessage("Usage", "CC0022:Should dispose object", Justification = "Caller disposes new controls.")]
+		[SuppressMessage("Reliability", "CA2000:Dispose objects before losing scope", Justification = "Caller disposes new controls.")]
 		public override void GetStepEditorControls(ICollection<StepEditorControl> controls)
 		{
 			base.GetStepEditorControls(controls);
-			controls.Add(new PowerShellStepCtrl() { Step = this });
+			controls.Add(new PowerShellStepCtrl { Step = this });
 		}
 
 		#endregion
@@ -159,15 +164,15 @@ namespace MegaBuild
 		protected internal override void Load(XmlKey key)
 		{
 			base.Load(key);
-			this.Command = key.GetValue("Command", this.Command);
-			this.WorkingDirectory = key.GetValue("WorkingDirectory", this.WorkingDirectory);
+			this.Command = key.GetValue(nameof(this.Command), this.Command);
+			this.WorkingDirectory = key.GetValue(nameof(this.WorkingDirectory), this.WorkingDirectory);
 		}
 
 		protected internal override void Save(XmlKey key)
 		{
 			base.Save(key);
-			key.SetValue("Command", this.Command);
-			key.SetValue("WorkingDirectory", this.WorkingDirectory);
+			key.SetValue(nameof(this.Command), this.Command);
+			key.SetValue(nameof(this.WorkingDirectory), this.WorkingDirectory);
 		}
 
 		#endregion

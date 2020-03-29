@@ -12,21 +12,22 @@ namespace MegaBuild
 	[SuppressMessage(
 		"Microsoft.Naming",
 		"CA1716:IdentifiersShouldNotMatchKeywords",
-		MessageId = "Step",
+		MessageId = nameof(Step),
 		Justification = "Legacy support.  Also, I don't care about conflicting with a VB keyword.")]
 	public abstract class Step
 	{
 		#region Private Data Members
 
+		private readonly StepCategory category = StepCategory.Build;
+		private readonly StepTypeInfo stepTypeInfo;
+		private readonly Project project;
+
 		private bool includeInBuild = true;
 		private bool modified;
-		private StepCategory category = StepCategory.Build;
 		private int level;
 		private int updateLevel;
 		private Step parent;
-		private Project project;
 		private StepCollection categorySteps;
-		private StepTypeInfo stepTypeInfo;
 		private string description = string.Empty;
 		private string name = string.Empty;
 
@@ -173,9 +174,11 @@ namespace MegaBuild
 		[SuppressMessage("Microsoft.Design", "CA1024:UsePropertiesWhereAppropriate", Justification = "Not suitable as a property.")]
 		public int GetIndex() => this.CategorySteps.IndexOf(this);
 
+		[SuppressMessage("Usage", "CC0022:Should dispose object", Justification = "Caller disposes new controls.")]
+		[SuppressMessage("Reliability", "CA2000:Dispose objects before losing scope", Justification = "Caller disposes new controls.")]
 		public virtual void GetStepEditorControls(ICollection<StepEditorControl> controls)
 		{
-			controls.Add(new GeneralStepCtrl() { Step = this });
+			controls.Add(new GeneralStepCtrl { Step = this });
 		}
 
 		public bool Indent() => this.SetLevel(this.Level + 1);
@@ -230,18 +233,18 @@ namespace MegaBuild
 
 		protected internal virtual void Load(XmlKey key)
 		{
-			this.Name = key.GetValue("Name", this.name);
-			this.Description = key.GetValue("Description", this.description);
-			this.IncludeInBuild = key.GetValue("IncludeInBuild", this.includeInBuild);
-			this.SetLevel(key.GetValue("Level", this.level));
+			this.Name = key.GetValue(nameof(this.Name), this.name);
+			this.Description = key.GetValue(nameof(this.Description), this.description);
+			this.IncludeInBuild = key.GetValue(nameof(this.IncludeInBuild), this.includeInBuild);
+			this.SetLevel(key.GetValue(nameof(this.Level), this.level));
 		}
 
 		protected internal virtual void Save(XmlKey key)
 		{
-			key.SetValue("Name", this.name);
-			key.SetValue("Description", this.description);
-			key.SetValue("IncludeInBuild", this.includeInBuild);
-			key.SetValue("Level", this.level);
+			key.SetValue(nameof(this.Name), this.name);
+			key.SetValue(nameof(this.Description), this.description);
+			key.SetValue(nameof(this.IncludeInBuild), this.includeInBuild);
+			key.SetValue(nameof(this.Level), this.level);
 		}
 
 		protected void SetModified()

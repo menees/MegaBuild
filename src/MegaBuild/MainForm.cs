@@ -35,12 +35,12 @@ namespace MegaBuild
 
 		private static readonly Color FailedOrTimedOutColor = Color.FromArgb(255, 75, 75);
 
+		private readonly CommandLineArgs commandLineArgs = new CommandLineArgs();
+		private readonly FindData findData = new FindData();
+		private readonly IFindTarget findTarget;
+		private readonly ToolStripMenuItem firstListContextMenuItem;
+		private readonly Stopwatch currentStepTimer = new Stopwatch();
 		private bool loading;
-		private CommandLineArgs commandLineArgs = new CommandLineArgs();
-		private FindData findData = new FindData();
-		private IFindTarget findTarget;
-		private ToolStripMenuItem firstListContextMenuItem;
-		private Stopwatch currentStepTimer = new Stopwatch();
 
 		#endregion
 
@@ -209,14 +209,11 @@ namespace MegaBuild
 		{
 			foreach (Component c in components)
 			{
-				ToolStripItem item;
-				Control ctrl;
-
-				if ((item = c as ToolStripItem) != null)
+				if (c is ToolStripItem item)
 				{
 					item.Enabled = enabled;
 				}
-				else if ((ctrl = c as Control) != null)
+				else if (c is Control ctrl)
 				{
 					ctrl.Enabled = enabled;
 				}
@@ -314,7 +311,7 @@ namespace MegaBuild
 						Options.TimestampFormat,
 						CultureInfo.CurrentCulture,
 						DateTimeStyles.NoCurrentDateDefault,
-						out DateTime timestamp))
+						out _))
 					{
 						result = result.Substring(tabIndex + 1);
 					}
@@ -403,7 +400,7 @@ namespace MegaBuild
 			// Load all the type information now.
 			try
 			{
-				Manager.Load(this, baseNode.GetSubNode("Manager", true));
+				Manager.Load(this, baseNode.GetSubNode(nameof(Manager), true));
 			}
 			catch (Exception ex)
 			{
@@ -415,7 +412,7 @@ namespace MegaBuild
 			}
 
 			// Load app settings.
-			Options.Load(baseNode.GetSubNode("Options", true));
+			Options.Load(baseNode.GetSubNode(nameof(Options), true));
 			this.ApplyOptions();
 
 			if (this.WindowState != FormWindowState.Minimized)
@@ -466,8 +463,8 @@ namespace MegaBuild
 			if (!this.loading)
 			{
 				ISettingsNode baseNode = e.SettingsNode;
-				Manager.Save(baseNode.GetSubNode("Manager", true));
-				Options.Save(baseNode.GetSubNode("Options", true));
+				Manager.Save(baseNode.GetSubNode(nameof(Manager), true));
+				Options.Save(baseNode.GetSubNode(nameof(Options), true));
 				baseNode.SetValue("SplitterPos", this.Splitter.SplitterDistance);
 			}
 		}
@@ -476,6 +473,8 @@ namespace MegaBuild
 
 		private Step[] GetSelectedSteps() => GetSelectedSteps(this.ActiveListView);
 
+		[SuppressMessage("Usage", "CC0022:Should dispose object", Justification = "Caller disposes new menu items.")]
+		[SuppressMessage("Reliability", "CA2000:Dispose objects before losing scope", Justification = "Caller disposes new menu items.")]
 		private void ListContextMenu_Opening(object sender, CancelEventArgs e)
 		{
 			// We must call this first to make sure all of the item states are set correctly.  If you right-click off of an item the
@@ -580,7 +579,9 @@ namespace MegaBuild
 			}
 		}
 
+#pragma warning disable CC0091 // Use static method. Designer likes instance event handlers.
 		private void MainForm_DragEnter(object sender, DragEventArgs e)
+#pragma warning restore CC0091 // Use static method
 		{
 			if (e.Data.GetDataPresent(DataFormats.FileDrop))
 			{
@@ -650,7 +651,9 @@ namespace MegaBuild
 			}
 		}
 
+#pragma warning disable CC0091 // Use static method. Designer likes instance event handlers.
 		private void ClearOutputWindow_Click(object sender, EventArgs e)
+#pragma warning restore CC0091 // Use static method
 		{
 			ClearOutputWindow();
 		}
@@ -1176,9 +1179,11 @@ namespace MegaBuild
 					IconReference iconRef = new IconReference(exePath, 0);
 					foreach (string fileName in this.recentFiles.Items)
 					{
-						JumpListLink link = new JumpListLink(TextUtility.EnsureQuotes(exePath), Path.GetFileName(fileName));
-						link.Arguments = TextUtility.EnsureQuotes(fileName);
-						link.IconReference = iconRef;
+						JumpListLink link = new JumpListLink(TextUtility.EnsureQuotes(exePath), Path.GetFileName(fileName))
+						{
+							Arguments = TextUtility.EnsureQuotes(fileName),
+							IconReference = iconRef,
+						};
 						category.AddJumpListItems(link);
 						disposables.Add(link);
 					}
@@ -1186,15 +1191,19 @@ namespace MegaBuild
 					jumpList.AddCustomCategories(category);
 					jumpList.Refresh();
 				}
+#pragma warning disable CC0004 // Catch block cannot be empty
 				catch (UnauthorizedAccessException)
 				{
 					// The user has turned off Jump List support (Taskbar -> Properties -> Jump Lists).
 				}
+#pragma warning restore CC0004 // Catch block cannot be empty
+#pragma warning disable CC0004 // Catch block cannot be empty
 				catch (InvalidOperationException)
 				{
 					// Sometimes TaskbarManager.get_OwnerHandle will throw with:
 					// "A valid active Window is needed to update the Taskbar"
 				}
+#pragma warning restore CC0004 // Catch block cannot be empty
 				finally
 				{
 					foreach (IDisposable disposable in disposables)
@@ -1286,11 +1295,6 @@ namespace MegaBuild
 			this.ActiveListView.Focus();
 		}
 
-		private void Output_LinkClicked(object sender, LinkClickedEventArgs e)
-		{
-			WindowsUtility.ShellExecute(this, e.LinkText);
-		}
-
 		private void UpdateBuildTime()
 		{
 			StringBuilder sb = new StringBuilder(FormatTimeSpan(DateTime.UtcNow - this.project.BuildStart, "Build: "));
@@ -1360,7 +1364,7 @@ namespace MegaBuild
 				}
 
 				// Set BackColor based on Status, etc.
-				Color clrNewBackColor = item.BackColor;
+				Color clrNewBackColor;
 				switch (executableStep.Status)
 				{
 					case StepStatus.Canceled:
@@ -1446,11 +1450,13 @@ namespace MegaBuild
 
 					taskbar.SetProgressState(state, this.Handle);
 				}
+#pragma warning disable CC0004 // Catch block cannot be empty
 				catch (InvalidOperationException)
 				{
 					// Sometimes TaskbarManager.get_OwnerHandle will throw with:
 					// "A valid active Window is needed to update the Taskbar"
 				}
+#pragma warning restore CC0004 // Catch block cannot be empty
 			}
 		}
 

@@ -16,7 +16,7 @@ namespace MegaBuild
 
 		ForceStepsToBeIncludedInBuild = 1,
 
-		AutoConfirmSteps = 2
+		AutoConfirmSteps = 2,
 	}
 
 	#endregion
@@ -35,7 +35,7 @@ namespace MegaBuild
 
 		Succeeded,
 
-		Failed
+		Failed,
 	}
 
 	#endregion
@@ -53,7 +53,7 @@ namespace MegaBuild
 
 		AutoColorErrorsAndWarnings = 4,
 
-		All = WaitForCompletion | Timeout | AutoColorErrorsAndWarnings
+		All = WaitForCompletion | Timeout | AutoColorErrorsAndWarnings,
 	}
 
 	#endregion
@@ -68,7 +68,7 @@ namespace MegaBuild
 
 		StepDeleted,
 
-		StepMoved
+		StepMoved,
 	}
 
 	#endregion
@@ -86,7 +86,7 @@ namespace MegaBuild
 
 		Error = 4,
 
-		All = Input | Output | Error
+		All = Input | Output | Error,
 	}
 
 	#endregion
@@ -97,7 +97,7 @@ namespace MegaBuild
 	{
 		Build,
 
-		Failure
+		Failure,
 	}
 
 	#endregion
@@ -118,7 +118,7 @@ namespace MegaBuild
 
 		Canceled,
 
-		TimedOut
+		TimedOut,
 	}
 
 	#endregion
@@ -173,7 +173,7 @@ namespace MegaBuild
 
 		Detailed,
 
-		Diagnostic
+		Diagnostic,
 	}
 
 	#endregion
@@ -186,7 +186,7 @@ namespace MegaBuild
 
 		WavFile,
 
-		Beep
+		Beep,
 	}
 
 	#endregion
@@ -207,7 +207,7 @@ namespace MegaBuild
 
 		Information = 0x40,
 
-		Simple = -1
+		Simple = -1,
 	}
 
 	#endregion
@@ -222,7 +222,7 @@ namespace MegaBuild
 
 		Clean,
 
-		Deploy
+		Deploy,
 	}
 
 	#endregion

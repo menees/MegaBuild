@@ -14,7 +14,7 @@ namespace MegaBuild
 
 	#endregion
 
-	[StepDisplay("Command", "Runs a program, batch file, script, or any other file with an associated program.", "Images.CommandStep.ico")]
+	[StepDisplay(nameof(Command), "Runs a program, batch file, script, or any other file with an associated program.", "Images.CommandStep.ico")]
 	[MayRequireAdministrator]
 	[SuppressMessage("Microsoft.Performance", "CA1812:AvoidUninstantiatedInternalClasses", Justification = "Called by Reflection.")]
 	internal sealed class CommandStep : ExecutableStep
@@ -206,7 +206,7 @@ namespace MegaBuild
 
 			if (!result)
 			{
-				this.Project.OutputLine("Command returned exit code: " + cmdArgs.ExitCode.ToString(), OutputColors.Heading);
+				this.Project.OutputLine("Command returned exit code: " + cmdArgs.ExitCode, OutputColors.Heading);
 			}
 
 			return result;
@@ -223,10 +223,12 @@ namespace MegaBuild
 						{
 						}
 					}
+#pragma warning disable CC0004 // Catch block cannot be empty
 					catch (Win32Exception)
 					{
 						// ShellExecute will have already displayed an error dialog.
 					}
+#pragma warning restore CC0004 // Catch block cannot be empty
 
 					break;
 			}
@@ -235,10 +237,12 @@ namespace MegaBuild
 		public override string[] GetCustomVerbs()
 			=> this.IsBatchFile ? new string[] { "Edit Batch File" } : base.GetCustomVerbs();
 
+		[SuppressMessage("Usage", "CC0022:Should dispose object", Justification = "Caller disposes new controls.")]
+		[SuppressMessage("Reliability", "CA2000:Dispose objects before losing scope", Justification = "Caller disposes new controls.")]
 		public override void GetStepEditorControls(ICollection<StepEditorControl> controls)
 		{
 			base.GetStepEditorControls(controls);
-			controls.Add(new CmdStepCtrl() { Step = this });
+			controls.Add(new CmdStepCtrl { Step = this });
 		}
 
 		#endregion
@@ -258,14 +262,14 @@ namespace MegaBuild
 		protected internal override void Load(XmlKey key)
 		{
 			base.Load(key);
-			this.Command = key.GetValue("Command", this.command);
-			this.Arguments = key.GetValue("Arguments", this.arguments);
-			this.WorkingDirectory = key.GetValue("WorkingDirectory", this.workingDirectory);
-			this.WindowState = key.GetValue("WindowState", this.windowState);
-			this.FirstSuccessCode = key.GetValue("FirstSuccessCode", this.firstSuccessCode);
-			this.LastSuccessCode = key.GetValue("LastSuccessCode", this.lastSuccessCode);
-			this.UseShellExecute = key.GetValue("UseShellExecute", this.useShellExecute);
-			this.Verb = key.GetValue("Verb", this.verb);
+			this.Command = key.GetValue(nameof(this.Command), this.command);
+			this.Arguments = key.GetValue(nameof(this.Arguments), this.arguments);
+			this.WorkingDirectory = key.GetValue(nameof(this.WorkingDirectory), this.workingDirectory);
+			this.WindowState = key.GetValue(nameof(this.WindowState), this.windowState);
+			this.FirstSuccessCode = key.GetValue(nameof(this.FirstSuccessCode), this.firstSuccessCode);
+			this.LastSuccessCode = key.GetValue(nameof(this.LastSuccessCode), this.lastSuccessCode);
+			this.UseShellExecute = key.GetValue(nameof(this.UseShellExecute), this.useShellExecute);
+			this.Verb = key.GetValue(nameof(this.Verb), this.verb);
 
 			// In 1.0.5, I changed the redirect to all streams, so this name changed.
 			// Then in 2.0.2, I changed it again to support a mask of streams.
@@ -275,9 +279,9 @@ namespace MegaBuild
 				this.RedirectStreams = key.GetValue("RedirectOutput", (this.redirectStreams & RedirectStandardStreams.Output) != 0)
 					? RedirectStandardStreams.All : RedirectStandardStreams.None;
 			}
-			else if (key.ValueExists("RedirectStreams"))
+			else if (key.ValueExists(nameof(this.RedirectStreams)))
 			{
-				this.RedirectStreams = key.GetValue("RedirectStreams", this.redirectStreams != RedirectStandardStreams.None)
+				this.RedirectStreams = key.GetValue(nameof(this.RedirectStreams), this.redirectStreams != RedirectStandardStreams.None)
 					? RedirectStandardStreams.All : RedirectStandardStreams.None;
 
 				// The ExecutableStep base class used to save a "RedirectStandardError" flag,
@@ -300,14 +304,14 @@ namespace MegaBuild
 		protected internal override void Save(XmlKey key)
 		{
 			base.Save(key);
-			key.SetValue("Command", this.command);
-			key.SetValue("Arguments", this.arguments);
-			key.SetValue("WorkingDirectory", this.workingDirectory);
-			key.SetValue("WindowState", this.windowState);
-			key.SetValue("FirstSuccessCode", this.firstSuccessCode);
-			key.SetValue("LastSuccessCode", this.lastSuccessCode);
-			key.SetValue("UseShellExecute", this.useShellExecute);
-			key.SetValue("Verb", this.verb);
+			key.SetValue(nameof(this.Command), this.command);
+			key.SetValue(nameof(this.Arguments), this.arguments);
+			key.SetValue(nameof(this.WorkingDirectory), this.workingDirectory);
+			key.SetValue(nameof(this.WindowState), this.windowState);
+			key.SetValue(nameof(this.FirstSuccessCode), this.firstSuccessCode);
+			key.SetValue(nameof(this.LastSuccessCode), this.lastSuccessCode);
+			key.SetValue(nameof(this.UseShellExecute), this.useShellExecute);
+			key.SetValue(nameof(this.Verb), this.verb);
 			key.SetValue("RedirectStreamsMask", this.redirectStreams);
 		}
 

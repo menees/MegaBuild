@@ -28,12 +28,15 @@ namespace MegaBuild
 
 		#region Private Data Members
 
+		private static readonly object LockToken = new object();
+		private static readonly ImageList Images = new ImageList();
+		private static readonly Dictionary<string, string> VariablesMap = new Dictionary<string, string>(StringComparer.CurrentCultureIgnoreCase);
+		private static readonly List<Project> Projects = new List<Project>(1);
+		private static readonly Dictionary<string, StepTypeInfo> TypeNameToStepTypeInfo
+			= new Dictionary<string, StepTypeInfo>(StringComparer.CurrentCultureIgnoreCase);
+
 		private static Form mainForm;
-		private static ImageList images = new ImageList();
-		private static Dictionary<string, StepTypeInfo> typeNameToStepTypeInfo = new Dictionary<string, StepTypeInfo>(StringComparer.CurrentCultureIgnoreCase);
-		private static Dictionary<string, string> variables = new Dictionary<string, string>(StringComparer.CurrentCultureIgnoreCase);
 		private static StringBuilder output = new StringBuilder();
-		private static List<Project> projects = new List<Project>(1);
 
 		#endregion
 
@@ -49,9 +52,9 @@ namespace MegaBuild
 
 		public static bool ParseOutputCommands { get; set; } = true;
 
-		public static ImageList StepImages => images;
+		public static ImageList StepImages => Images;
 
-		public static Dictionary<string, string> Variables => variables;
+		public static Dictionary<string, string> Variables => VariablesMap;
 
 		#endregion
 
@@ -59,7 +62,7 @@ namespace MegaBuild
 
 		public static void ClearOutput()
 		{
-			lock (typeof(Manager))
+			lock (LockToken)
 			{
 				// Clear the output cache
 				output = new StringBuilder();
@@ -81,7 +84,7 @@ namespace MegaBuild
 
 		public static string CollapseVariables(string text)
 		{
-			lock (typeof(Manager))
+			lock (LockToken)
 			{
 				var combinedVariables = GetCombinedVariables();
 				foreach (KeyValuePair<string, string> entry in combinedVariables)
@@ -113,7 +116,7 @@ namespace MegaBuild
 
 		public static string ExpandVariables(string text)
 		{
-			lock (typeof(Manager))
+			lock (LockToken)
 			{
 				var combinedVariables = GetCombinedVariables();
 				foreach (KeyValuePair<string, string> entry in combinedVariables)
@@ -146,7 +149,7 @@ namespace MegaBuild
 		[SuppressMessage("Microsoft.Design", "CA1024:UsePropertiesWhereAppropriate", Justification = "Not suitable as a property.")]
 		public static string GetOutput()
 		{
-			lock (typeof(Manager))
+			lock (LockToken)
 			{
 				string result = output.ToString();
 				return result;
@@ -155,21 +158,21 @@ namespace MegaBuild
 
 		public static void Load(Form mainForm, ISettingsNode key)
 		{
-			lock (typeof(Manager))
+			lock (LockToken)
 			{
 				Manager.mainForm = mainForm;
 
-				ParseOutputCommands = key.GetValue("ParseOutputCommands", ParseOutputCommands);
+				ParseOutputCommands = key.GetValue(nameof(ParseOutputCommands), ParseOutputCommands);
 
 				// Load variables
-				variables.Clear();
-				ISettingsNode node = key.GetSubNode("Variables", false);
+				VariablesMap.Clear();
+				ISettingsNode node = key.GetSubNode(nameof(Variables), false);
 				if (node != null)
 				{
 					IList<string> names = node.GetSettingNames();
 					foreach (string name in names)
 					{
-						variables.Add(name, node.GetValue(name, string.Empty));
+						VariablesMap.Add(name, node.GetValue(name, string.Empty));
 					}
 				}
 
@@ -193,7 +196,7 @@ namespace MegaBuild
 		public static void Output(string message, int indent, Color color, bool highlight, Guid outputId)
 		{
 			// Cache the output so Email steps can get it if necessary.
-			lock (typeof(Manager))
+			lock (LockToken)
 			{
 				// Parse any commands in the output (e.g. MEGABUILD.SET) if necessary.
 				if (ParseOutputCommands)
@@ -229,16 +232,16 @@ namespace MegaBuild
 
 		public static void Save(ISettingsNode key)
 		{
-			lock (typeof(Manager))
+			lock (LockToken)
 			{
-				key.SetValue("ParseOutputCommands", ParseOutputCommands);
+				key.SetValue(nameof(ParseOutputCommands), ParseOutputCommands);
 
 				// Save variables
-				key.DeleteSubNode("Variables");
-				if (variables.Count > 0)
+				key.DeleteSubNode(nameof(Variables));
+				if (VariablesMap.Count > 0)
 				{
-					ISettingsNode varNode = key.GetSubNode("Variables", true);
-					foreach (KeyValuePair<string, string> entry in variables)
+					ISettingsNode varNode = key.GetSubNode(nameof(Variables), true);
+					foreach (KeyValuePair<string, string> entry in VariablesMap)
 					{
 						varNode.SetValue(entry.Key, entry.Value);
 					}
@@ -252,35 +255,34 @@ namespace MegaBuild
 
 		internal static void AddProject(Project project)
 		{
-			lock (typeof(Manager))
+			lock (LockToken)
 			{
-				projects.Add(project);
+				Projects.Add(project);
 			}
 		}
 
 		internal static StepTypeInfo GetStepTypeInfo(string fullTypeName)
 		{
-			lock (typeof(Manager))
+			lock (LockToken)
 			{
-				StepTypeInfo result;
-				typeNameToStepTypeInfo.TryGetValue(fullTypeName, out result);
+				TypeNameToStepTypeInfo.TryGetValue(fullTypeName, out StepTypeInfo result);
 				return result;
 			}
 		}
 
 		internal static StepTypeInfo[] GetStepTypeInfos()
 		{
-			lock (typeof(Manager))
+			lock (LockToken)
 			{
-				return typeNameToStepTypeInfo.Select(pair => pair.Value).ToArray();
+				return TypeNameToStepTypeInfo.Select(pair => pair.Value).ToArray();
 			}
 		}
 
 		internal static void RemoveProject(Project project)
 		{
-			lock (typeof(Manager))
+			lock (LockToken)
 			{
-				projects.Remove(project);
+				Projects.Remove(project);
 			}
 		}
 
@@ -315,7 +317,7 @@ namespace MegaBuild
 
 						if (available)
 						{
-							typeNameToStepTypeInfo.Add(type.FullName, new StepTypeInfo(type));
+							TypeNameToStepTypeInfo.Add(type.FullName, new StepTypeInfo(type));
 						}
 					}
 				}
@@ -324,7 +326,7 @@ namespace MegaBuild
 
 		private static void CacheStepTypes()
 		{
-			typeNameToStepTypeInfo.Clear();
+			TypeNameToStepTypeInfo.Clear();
 
 			// Cache the types in this assembly first.
 			Assembly thisAsm = Assembly.GetExecutingAssembly();
@@ -345,11 +347,11 @@ namespace MegaBuild
 		private static Dictionary<string, string> GetCombinedVariables()
 		{
 			// Add the Manager variables first.
-			Dictionary<string, string> result = new Dictionary<string, string>(variables, StringComparer.CurrentCultureIgnoreCase);
+			Dictionary<string, string> result = new Dictionary<string, string>(VariablesMap, StringComparer.CurrentCultureIgnoreCase);
 
 			// Then add each project's variables in project order, so project and sub-project variables
 			// can override existing variable values from Manager or parent projects.
-			foreach (Project project in projects)
+			foreach (Project project in Projects)
 			{
 				foreach (KeyValuePair<string, string> pair in project.Variables)
 				{
@@ -407,7 +409,7 @@ namespace MegaBuild
 								name = TextUtility.EnsureQuotes(name, "%");
 
 								// Put it in the map.  The index operator adds or overwrites.
-								variables[name] = value;
+								VariablesMap[name] = value;
 							}
 						}
 					}

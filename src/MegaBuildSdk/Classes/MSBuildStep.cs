@@ -232,7 +232,7 @@
 				string exePath = Path.Combine(directory, "MSBuild.exe");
 				string commandLineArguments = this.BuildCommandLineArguments();
 
-				ExecuteCommandArgs cmdArgs = new ExecuteCommandArgs()
+				ExecuteCommandArgs cmdArgs = new ExecuteCommandArgs
 				{
 					FileName = exePath,
 					Arguments = commandLineArguments,
@@ -245,17 +245,19 @@
 
 				if (!result)
 				{
-					this.Project.OutputLine("MSBuild returned exit code: " + cmdArgs.ExitCode.ToString(), OutputColors.Heading);
+					this.Project.OutputLine("MSBuild returned exit code: " + cmdArgs.ExitCode, OutputColors.Heading);
 				}
 			}
 
 			return result;
 		}
 
+		[SuppressMessage("Usage", "CC0022:Should dispose object", Justification = "Caller disposes new controls.")]
+		[SuppressMessage("Reliability", "CA2000:Dispose objects before losing scope", Justification = "Caller disposes new controls.")]
 		public override void GetStepEditorControls(ICollection<StepEditorControl> controls)
 		{
 			base.GetStepEditorControls(controls);
-			controls.Add(new MSBuildStepCtrl() { Step = this });
+			controls.Add(new MSBuildStepCtrl { Step = this });
 		}
 
 		#endregion
@@ -266,20 +268,20 @@
 		{
 			base.Load(key);
 
-			this.ProjectFile = key.GetValue("ProjectFile", this.ProjectFile);
-			this.WorkingDirectory = key.GetValue("WorkingDirectory", this.WorkingDirectory);
-			this.Verbosity = key.GetValue("Verbosity", this.verbosity);
-			this.ToolsVersion = key.GetValue("ToolsVersion", this.toolsVersion);
-			this.CommandLineOptions = key.GetValue("CommandLineOptions", this.commandLineOptions);
-			this.Use32BitProcess = key.GetValue("Use32BitProcess", this.use32BitProcess);
+			this.ProjectFile = key.GetValue(nameof(this.ProjectFile), this.ProjectFile);
+			this.WorkingDirectory = key.GetValue(nameof(this.WorkingDirectory), this.WorkingDirectory);
+			this.Verbosity = key.GetValue(nameof(this.Verbosity), this.verbosity);
+			this.ToolsVersion = key.GetValue(nameof(this.ToolsVersion), this.toolsVersion);
+			this.CommandLineOptions = key.GetValue(nameof(this.CommandLineOptions), this.commandLineOptions);
+			this.Use32BitProcess = key.GetValue(nameof(this.Use32BitProcess), this.use32BitProcess);
 
 			List<string> targets = new List<string>();
-			XmlKey targetsKey = key.GetSubkey("Targets", string.Empty);
+			XmlKey targetsKey = key.GetSubkey(nameof(this.Targets), string.Empty);
 			foreach (XmlKey targetKey in targetsKey.GetSubkeys())
 			{
 				Debug.Assert(targetKey.KeyType == "Target", "Key type must be Target.");
 
-				string target = targetKey.GetValue("Name", string.Empty);
+				string target = targetKey.GetValue(nameof(this.Name), string.Empty);
 				if (!string.IsNullOrEmpty(target))
 				{
 					targets.Add(target);
@@ -289,12 +291,12 @@
 			this.Targets = targets.ToArray();
 
 			Dictionary<string, string> properties = new Dictionary<string, string>();
-			XmlKey propertiesKey = key.GetSubkey("Properties", string.Empty);
+			XmlKey propertiesKey = key.GetSubkey(nameof(this.Properties), string.Empty);
 			foreach (XmlKey propertyKey in propertiesKey.GetSubkeys())
 			{
 				Debug.Assert(propertyKey.KeyType == "Property", "Key type must be Property.");
 
-				string name = propertyKey.GetValue("Name", string.Empty);
+				string name = propertyKey.GetValue(nameof(this.Name), string.Empty);
 				if (!string.IsNullOrEmpty(name))
 				{
 					string value = propertyKey.GetValue("Value", string.Empty);
@@ -309,30 +311,30 @@
 		{
 			base.Save(key);
 
-			key.SetValue("ProjectFile", this.ProjectFile);
-			key.SetValue("WorkingDirectory", this.WorkingDirectory);
-			key.SetValue("Verbosity", this.Verbosity);
-			key.SetValue("ToolsVersion", this.ToolsVersion);
-			key.SetValue("CommandLineOptions", this.CommandLineOptions);
-			key.SetValue("Use32BitProcess", this.Use32BitProcess);
+			key.SetValue(nameof(this.ProjectFile), this.ProjectFile);
+			key.SetValue(nameof(this.WorkingDirectory), this.WorkingDirectory);
+			key.SetValue(nameof(this.Verbosity), this.Verbosity);
+			key.SetValue(nameof(this.ToolsVersion), this.ToolsVersion);
+			key.SetValue(nameof(this.CommandLineOptions), this.CommandLineOptions);
+			key.SetValue(nameof(this.Use32BitProcess), this.Use32BitProcess);
 
 			var targets = this.Targets;
-			XmlKey targetsKey = key.GetSubkey("Targets", string.Empty);
+			XmlKey targetsKey = key.GetSubkey(nameof(this.Targets), string.Empty);
 			int numTargets = targets.Length;
 			for (int i = 0; i < numTargets; i++)
 			{
 				XmlKey targetKey = targetsKey.GetSubkey("Target", i.ToString());
-				targetKey.SetValue("Name", targets[i]);
+				targetKey.SetValue(nameof(this.Name), targets[i]);
 			}
 
 			var properties = this.Properties.ToList();
-			XmlKey propertiesKey = key.GetSubkey("Properties", string.Empty);
+			XmlKey propertiesKey = key.GetSubkey(nameof(this.Properties), string.Empty);
 			int numKeys = properties.Count;
 			for (int i = 0; i < numKeys; i++)
 			{
 				XmlKey propertyKey = propertiesKey.GetSubkey("Property", i.ToString());
 				var pair = properties[i];
-				propertyKey.SetValue("Name", pair.Key);
+				propertyKey.SetValue(nameof(this.Name), pair.Key);
 				propertyKey.SetValue("Value", pair.Value);
 			}
 		}

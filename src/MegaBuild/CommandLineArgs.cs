@@ -13,10 +13,12 @@ namespace MegaBuild
 	{
 		#region Private Data Members
 
+		private readonly bool showHelp;
+#pragma warning disable CC0052 // Make field readonly. These are modified by lambdas in the constructor, so they can't be readonly.
 		private bool build;
 		private bool exit;
-		private bool showHelp;
 		private string project = string.Empty;
+#pragma warning restore CC0052 // Make field readonly
 
 		#endregion
 
@@ -25,8 +27,8 @@ namespace MegaBuild
 		public CommandLineArgs()
 		{
 			CommandLine cmdLine = new CommandLine(false);
-			cmdLine.AddSwitch("Build", string.Empty, value => this.build = value);
-			cmdLine.AddSwitch("Exit", string.Empty, value => this.exit = value);
+			cmdLine.AddSwitch(nameof(this.Build), string.Empty, value => this.build = value);
+			cmdLine.AddSwitch(nameof(this.Exit), string.Empty, value => this.exit = value);
 			cmdLine.AddValueHandler((value, errors) =>
 				{
 					this.project = TextUtility.StripQuotes(value);

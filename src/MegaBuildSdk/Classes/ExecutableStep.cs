@@ -26,6 +26,7 @@ namespace MegaBuild
 		private static readonly List<Regex> WarningRegexs = ParseRegexes(Properties.Settings.Default.ExecutableStep_WarningRegexs);
 		private static readonly ConcurrentExclusiveSchedulerPair Schedulers = new ConcurrentExclusiveSchedulerPair();
 
+		private readonly ExecSupports supportFlags;
 		private bool autoColorErrorsAndWarnings;
 		private bool ignoreFailure;
 		private bool inCurrentBuild;
@@ -35,7 +36,6 @@ namespace MegaBuild
 		private bool timeout;
 		private bool waitForCompletion = true;
 		private StepStatus status = StepStatus.None;
-		private ExecSupports supportFlags;
 		private int timeoutMinutes = 10;
 		private TimeSpan totalTime;
 
@@ -292,10 +292,12 @@ namespace MegaBuild
 
 		public abstract bool Execute(StepExecuteArgs args);
 
+		[SuppressMessage("Usage", "CC0022:Should dispose object", Justification = "Caller disposes new controls.")]
+		[SuppressMessage("Reliability", "CA2000:Dispose objects before losing scope", Justification = "Caller disposes new controls.")]
 		public override void GetStepEditorControls(ICollection<StepEditorControl> controls)
 		{
 			base.GetStepEditorControls(controls);
-			controls.Add(new ExecStepCtrl() { Step = this });
+			controls.Add(new ExecStepCtrl { Step = this });
 		}
 
 		public void ResetStatus()
@@ -312,30 +314,30 @@ namespace MegaBuild
 		protected internal override void Load(XmlKey key)
 		{
 			base.Load(key);
-			this.WaitForCompletion = key.GetValue("WaitForCompletion", this.waitForCompletion);
-			this.IgnoreFailure = key.GetValue("IgnoreFailure", this.ignoreFailure);
-			this.PromptFirst = key.GetValue("PromptFirst", this.promptFirst);
-			this.OnlyIfParentSucceeded = key.GetValue("OnlyIfParentSucceeded", this.onlyIfParentSucceeded);
-			this.Timeout = key.GetValue("Timeout", this.timeout);
-			this.TimeoutMinutes = key.GetValue("TimeoutMinutes", this.timeoutMinutes);
-			this.AutoColorErrorsAndWarnings = key.GetValue("AutoColorErrorsAndWarnings", this.autoColorErrorsAndWarnings);
+			this.WaitForCompletion = key.GetValue(nameof(this.WaitForCompletion), this.waitForCompletion);
+			this.IgnoreFailure = key.GetValue(nameof(this.IgnoreFailure), this.ignoreFailure);
+			this.PromptFirst = key.GetValue(nameof(this.PromptFirst), this.promptFirst);
+			this.OnlyIfParentSucceeded = key.GetValue(nameof(this.OnlyIfParentSucceeded), this.onlyIfParentSucceeded);
+			this.Timeout = key.GetValue(nameof(this.Timeout), this.timeout);
+			this.TimeoutMinutes = key.GetValue(nameof(this.TimeoutMinutes), this.timeoutMinutes);
+			this.AutoColorErrorsAndWarnings = key.GetValue(nameof(this.AutoColorErrorsAndWarnings), this.autoColorErrorsAndWarnings);
 			if (this.MayRequireAdministrator)
 			{
-				this.IsAdministratorRequired = key.GetValue("IsAdministratorRequired", this.isAdministratorRequired);
+				this.IsAdministratorRequired = key.GetValue(nameof(this.IsAdministratorRequired), this.isAdministratorRequired);
 			}
 		}
 
 		protected internal override void Save(XmlKey key)
 		{
 			base.Save(key);
-			key.SetValue("WaitForCompletion", this.waitForCompletion);
-			key.SetValue("IgnoreFailure", this.ignoreFailure);
-			key.SetValue("PromptFirst", this.promptFirst);
-			key.SetValue("OnlyIfParentSucceeded", this.onlyIfParentSucceeded);
-			key.SetValue("Timeout", this.timeout);
-			key.SetValue("TimeoutMinutes", this.timeoutMinutes);
-			key.SetValue("AutoColorErrorsAndWarnings", this.autoColorErrorsAndWarnings);
-			key.SetValue("IsAdministratorRequired", this.isAdministratorRequired);
+			key.SetValue(nameof(this.WaitForCompletion), this.waitForCompletion);
+			key.SetValue(nameof(this.IgnoreFailure), this.ignoreFailure);
+			key.SetValue(nameof(this.PromptFirst), this.promptFirst);
+			key.SetValue(nameof(this.OnlyIfParentSucceeded), this.onlyIfParentSucceeded);
+			key.SetValue(nameof(this.Timeout), this.timeout);
+			key.SetValue(nameof(this.TimeoutMinutes), this.timeoutMinutes);
+			key.SetValue(nameof(this.AutoColorErrorsAndWarnings), this.autoColorErrorsAndWarnings);
+			key.SetValue(nameof(this.IsAdministratorRequired), this.isAdministratorRequired);
 		}
 
 		protected bool ExecuteCommand(ExecuteCommandArgs args)
@@ -487,10 +489,11 @@ namespace MegaBuild
 
 		private ProcessStartInfo CreateProcessStartInfo(ExecuteCommandArgs args)
 		{
-			ProcessStartInfo startInfo = new ProcessStartInfo();
-
-			// Use Manager.ExpandVariables for all strings.
-			startInfo.FileName = Manager.ExpandVariables(args.FileName);
+			ProcessStartInfo startInfo = new ProcessStartInfo
+			{
+				// Use Manager.ExpandVariables for all strings.
+				FileName = Manager.ExpandVariables(args.FileName),
+			};
 			this.DebugProperty("FileName", startInfo.FileName);
 			startInfo.Arguments = Manager.ExpandVariables(args.Arguments);
 			this.DebugProperty("Arguments", startInfo.Arguments);
@@ -543,6 +546,7 @@ namespace MegaBuild
 					this.DebugOutput($"Closing main window for {process.ProcessName}.");
 					process.CloseMainWindow();
 				}
+#pragma warning disable CC0004 // Catch block cannot be empty
 				catch (InvalidOperationException)
 				{
 					// If the process goes away between the time we check
@@ -550,6 +554,7 @@ namespace MegaBuild
 					// InvalidOperationException will be thrown.  But that's ok
 					// because then we know the process has definitely exited.
 				}
+#pragma warning restore CC0004 // Catch block cannot be empty
 			}
 
 			if (!process.HasExited)
@@ -564,12 +569,18 @@ namespace MegaBuild
 					{
 						process.Kill();
 					}
+#pragma warning disable CC0004 // Catch block cannot be empty
 					catch (InvalidOperationException)
 					{
+						// This can occur if the process finished between WaitForExit and Kill.
 					}
+#pragma warning restore CC0004 // Catch block cannot be empty
+#pragma warning disable CC0004 // Catch block cannot be empty
 					catch (Win32Exception)
 					{
+						// This can occur if the process can't be killed.
 					}
+#pragma warning restore CC0004 // Catch block cannot be empty
 				}
 			}
 		}

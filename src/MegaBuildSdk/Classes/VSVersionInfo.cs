@@ -179,15 +179,19 @@ namespace MegaBuild
 				}
 				while (fetched > 0);
 			}
+#pragma warning disable CC0004 // Catch block cannot be empty
 			catch (COMException ex) when (ex.HResult == REGDB_E_CLASSNOTREG)
 			{
 				// The SetupConfiguration API is not registered, so assume no instances are installed.
 			}
+#pragma warning restore CC0004 // Catch block cannot be empty
+#pragma warning disable CC0004 // Catch block cannot be empty
 			catch (Exception)
 			{
 				// Heath Stewart (MSFT), the author of the SetupConfiguration API, says to treat any exception as "no instances installed."
 				// https://code.msdn.microsoft.com/windowsdesktop/Visual-Studio-Setup-0cedd331/view/Discussions#content
 			}
+#pragma warning restore CC0004 // Catch block cannot be empty
 
 			// This must return a non-null, non-empty path, even if it doesn't exist. VSStep depends on getting back
 			// at least an environment variable-based path that it can display to the user.  So we'll make one up here.

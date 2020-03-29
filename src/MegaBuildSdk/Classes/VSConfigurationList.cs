@@ -150,8 +150,10 @@ namespace MegaBuild
 				string name = this.names[i];
 				bool state = (bool)this.nameToState[name];
 
-				ListViewItem item = new ListViewItem(name);
-				item.Checked = state;
+				ListViewItem item = new ListViewItem(name)
+				{
+					Checked = state,
+				};
 
 				listView.Items.Add(item);
 			}

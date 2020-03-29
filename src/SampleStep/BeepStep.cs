@@ -4,6 +4,7 @@ namespace SampleStep
 
 	using System;
 	using System.Collections.Generic;
+	using System.Diagnostics.CodeAnalysis;
 	using System.Runtime.InteropServices;
 	using MegaBuild;
 
@@ -81,17 +82,22 @@ namespace SampleStep
 					result = true;
 				}
 			}
+#pragma warning disable CC0004 // Catch block cannot be empty
 			catch (ArgumentOutOfRangeException)
 			{
+				// The user asked for a frequencey too high or too low to play.
 			}
+#pragma warning restore CC0004 // Catch block cannot be empty
 
 			return result;
 		}
 
+		[SuppressMessage("Usage", "CC0022:Should dispose object", Justification = "Caller disposes new controls.")]
+		[SuppressMessage("Reliability", "CA2000:Dispose objects before losing scope", Justification = "Caller disposes new controls.")]
 		public override void GetStepEditorControls(ICollection<StepEditorControl> controls)
 		{
 			base.GetStepEditorControls(controls);
-			controls.Add(new BeepStepCtrl() { Step = this });
+			controls.Add(new BeepStepCtrl { Step = this });
 		}
 
 		#endregion
@@ -101,15 +107,15 @@ namespace SampleStep
 		protected override void Load(XmlKey key)
 		{
 			base.Load(key);
-			this.Frequency = key.GetValue("Frequency", this.Frequency);
-			this.Duration = key.GetValue("Duration", this.Duration);
+			this.Frequency = key.GetValue(nameof(this.Frequency), this.Frequency);
+			this.Duration = key.GetValue(nameof(this.Duration), this.Duration);
 		}
 
 		protected override void Save(XmlKey key)
 		{
 			base.Save(key);
-			key.SetValue("Frequency", this.Frequency);
-			key.SetValue("Duration", this.Duration);
+			key.SetValue(nameof(this.Frequency), this.Frequency);
+			key.SetValue(nameof(this.Duration), this.Duration);
 		}
 
 		#endregion

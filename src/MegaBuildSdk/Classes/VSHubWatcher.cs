@@ -59,7 +59,7 @@ namespace MegaBuild
 					{
 						CreateNoWindow = true,
 						WindowStyle = ProcessWindowStyle.Hidden,
-						UseShellExecute = false
+						UseShellExecute = false,
 					};
 					using (Process.Start(startInfo))
 					{

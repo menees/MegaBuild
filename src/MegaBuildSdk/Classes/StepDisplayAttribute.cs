@@ -11,9 +11,9 @@ namespace MegaBuild
 	{
 		#region Private Data Members
 
-		private string description;
-		private string iconResourceName;
-		private string name;
+		private readonly string description;
+		private readonly string iconResourceName;
+		private readonly string name;
 
 		#endregion
 

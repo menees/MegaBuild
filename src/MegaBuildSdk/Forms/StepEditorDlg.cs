@@ -52,8 +52,10 @@ namespace MegaBuild
 				step.GetStepEditorControls(this.editorControls);
 				foreach (StepEditorControl editCtrl in this.editorControls)
 				{
-					TabPage page = new TabPage(editCtrl.DisplayName);
-					page.UseVisualStyleBackColor = true;
+					TabPage page = new TabPage(editCtrl.DisplayName)
+					{
+						UseVisualStyleBackColor = true,
+					};
 
 					// Set the control to fill the entire page client area
 					editCtrl.Dock = DockStyle.Fill;

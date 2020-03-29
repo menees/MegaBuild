@@ -213,7 +213,7 @@ namespace MegaBuild
 							string command = this.GenerateCommand(executableVersion, false);
 							string arguments = this.GenerateArguments(executableVersion, configuration);
 
-							ExecuteCommandArgs cmdArgs = new ExecuteCommandArgs()
+							ExecuteCommandArgs cmdArgs = new ExecuteCommandArgs
 							{
 								FileName = command,
 								Arguments = arguments,
@@ -293,10 +293,12 @@ namespace MegaBuild
 			return result;
 		}
 
+		[SuppressMessage("Usage", "CC0022:Should dispose object", Justification = "Caller disposes new controls.")]
+		[SuppressMessage("Reliability", "CA2000:Dispose objects before losing scope", Justification = "Caller disposes new controls.")]
 		public override void GetStepEditorControls(ICollection<StepEditorControl> controls)
 		{
 			base.GetStepEditorControls(controls);
-			controls.Add(new VSStepCtrl() { Step = this });
+			controls.Add(new VSStepCtrl { Step = this });
 		}
 
 		public override void ProjectOptionsChanged()
@@ -328,17 +330,17 @@ namespace MegaBuild
 		protected internal override void Load(XmlKey key)
 		{
 			base.Load(key);
-			this.Solution = key.GetValue("Solution", this.solution);
-			this.Action = key.GetValue("Action", this.action);
-			this.Version = key.GetValue("Version", this.version);
-			this.DevEnvArguments = key.GetValue("DevEnvArguments", this.devEnvArguments);
-			this.WindowState = key.GetValue("WindowState", this.windowState);
-			this.configurations.Load(key.GetSubkey("Configurations", string.Empty));
+			this.Solution = key.GetValue(nameof(this.Solution), this.solution);
+			this.Action = key.GetValue(nameof(this.Action), this.action);
+			this.Version = key.GetValue(nameof(this.Version), this.version);
+			this.DevEnvArguments = key.GetValue(nameof(this.DevEnvArguments), this.devEnvArguments);
+			this.WindowState = key.GetValue(nameof(this.WindowState), this.windowState);
+			this.configurations.Load(key.GetSubkey(nameof(this.Configurations), string.Empty));
 
 			// In 1.0.5, I changed the redirect to all streams, so this name changed.
 			// But I need to still read in old project files correctly.
 			this.RedirectStreams = key.GetValue(
-				key.ValueExists("RedirectOutput") ? "RedirectOutput" : "RedirectStreams",
+				key.ValueExists("RedirectOutput") ? "RedirectOutput" : nameof(this.RedirectStreams),
 				this.redirectStreams);
 			this.UpdateStepInformation(false);
 		}
@@ -346,13 +348,13 @@ namespace MegaBuild
 		protected internal override void Save(XmlKey key)
 		{
 			base.Save(key);
-			key.SetValue("Solution", this.solution);
-			key.SetValue("Action", this.action);
-			key.SetValue("Version", this.version);
-			key.SetValue("RedirectStreams", this.redirectStreams);
-			key.SetValue("DevEnvArguments", this.devEnvArguments);
-			key.SetValue("WindowState", this.windowState);
-			this.configurations.Save(key.GetSubkey("Configurations", string.Empty));
+			key.SetValue(nameof(this.Solution), this.solution);
+			key.SetValue(nameof(this.Action), this.action);
+			key.SetValue(nameof(this.Version), this.version);
+			key.SetValue(nameof(this.RedirectStreams), this.redirectStreams);
+			key.SetValue(nameof(this.DevEnvArguments), this.devEnvArguments);
+			key.SetValue(nameof(this.WindowState), this.windowState);
+			this.configurations.Save(key.GetSubkey(nameof(this.Configurations), string.Empty));
 		}
 
 		protected override void StepEdited()
@@ -555,7 +557,7 @@ namespace MegaBuild
 					{
 						"Package 'Microsoft.VisualStudio.TestTools.TestCaseManagement.QualityToolsPackage, " +
 						"Microsoft.VisualStudio.QualityTools.TestCaseManagement, Version=10.0.0.0, Culture=neutral, " +
-						"PublicKeyToken=b03f5f7f11d50a3a' failed to load."
+						"PublicKeyToken=b03f5f7f11d50a3a' failed to load.",
 					};
 					break;
 
@@ -567,7 +569,7 @@ namespace MegaBuild
 						"Package 'Code Analysis Package' failed to load.",
 
 						// This shows up when building solutions for analyzers (e.g., with vsix projects).
-						"Package 'TestWindowPackage' failed to load."
+						"Package 'TestWindowPackage' failed to load.",
 					};
 					break;
 
@@ -575,7 +577,7 @@ namespace MegaBuild
 					packageErrorsToIgnore = new[]
 					{
 						"Package 'Task Status Center' failed to load.",
-						"Package 'Operation Progress Service Package' failed to load."
+						"Package 'Operation Progress Service Package' failed to load.",
 					};
 					break;
 			}

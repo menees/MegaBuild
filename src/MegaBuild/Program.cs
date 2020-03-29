@@ -11,7 +11,7 @@ namespace MegaBuild
 
 	#endregion
 
-	static class Program
+	internal static class Program
 	{
 		#region Main Entry Point
 

@@ -263,8 +263,10 @@ namespace MegaBuild
 			foreach (string configuration in configurations)
 			{
 				// Make all the configurations initially enabled.
-				ListViewItem item = new ListViewItem(configuration);
-				item.Checked = true;
+				ListViewItem item = new ListViewItem(configuration)
+				{
+					Checked = true,
+				};
 				this.lstConfigurations.Items.Add(item);
 			}
 

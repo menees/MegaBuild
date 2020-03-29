@@ -159,10 +159,12 @@ namespace MegaBuild
 			return result;
 		}
 
+		[SuppressMessage("Usage", "CC0022:Should dispose object", Justification = "Caller disposes new controls.")]
+		[SuppressMessage("Reliability", "CA2000:Dispose objects before losing scope", Justification = "Caller disposes new controls.")]
 		public override void GetStepEditorControls(ICollection<StepEditorControl> controls)
 		{
 			base.GetStepEditorControls(controls);
-			controls.Add(new SoundStepCtrl() { Step = this });
+			controls.Add(new SoundStepCtrl { Step = this });
 		}
 
 		#endregion
@@ -172,21 +174,21 @@ namespace MegaBuild
 		protected internal override void Load(XmlKey key)
 		{
 			base.Load(key);
-			this.Style = key.GetValue("Style", this.Style);
-			this.SystemSound = key.GetValue("SystemSound", this.SystemSound);
-			this.WavFile = key.GetValue("WavFile", this.WavFile);
-			this.Frequency = key.GetValue("Frequency", this.Frequency);
-			this.Duration = key.GetValue("Duration", this.Duration);
+			this.Style = key.GetValue(nameof(this.Style), this.Style);
+			this.SystemSound = key.GetValue(nameof(this.SystemSound), this.SystemSound);
+			this.WavFile = key.GetValue(nameof(this.WavFile), this.WavFile);
+			this.Frequency = key.GetValue(nameof(this.Frequency), this.Frequency);
+			this.Duration = key.GetValue(nameof(this.Duration), this.Duration);
 		}
 
 		protected internal override void Save(XmlKey key)
 		{
 			base.Save(key);
-			key.SetValue("Style", this.Style);
-			key.SetValue("SystemSound", this.SystemSound);
-			key.SetValue("WavFile", this.WavFile);
-			key.SetValue("Frequency", this.Frequency);
-			key.SetValue("Duration", this.Duration);
+			key.SetValue(nameof(this.Style), this.Style);
+			key.SetValue(nameof(this.SystemSound), this.SystemSound);
+			key.SetValue(nameof(this.WavFile), this.WavFile);
+			key.SetValue(nameof(this.Frequency), this.Frequency);
+			key.SetValue(nameof(this.Duration), this.Duration);
 		}
 
 		#endregion
@@ -238,15 +240,24 @@ namespace MegaBuild
 					player.PlaySync();
 					result = true;
 				}
+#pragma warning disable CC0004 // Catch block cannot be empty
 				catch (TimeoutException)
 				{
+					// The load time exceeded the player's LoadTimeout.
 				}
+#pragma warning restore CC0004 // Catch block cannot be empty
+#pragma warning disable CC0004 // Catch block cannot be empty
 				catch (InvalidOperationException)
 				{
+					// The .wav file is corrupt or an unsupported format.
 				}
+#pragma warning restore CC0004 // Catch block cannot be empty
+#pragma warning disable CC0004 // Catch block cannot be empty
 				catch (FileNotFoundException)
 				{
+					// The .wav file couldn't be found.
 				}
+#pragma warning restore CC0004 // Catch block cannot be empty
 
 				return result;
 			}
@@ -261,9 +272,12 @@ namespace MegaBuild
 				Console.Beep(frequency, duration);
 				result = true;
 			}
+#pragma warning disable CC0004 // Catch block cannot be empty
 			catch (ArgumentOutOfRangeException)
 			{
+				// The user asked for a frequencey too high or too low to play.
 			}
+#pragma warning restore CC0004 // Catch block cannot be empty
 
 			return result;
 		}

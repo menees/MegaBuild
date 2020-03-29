@@ -14,7 +14,7 @@ namespace MegaBuild
 	{
 		#region Private Data Members
 
-		private List<Step> steps = new List<Step>();
+		private readonly List<Step> steps = new List<Step>();
 
 		#endregion
 
@@ -150,7 +150,7 @@ namespace MegaBuild
 			for (int i = 0; i < numSteps; i++)
 			{
 				Step step = this[i];
-				XmlKey stepKey = key.AddSubkey("Step", string.Empty);
+				XmlKey stepKey = key.AddSubkey(nameof(Step), string.Empty);
 				stepKey.SetValue("StepTypeName", step.GetType().FullName);
 				step.Save(stepKey);
 			}

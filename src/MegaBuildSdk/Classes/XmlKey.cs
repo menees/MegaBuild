@@ -16,7 +16,7 @@ namespace MegaBuild
 	{
 		#region Private Data Members
 
-		private XElement element;
+		private readonly XElement element;
 
 		#endregion
 
@@ -145,7 +145,7 @@ namespace MegaBuild
 			// Make sure "empty" sub-elements aren't saved out (e.g., if no child elements and no attributes other than XmlKeyName).
 			// Copy to an array first since we'll be removing nodes in the loop.
 			XElement[] emptyElements = this.element.Descendants().Where(e => !e.HasElements &&
-				(!e.HasAttributes || (e.Attributes().Count() == 1 && e.Attributes("XmlKeyName") != null))).ToArray();
+				(!e.HasAttributes || (e.Attributes().Count() == 1 && e.Attributes(nameof(this.XmlKeyName)) != null))).ToArray();
 			foreach (XElement empty in emptyElements)
 			{
 				empty.Remove();
@@ -217,7 +217,7 @@ namespace MegaBuild
 
 			if (!string.IsNullOrEmpty(xmlKeyName))
 			{
-				SetValue(result, "XmlKeyName", xmlKeyName);
+				SetValue(result, nameof(this.XmlKeyName), xmlKeyName);
 			}
 
 			this.element.Add(result);
@@ -230,7 +230,7 @@ namespace MegaBuild
 			// XmlKeyNames, so they'll be read back in as null, which we'll default to empty
 			// (on both sides of the comparison).
 			XElement result = this.element.Elements(subkeyType)
-				.FirstOrDefault(e => e.GetAttributeValue("XmlKeyName", string.Empty) == (xmlKeyName ?? string.Empty));
+				.FirstOrDefault(e => e.GetAttributeValue(nameof(this.XmlKeyName), string.Empty) == (xmlKeyName ?? string.Empty));
 
 			if (result == null && !allowNull)
 			{

@@ -279,7 +279,7 @@
 				message = "No properties were found in the project file.";
 			}
 
-			MessageBox.Show(this, message, "Properties", MessageBoxButtons.OK, MessageBoxIcon.Information);
+			MessageBox.Show(this, message, nameof(Properties), MessageBoxButtons.OK, MessageBoxIcon.Information);
 		}
 
 		private void ShowTargets_Click(object sender, EventArgs e)
