@@ -90,33 +90,102 @@ namespace MegaBuild
 
 		#endregion
 
-		#region Main Entry Point
+		#region Internal Methods
 
-		/// <summary>
-		/// The main entry point for the application.
-		/// </summary>
-		[STAThread]
-		private static int Main()
+		[SuppressMessage(
+			"Microsoft.Design",
+			"CA1031:DoNotCatchGeneralExceptionTypes",
+			Justification = "Application.Idle doesn't catch exceptions and route them to Application.OnThreadException, so we have to.")]
+		internal void OnIdle(object sender, EventArgs e)
 		{
-			// I'm intentionally not setting TaskbarManager.Instance.ApplicationId.  We want Windows
-			// to assign a default application ID to each executable path, so they can have their own
-			// private lists of recent files (just like we store in our .stgx files).  Then it will also make
-			// MegaBuild's taskbar icons group together separately by .exe.  For more info:
-			// "Introducing The Taskbar APIs" discusses the "default application ID":
-			// http://msdn.microsoft.com/en-us/magazine/dd942846.aspx
-			// Also, see SetCurrentProcessExplicitAppUserModelID function:
-			// http://msdn.microsoft.com/en-us/library/windows/desktop/dd378422(v=vs.85).aspx
-			WindowsUtility.InitializeApplication("MegaBuild", null);
+			try
+			{
+				bool isBuildStep = this.IsBuildStep;
+				Step[] buildSteps = GetSelectedSteps(this.lstBuildSteps);
+				Step[] steps = isBuildStep ? buildSteps : GetSelectedSteps(this.lstFailureSteps);
+				bool building = this.project.Building;
+				int numSteps = steps.Length;
+				int numBuildSteps = buildSteps.Length;
+				int projectBuildSteps = this.project.BuildSteps.Count;
+				bool hasOutput = this.outputWindow.HasText;
 
-			// Setup idle time processing.
-			MainForm frmMain = new MainForm();
-			Application.Idle += new EventHandler(frmMain.OnIdle);
+				EnableComponents(!building, this.mnuNew, this.mnuOpen, this.mnuSave, this.mnuSaveAs, this.tbNew, this.tbOpen, this.tbSave);
 
-			// Run the application.
-			Application.Run(frmMain);
+				foreach (ToolStripMenuItem mi in this.mnuRecentFiles.DropDownItems)
+				{
+					mi.Enabled = !building;
+				}
 
-			// Return the exit code.
-			return Environment.ExitCode;
+				EnableComponents(!building && numSteps > 0, this.mnuCutStep, this.mnuCutStep2, this.mnuCopyStep, this.mnuCopyStep2);
+				EnableComponents(!building && numSteps <= 1 && Project.CanPasteSteps, this.mnuPasteStep, this.mnuPasteStep2);
+				EnableComponents(!building && hasOutput, this.mnuFindInOutput, this.mnuFindNextInOutput, this.mnuFindPreviousInOutput);
+
+				EnableComponents(
+					this.outputWindow.FindNextHighlightPosition(false, false),
+					this.mnuGoToPreviousHighlight,
+					this.mnuGoToPreviousHighlight2,
+					this.btnGoToPreviousHighlight);
+				EnableComponents(
+					this.outputWindow.FindNextHighlightPosition(true, false),
+					this.mnuGoToNextHighlight,
+					this.mnuGoToNextHighlight2,
+					this.btnGoToNextHighlight);
+
+				bool canGoToStepOutput = false;
+				if (numSteps == 1 && steps[0] is ExecutableStep step)
+				{
+					canGoToStepOutput = this.outputWindow.FindOutput(step.OutputStartId, false);
+				}
+
+				EnableComponents(canGoToStepOutput, this.mnuGoToStepOutput, this.mnuGoToStepOutput2);
+				EnableComponents(!building, this.mnuAddStep1, this.mnuAddStep2, this.tbAddStep);
+				EnableComponents(!building && numSteps <= 1, this.mnuInsertStep1, this.mnuInsertStep2, this.tbInsertStep);
+				bool canEdit = !building && numSteps == 1;
+				EnableComponents(canEdit, this.mnuEditStep1, this.mnuEditStep2, this.tbEditStep);
+				if (canEdit)
+				{
+					// Make the text bold to indicate that "Edit Step" is the default item.
+					this.mnuEditStep2.Font = new Font(this.mnuAddStep2.Font, FontStyle.Bold);
+				}
+				else
+				{
+					this.mnuEditStep2.Font = this.mnuAddStep2.Font;
+				}
+
+				EnableComponents(!building && numSteps > 0, this.mnuDeleteStep1, this.mnuDeleteStep2, this.tbDeleteStep);
+				EnableComponents(!building && numSteps > 0, this.mnuIncludeInBuild1, this.mnuIncludeInBuild2, this.tbIncludeInBuild);
+				EnableComponents(!building && numSteps == 1, this.mnuMoveUp1, this.mnuMoveUp2, this.tbMoveUp);
+				EnableComponents(!building && numSteps == 1, this.mnuMoveDown1, this.mnuMoveDown2, this.tbMoveDown);
+				EnableComponents(!building && numSteps > 0, this.mnuIndent1, this.mnuIndent2, this.tbIndent);
+				EnableComponents(!building && numSteps > 0, this.mnuUnindent1, this.mnuUnindent2, this.tbUnindent);
+
+				EnableComponents(!building && projectBuildSteps > 0, this.mnuBuildProject, this.tbBuildProject);
+				EnableComponents(!building && numSteps > 0, this.mnuBuildSelectedStepsOnly1, this.mnuBuildSelectedStepsOnly2, this.tbBuildSelected);
+				EnableComponents(
+					!building && isBuildStep && numBuildSteps == 1,
+					new Component[] { this.mnuBuildFromSelectedStep1, this.mnuBuildFromSelectedStep2, this.tbBuildFrom });
+				EnableComponents(!building && isBuildStep && numBuildSteps == 1, this.mnuBuildToSelectedStep1, this.mnuBuildToSelectedStep2, this.tbBuildTo);
+				EnableComponents(building, this.mnuStopBuild, this.tbStopBuild);
+
+				bool canResetStatuses = !building && (projectBuildSteps > 0 || this.project.FailureSteps.Count > 0);
+				EnableComponents(canResetStatuses && hasOutput, this.mnuResetAndClear);
+				EnableComponents(canResetStatuses, this.mnuResetStatuses1);
+				EnableComponents(!building, this.mnuProjectOptions);
+
+				EnableComponents(this.outputWindow.HasSelection, this.mnuCopyOutput);
+				EnableComponents(hasOutput, this.mnuSelectAllOutput);
+				EnableComponents(hasOutput, this.mnuClearAll, this.mnuClearOutputWindow);
+				EnableComponents(hasOutput, this.mnuSaveOutputAs1, this.mnuSaveOutputAs2);
+
+				this.spProgress.Visible = building;
+			}
+			catch (Exception ex)
+			{
+				// We must explicitly call this because Application.Idle
+				// doesn't run inside the normal ThreadException protection
+				// that the Application provides for the main message pump.
+				Application.OnThreadException(ex);
+			}
 		}
 
 		#endregion
@@ -773,11 +842,6 @@ namespace MegaBuild
 			this.project.Open();
 		}
 
-		private void OpenDoc_Click(object sender, EventArgs e)
-		{
-			WindowsUtility.ShellExecute(this, "MegaBuild.docx");
-		}
-
 		private void PasteStep_Click(object sender, EventArgs e)
 		{
 			if (Project.CanPasteSteps)
@@ -901,102 +965,6 @@ namespace MegaBuild
 				// we'll auto-confirm the same way that MegaBuildStep
 				// does for in-proc builds.
 				this.BuildProject(BuildOptions.AutoConfirmSteps);
-			}
-		}
-
-		[SuppressMessage(
-			"Microsoft.Design",
-			"CA1031:DoNotCatchGeneralExceptionTypes",
-			Justification = "Application.Idle doesn't catch exceptions and route them to Application.OnThreadException, so we have to.")]
-		private void OnIdle(object sender, EventArgs e)
-		{
-			try
-			{
-				bool isBuildStep = this.IsBuildStep;
-				Step[] buildSteps = GetSelectedSteps(this.lstBuildSteps);
-				Step[] steps = isBuildStep ? buildSteps : GetSelectedSteps(this.lstFailureSteps);
-				bool building = this.project.Building;
-				int numSteps = steps.Length;
-				int numBuildSteps = buildSteps.Length;
-				int projectBuildSteps = this.project.BuildSteps.Count;
-				bool hasOutput = this.outputWindow.HasText;
-
-				EnableComponents(!building, this.mnuNew, this.mnuOpen, this.mnuSave, this.mnuSaveAs, this.tbNew, this.tbOpen, this.tbSave);
-
-				foreach (ToolStripMenuItem mi in this.mnuRecentFiles.DropDownItems)
-				{
-					mi.Enabled = !building;
-				}
-
-				EnableComponents(!building && numSteps > 0, this.mnuCutStep, this.mnuCutStep2, this.mnuCopyStep, this.mnuCopyStep2);
-				EnableComponents(!building && numSteps <= 1 && Project.CanPasteSteps, this.mnuPasteStep, this.mnuPasteStep2);
-				EnableComponents(!building && hasOutput, this.mnuFindInOutput, this.mnuFindNextInOutput, this.mnuFindPreviousInOutput);
-
-				EnableComponents(
-					this.outputWindow.FindNextHighlightPosition(false, false),
-					this.mnuGoToPreviousHighlight,
-					this.mnuGoToPreviousHighlight2,
-					this.btnGoToPreviousHighlight);
-				EnableComponents(
-					this.outputWindow.FindNextHighlightPosition(true, false),
-					this.mnuGoToNextHighlight,
-					this.mnuGoToNextHighlight2,
-					this.btnGoToNextHighlight);
-
-				bool canGoToStepOutput = false;
-				if (numSteps == 1 && steps[0] is ExecutableStep step)
-				{
-					canGoToStepOutput = this.outputWindow.FindOutput(step.OutputStartId, false);
-				}
-
-				EnableComponents(canGoToStepOutput, this.mnuGoToStepOutput, this.mnuGoToStepOutput2);
-				EnableComponents(!building, this.mnuAddStep1, this.mnuAddStep2, this.tbAddStep);
-				EnableComponents(!building && numSteps <= 1, this.mnuInsertStep1, this.mnuInsertStep2, this.tbInsertStep);
-				bool canEdit = !building && numSteps == 1;
-				EnableComponents(canEdit, this.mnuEditStep1, this.mnuEditStep2, this.tbEditStep);
-				if (canEdit)
-				{
-					// Make the text bold to indicate that "Edit Step" is the default item.
-					this.mnuEditStep2.Font = new Font(this.mnuAddStep2.Font, FontStyle.Bold);
-				}
-				else
-				{
-					this.mnuEditStep2.Font = this.mnuAddStep2.Font;
-				}
-
-				EnableComponents(!building && numSteps > 0, this.mnuDeleteStep1, this.mnuDeleteStep2, this.tbDeleteStep);
-				EnableComponents(!building && numSteps > 0, this.mnuIncludeInBuild1, this.mnuIncludeInBuild2, this.tbIncludeInBuild);
-				EnableComponents(!building && numSteps == 1, this.mnuMoveUp1, this.mnuMoveUp2, this.tbMoveUp);
-				EnableComponents(!building && numSteps == 1, this.mnuMoveDown1, this.mnuMoveDown2, this.tbMoveDown);
-				EnableComponents(!building && numSteps > 0, this.mnuIndent1, this.mnuIndent2, this.tbIndent);
-				EnableComponents(!building && numSteps > 0, this.mnuUnindent1, this.mnuUnindent2, this.tbUnindent);
-
-				EnableComponents(!building && projectBuildSteps > 0, this.mnuBuildProject, this.tbBuildProject);
-				EnableComponents(!building && numSteps > 0, this.mnuBuildSelectedStepsOnly1, this.mnuBuildSelectedStepsOnly2, this.tbBuildSelected);
-				EnableComponents(
-					!building && isBuildStep && numBuildSteps == 1,
-					new Component[] { this.mnuBuildFromSelectedStep1, this.mnuBuildFromSelectedStep2, this.tbBuildFrom });
-				EnableComponents(!building && isBuildStep && numBuildSteps == 1, this.mnuBuildToSelectedStep1, this.mnuBuildToSelectedStep2, this.tbBuildTo);
-				EnableComponents(building, this.mnuStopBuild, this.tbStopBuild);
-
-				bool canResetStatuses = !building && (projectBuildSteps > 0 || this.project.FailureSteps.Count > 0);
-				EnableComponents(canResetStatuses && hasOutput, this.mnuResetAndClear);
-				EnableComponents(canResetStatuses, this.mnuResetStatuses1);
-				EnableComponents(!building, this.mnuProjectOptions);
-
-				EnableComponents(this.outputWindow.HasSelection, this.mnuCopyOutput);
-				EnableComponents(hasOutput, this.mnuSelectAllOutput);
-				EnableComponents(hasOutput, this.mnuClearAll, this.mnuClearOutputWindow);
-				EnableComponents(hasOutput, this.mnuSaveOutputAs1, this.mnuSaveOutputAs2);
-
-				this.spProgress.Visible = building;
-			}
-			catch (Exception ex)
-			{
-				// We must explicitly call this because Application.Idle
-				// doesn't run inside the normal ThreadException protection
-				// that the Application provides for the main message pump.
-				Application.OnThreadException(ex);
 			}
 		}
 

@@ -304,7 +304,7 @@ namespace MegaBuild
 						MethodInfo checkAvailability = type.GetMethod("CheckAvailability", BindingFlags.Static | BindingFlags.Public);
 						if (checkAvailability != null)
 						{
-							string reasonUnavailable = (string)checkAvailability.Invoke(null, new object[0]);
+							string reasonUnavailable = (string)checkAvailability.Invoke(null, CollectionUtility.EmptyArray<object>());
 							if (!string.IsNullOrEmpty(reasonUnavailable))
 							{
 								available = false;

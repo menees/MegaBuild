@@ -18,13 +18,15 @@ To uninstall MegaBuild, delete the directory you unzipped it to.
 ## Command Line Switches
 MegaBuild supports command line switches to open a project, execute a build, and exit the process after building.
 ```
-Usage:		MegaBuild [/build [/exit]] [project]
+Usage:    MegaBuild [/build [/exit]] [project]
 
-/build	Builds the specified project.  Optional.  If this is specified,
-        then a project must be specified as well.
-/exit	Exits the program after building.  The process exit code is 0 for a successful build
-        or 1 for a failed build.  This switch can only be used if /build is used.
-project	The name of the MegaBuild project to open.
+/build	  Builds the specified project.  Optional.  If this is specified,
+          then a project must be specified as well.
+
+/exit	  Exits the program after building.  The process exit code is 0 for a successful build
+          or 1 for a failed build.  This switch can only be used if /build is used.
+
+project   The name of the MegaBuild project to open.
 ```
 Any other command line arguments (e.g. /?) will cause a help message to display about the valid command line switches.
 
@@ -36,9 +38,9 @@ C:\>start /min MegaBuild /build /exit Test.mgb
 MegaBuild supports parsing the output for MegaBuild-specific commands.  Currently, only the “Megabuild.Set” command is supported.  Its syntax and semantics are similar to the Windows SET command except “MegaBuild.Set” lets you set a MegaBuild application variable instead of an environment variable.  This makes the variable available to MegaBuild so it can pass the value into any spawned process if you put it on that process’s command-line.
 
 ```
-Usage:		MegaBuild.Set VariableName=VariableValue
+Usage:    MegaBuild.Set VariableName=VariableValue
 
-Example:	MegaBuild.Set ZipFileOutput=C:\Dev\WidgetMgr\Release.zip
+Example:  MegaBuild.Set ZipFileOutput=C:\Dev\WidgetMgr\Release.zip
 ```
 
 Using “MegaBuild.Set” allows you to set a MegaBuild application variable from any batch file, console application, or MegaBuild OutputStep.  Then later steps can use this variable to affect their output.  If an individual command step only sets a Windows environment variable using SET, then that environment variable won’t be available to later steps because the command process won’t let you set an environment variable in the parent process or sibling processes.  MegaBuild application variables can be used to work around that limitation.

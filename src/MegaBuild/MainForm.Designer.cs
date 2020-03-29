@@ -108,7 +108,6 @@ namespace MegaBuild
 		private System.Windows.Forms.ColumnHeader colFConfirm;
 		private System.Windows.Forms.ColumnHeader colInfo;
 		private System.Windows.Forms.ColumnHeader colFInfo;
-		private System.Windows.Forms.ToolStripMenuItem mnuOpenDoc;
 		private System.Windows.Forms.ToolStripMenuItem mnuEdit;
 		private System.Windows.Forms.ToolStripMenuItem mnuCutStep;
 		private System.Windows.Forms.ToolStripMenuItem mnuCopyStep;
@@ -127,7 +126,6 @@ namespace MegaBuild
 		private ToolStripSeparator menuItem12;
 		private ToolStripSeparator menuItem26;
 		private ToolStripSeparator menuItem20;
-		private ToolStripSeparator menuItem4;
 		private ToolStripSeparator menuItem13;
 		private ToolStripSeparator menuItem34;
 		private ToolStripSeparator menuItem43;
@@ -240,8 +238,6 @@ namespace MegaBuild
 			this.mnuProjectOptions = new System.Windows.Forms.ToolStripMenuItem();
 			this.mnuApplicationOptions = new System.Windows.Forms.ToolStripMenuItem();
 			this.mnuHelp = new System.Windows.Forms.ToolStripMenuItem();
-			this.mnuOpenDoc = new System.Windows.Forms.ToolStripMenuItem();
-			this.menuItem4 = new System.Windows.Forms.ToolStripSeparator();
 			this.mnuAbout = new System.Windows.Forms.ToolStripMenuItem();
 			this.toolbar = new Menees.Windows.Forms.ExtendedToolStrip();
 			this.tbNew = new System.Windows.Forms.ToolStripButton();
@@ -477,7 +473,7 @@ namespace MegaBuild
 			this.mnuCutStep.MergeIndex = 0;
 			this.mnuCutStep.Name = "mnuCutStep";
 			this.mnuCutStep.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.X)));
-			this.mnuCutStep.Size = new System.Drawing.Size(258, 22);
+			this.mnuCutStep.Size = new System.Drawing.Size(256, 22);
 			this.mnuCutStep.Text = "Cu&t Step";
 			this.mnuCutStep.Click += new System.EventHandler(this.CutStep_Click);
 			// 
@@ -488,7 +484,7 @@ namespace MegaBuild
 			this.mnuCopyStep.MergeIndex = 1;
 			this.mnuCopyStep.Name = "mnuCopyStep";
 			this.mnuCopyStep.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.C)));
-			this.mnuCopyStep.Size = new System.Drawing.Size(258, 22);
+			this.mnuCopyStep.Size = new System.Drawing.Size(256, 22);
 			this.mnuCopyStep.Text = "&Copy Step";
 			this.mnuCopyStep.Click += new System.EventHandler(this.CopyStep_Click);
 			// 
@@ -499,7 +495,7 @@ namespace MegaBuild
 			this.mnuPasteStep.MergeIndex = 2;
 			this.mnuPasteStep.Name = "mnuPasteStep";
 			this.mnuPasteStep.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.V)));
-			this.mnuPasteStep.Size = new System.Drawing.Size(258, 22);
+			this.mnuPasteStep.Size = new System.Drawing.Size(256, 22);
 			this.mnuPasteStep.Text = "&Paste Step";
 			this.mnuPasteStep.Click += new System.EventHandler(this.PasteStep_Click);
 			// 
@@ -507,14 +503,14 @@ namespace MegaBuild
 			// 
 			this.menuItem5.MergeIndex = 3;
 			this.menuItem5.Name = "menuItem5";
-			this.menuItem5.Size = new System.Drawing.Size(255, 6);
+			this.menuItem5.Size = new System.Drawing.Size(253, 6);
 			// 
 			// mnuSelectAllSteps
 			// 
 			this.mnuSelectAllSteps.MergeIndex = 4;
 			this.mnuSelectAllSteps.Name = "mnuSelectAllSteps";
 			this.mnuSelectAllSteps.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.A)));
-			this.mnuSelectAllSteps.Size = new System.Drawing.Size(258, 22);
+			this.mnuSelectAllSteps.Size = new System.Drawing.Size(256, 22);
 			this.mnuSelectAllSteps.Text = "Select &All Steps";
 			this.mnuSelectAllSteps.Click += new System.EventHandler(this.SelectAllSteps_Click);
 			// 
@@ -522,7 +518,7 @@ namespace MegaBuild
 			// 
 			this.menuItem8.MergeIndex = 5;
 			this.menuItem8.Name = "menuItem8";
-			this.menuItem8.Size = new System.Drawing.Size(255, 6);
+			this.menuItem8.Size = new System.Drawing.Size(253, 6);
 			// 
 			// mnuFindInOutput
 			// 
@@ -531,7 +527,7 @@ namespace MegaBuild
 			this.mnuFindInOutput.MergeIndex = 6;
 			this.mnuFindInOutput.Name = "mnuFindInOutput";
 			this.mnuFindInOutput.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.F)));
-			this.mnuFindInOutput.Size = new System.Drawing.Size(258, 22);
+			this.mnuFindInOutput.Size = new System.Drawing.Size(256, 22);
 			this.mnuFindInOutput.Text = "&Find In Output...";
 			this.mnuFindInOutput.Click += new System.EventHandler(this.FindInOutput_Click);
 			// 
@@ -542,7 +538,7 @@ namespace MegaBuild
 			this.mnuFindNextInOutput.MergeIndex = 7;
 			this.mnuFindNextInOutput.Name = "mnuFindNextInOutput";
 			this.mnuFindNextInOutput.ShortcutKeys = System.Windows.Forms.Keys.F3;
-			this.mnuFindNextInOutput.Size = new System.Drawing.Size(258, 22);
+			this.mnuFindNextInOutput.Size = new System.Drawing.Size(256, 22);
 			this.mnuFindNextInOutput.Text = "Find &Next In Output";
 			this.mnuFindNextInOutput.Click += new System.EventHandler(this.FindNextInOutput_Click);
 			// 
@@ -553,14 +549,14 @@ namespace MegaBuild
 			this.mnuFindPreviousInOutput.MergeIndex = 8;
 			this.mnuFindPreviousInOutput.Name = "mnuFindPreviousInOutput";
 			this.mnuFindPreviousInOutput.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Shift | System.Windows.Forms.Keys.F3)));
-			this.mnuFindPreviousInOutput.Size = new System.Drawing.Size(258, 22);
+			this.mnuFindPreviousInOutput.Size = new System.Drawing.Size(256, 22);
 			this.mnuFindPreviousInOutput.Text = "Find P&revious In Output";
 			this.mnuFindPreviousInOutput.Click += new System.EventHandler(this.FindPreviousInOutput_Click);
 			// 
 			// toolStripMenuItem1
 			// 
 			this.toolStripMenuItem1.Name = "toolStripMenuItem1";
-			this.toolStripMenuItem1.Size = new System.Drawing.Size(255, 6);
+			this.toolStripMenuItem1.Size = new System.Drawing.Size(253, 6);
 			// 
 			// mnuGoToPreviousHighlight
 			// 
@@ -568,7 +564,7 @@ namespace MegaBuild
 			this.mnuGoToPreviousHighlight.ImageTransparentColor = System.Drawing.Color.Fuchsia;
 			this.mnuGoToPreviousHighlight.Name = "mnuGoToPreviousHighlight";
 			this.mnuGoToPreviousHighlight.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Shift | System.Windows.Forms.Keys.F4)));
-			this.mnuGoToPreviousHighlight.Size = new System.Drawing.Size(258, 22);
+			this.mnuGoToPreviousHighlight.Size = new System.Drawing.Size(256, 22);
 			this.mnuGoToPreviousHighlight.Text = "Go To Pre&vious Highlight";
 			this.mnuGoToPreviousHighlight.Click += new System.EventHandler(this.GoToPreviousHighlight_Click);
 			// 
@@ -578,20 +574,20 @@ namespace MegaBuild
 			this.mnuGoToNextHighlight.ImageTransparentColor = System.Drawing.Color.Fuchsia;
 			this.mnuGoToNextHighlight.Name = "mnuGoToNextHighlight";
 			this.mnuGoToNextHighlight.ShortcutKeys = System.Windows.Forms.Keys.F4;
-			this.mnuGoToNextHighlight.Size = new System.Drawing.Size(258, 22);
+			this.mnuGoToNextHighlight.Size = new System.Drawing.Size(256, 22);
 			this.mnuGoToNextHighlight.Text = "Go To Ne&xt Highlight";
 			this.mnuGoToNextHighlight.Click += new System.EventHandler(this.GoToNextHighlight_Click);
 			// 
 			// toolStripMenuItem3
 			// 
 			this.toolStripMenuItem3.Name = "toolStripMenuItem3";
-			this.toolStripMenuItem3.Size = new System.Drawing.Size(255, 6);
+			this.toolStripMenuItem3.Size = new System.Drawing.Size(253, 6);
 			// 
 			// mnuGoToStepOutput
 			// 
 			this.mnuGoToStepOutput.Name = "mnuGoToStepOutput";
 			this.mnuGoToStepOutput.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.G)));
-			this.mnuGoToStepOutput.Size = new System.Drawing.Size(258, 22);
+			this.mnuGoToStepOutput.Size = new System.Drawing.Size(256, 22);
 			this.mnuGoToStepOutput.Text = "&Go To Step Output";
 			this.mnuGoToStepOutput.Click += new System.EventHandler(this.GoToStepOutput_Click);
 			// 
@@ -739,7 +735,7 @@ namespace MegaBuild
 			this.mnuBuildProject.MergeIndex = 0;
 			this.mnuBuildProject.Name = "mnuBuildProject";
 			this.mnuBuildProject.ShortcutKeys = System.Windows.Forms.Keys.F7;
-			this.mnuBuildProject.Size = new System.Drawing.Size(269, 22);
+			this.mnuBuildProject.Size = new System.Drawing.Size(267, 22);
 			this.mnuBuildProject.Text = "&Build Project";
 			this.mnuBuildProject.Click += new System.EventHandler(this.BuildProject_Click);
 			// 
@@ -750,7 +746,7 @@ namespace MegaBuild
 			this.mnuBuildSelectedStepsOnly1.MergeIndex = 1;
 			this.mnuBuildSelectedStepsOnly1.Name = "mnuBuildSelectedStepsOnly1";
 			this.mnuBuildSelectedStepsOnly1.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Shift | System.Windows.Forms.Keys.F7)));
-			this.mnuBuildSelectedStepsOnly1.Size = new System.Drawing.Size(269, 22);
+			this.mnuBuildSelectedStepsOnly1.Size = new System.Drawing.Size(267, 22);
 			this.mnuBuildSelectedStepsOnly1.Text = "Build &Selected Step(s) Only";
 			this.mnuBuildSelectedStepsOnly1.Click += new System.EventHandler(this.BuildSelectedStepOnly1_Click);
 			// 
@@ -761,7 +757,7 @@ namespace MegaBuild
 			this.mnuBuildFromSelectedStep1.MergeIndex = 2;
 			this.mnuBuildFromSelectedStep1.Name = "mnuBuildFromSelectedStep1";
 			this.mnuBuildFromSelectedStep1.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.F7)));
-			this.mnuBuildFromSelectedStep1.Size = new System.Drawing.Size(269, 22);
+			this.mnuBuildFromSelectedStep1.Size = new System.Drawing.Size(267, 22);
 			this.mnuBuildFromSelectedStep1.Text = "Build &From Selected Step";
 			this.mnuBuildFromSelectedStep1.Click += new System.EventHandler(this.BuildFromSelectedStep1_Click);
 			// 
@@ -773,7 +769,7 @@ namespace MegaBuild
 			this.mnuBuildToSelectedStep1.Name = "mnuBuildToSelectedStep1";
 			this.mnuBuildToSelectedStep1.ShortcutKeys = ((System.Windows.Forms.Keys)(((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.Shift) 
             | System.Windows.Forms.Keys.F7)));
-			this.mnuBuildToSelectedStep1.Size = new System.Drawing.Size(269, 22);
+			this.mnuBuildToSelectedStep1.Size = new System.Drawing.Size(267, 22);
 			this.mnuBuildToSelectedStep1.Text = "Build &To Selected Step";
 			this.mnuBuildToSelectedStep1.Click += new System.EventHandler(this.BuildToSelectedStep1_Click);
 			// 
@@ -781,7 +777,7 @@ namespace MegaBuild
 			// 
 			this.menuItem26.MergeIndex = 4;
 			this.menuItem26.Name = "menuItem26";
-			this.menuItem26.Size = new System.Drawing.Size(266, 6);
+			this.menuItem26.Size = new System.Drawing.Size(264, 6);
 			// 
 			// mnuStopBuild
 			// 
@@ -790,7 +786,7 @@ namespace MegaBuild
 			this.mnuStopBuild.MergeIndex = 5;
 			this.mnuStopBuild.Name = "mnuStopBuild";
 			this.mnuStopBuild.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.Q)));
-			this.mnuStopBuild.Size = new System.Drawing.Size(269, 22);
+			this.mnuStopBuild.Size = new System.Drawing.Size(267, 22);
 			this.mnuStopBuild.Text = "Sto&p Build";
 			this.mnuStopBuild.Click += new System.EventHandler(this.StopBuild_Click);
 			// 
@@ -806,7 +802,7 @@ namespace MegaBuild
             this.mnuApplicationOptions});
 			this.mnuTools.MergeIndex = 4;
 			this.mnuTools.Name = "mnuTools";
-			this.mnuTools.Size = new System.Drawing.Size(48, 20);
+			this.mnuTools.Size = new System.Drawing.Size(46, 20);
 			this.mnuTools.Text = "&Tools";
 			// 
 			// mnuResetAndClear
@@ -866,34 +862,17 @@ namespace MegaBuild
 			// mnuHelp
 			// 
 			this.mnuHelp.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.mnuOpenDoc,
-            this.menuItem4,
             this.mnuAbout});
 			this.mnuHelp.MergeIndex = 5;
 			this.mnuHelp.Name = "mnuHelp";
 			this.mnuHelp.Size = new System.Drawing.Size(44, 20);
 			this.mnuHelp.Text = "&Help";
 			// 
-			// mnuOpenDoc
-			// 
-			this.mnuOpenDoc.MergeIndex = 0;
-			this.mnuOpenDoc.Name = "mnuOpenDoc";
-			this.mnuOpenDoc.ShortcutKeys = System.Windows.Forms.Keys.F1;
-			this.mnuOpenDoc.Size = new System.Drawing.Size(210, 22);
-			this.mnuOpenDoc.Text = "Open &MegaBuild.docx";
-			this.mnuOpenDoc.Click += new System.EventHandler(this.OpenDoc_Click);
-			// 
-			// menuItem4
-			// 
-			this.menuItem4.MergeIndex = 1;
-			this.menuItem4.Name = "menuItem4";
-			this.menuItem4.Size = new System.Drawing.Size(207, 6);
-			// 
 			// mnuAbout
 			// 
 			this.mnuAbout.MergeIndex = 2;
 			this.mnuAbout.Name = "mnuAbout";
-			this.mnuAbout.Size = new System.Drawing.Size(210, 22);
+			this.mnuAbout.Size = new System.Drawing.Size(180, 22);
 			this.mnuAbout.Text = "&About...";
 			this.mnuAbout.Click += new System.EventHandler(this.About_Click);
 			// 
@@ -1520,14 +1499,14 @@ namespace MegaBuild
             this.mnuGoToPreviousHighlight2,
             this.mnuGoToNextHighlight2});
 			this.outputContextMenu.Name = "OutputContextMenu";
-			this.outputContextMenu.Size = new System.Drawing.Size(208, 154);
+			this.outputContextMenu.Size = new System.Drawing.Size(206, 154);
 			this.outputContextMenu.Opened += new System.EventHandler(this.OnIdle);
 			// 
 			// mnuCopyOutput
 			// 
 			this.mnuCopyOutput.MergeIndex = 0;
 			this.mnuCopyOutput.Name = "mnuCopyOutput";
-			this.mnuCopyOutput.Size = new System.Drawing.Size(207, 22);
+			this.mnuCopyOutput.Size = new System.Drawing.Size(205, 22);
 			this.mnuCopyOutput.Text = "&Copy";
 			this.mnuCopyOutput.Click += new System.EventHandler(this.CopyOutput_Click);
 			// 
@@ -1535,7 +1514,7 @@ namespace MegaBuild
 			// 
 			this.mnuSelectAllOutput.MergeIndex = 1;
 			this.mnuSelectAllOutput.Name = "mnuSelectAllOutput";
-			this.mnuSelectAllOutput.Size = new System.Drawing.Size(207, 22);
+			this.mnuSelectAllOutput.Size = new System.Drawing.Size(205, 22);
 			this.mnuSelectAllOutput.Text = "&Select All";
 			this.mnuSelectAllOutput.Click += new System.EventHandler(this.SelectAll_Click);
 			// 
@@ -1543,13 +1522,13 @@ namespace MegaBuild
 			// 
 			this.menuItem6.MergeIndex = 2;
 			this.menuItem6.Name = "menuItem6";
-			this.menuItem6.Size = new System.Drawing.Size(204, 6);
+			this.menuItem6.Size = new System.Drawing.Size(202, 6);
 			// 
 			// mnuClearAll
 			// 
 			this.mnuClearAll.MergeIndex = 3;
 			this.mnuClearAll.Name = "mnuClearAll";
-			this.mnuClearAll.Size = new System.Drawing.Size(207, 22);
+			this.mnuClearAll.Size = new System.Drawing.Size(205, 22);
 			this.mnuClearAll.Text = "C&lear All";
 			this.mnuClearAll.Click += new System.EventHandler(this.ClearOutputWindow_Click);
 			// 
@@ -1557,27 +1536,27 @@ namespace MegaBuild
 			// 
 			this.menuItem3.MergeIndex = 4;
 			this.menuItem3.Name = "menuItem3";
-			this.menuItem3.Size = new System.Drawing.Size(204, 6);
+			this.menuItem3.Size = new System.Drawing.Size(202, 6);
 			// 
 			// mnuSaveOutputAs2
 			// 
 			this.mnuSaveOutputAs2.MergeIndex = 5;
 			this.mnuSaveOutputAs2.Name = "mnuSaveOutputAs2";
-			this.mnuSaveOutputAs2.Size = new System.Drawing.Size(207, 22);
+			this.mnuSaveOutputAs2.Size = new System.Drawing.Size(205, 22);
 			this.mnuSaveOutputAs2.Text = "Sa&ve Output As...";
 			this.mnuSaveOutputAs2.Click += new System.EventHandler(this.SaveOutputAs_Click);
 			// 
 			// toolStripMenuItem2
 			// 
 			this.toolStripMenuItem2.Name = "toolStripMenuItem2";
-			this.toolStripMenuItem2.Size = new System.Drawing.Size(204, 6);
+			this.toolStripMenuItem2.Size = new System.Drawing.Size(202, 6);
 			// 
 			// mnuGoToPreviousHighlight2
 			// 
 			this.mnuGoToPreviousHighlight2.Image = global::MegaBuild.Properties.Resources.GoToPreviousHighlight;
 			this.mnuGoToPreviousHighlight2.ImageTransparentColor = System.Drawing.Color.Fuchsia;
 			this.mnuGoToPreviousHighlight2.Name = "mnuGoToPreviousHighlight2";
-			this.mnuGoToPreviousHighlight2.Size = new System.Drawing.Size(207, 22);
+			this.mnuGoToPreviousHighlight2.Size = new System.Drawing.Size(205, 22);
 			this.mnuGoToPreviousHighlight2.Text = "Go To Pre&vious Highlight";
 			this.mnuGoToPreviousHighlight2.Click += new System.EventHandler(this.GoToPreviousHighlight_Click);
 			// 
@@ -1586,7 +1565,7 @@ namespace MegaBuild
 			this.mnuGoToNextHighlight2.Image = global::MegaBuild.Properties.Resources.GoToNextHighlight;
 			this.mnuGoToNextHighlight2.ImageTransparentColor = System.Drawing.Color.Fuchsia;
 			this.mnuGoToNextHighlight2.Name = "mnuGoToNextHighlight2";
-			this.mnuGoToNextHighlight2.Size = new System.Drawing.Size(207, 22);
+			this.mnuGoToNextHighlight2.Size = new System.Drawing.Size(205, 22);
 			this.mnuGoToNextHighlight2.Text = "Go To Ne&xt Highlight";
 			this.mnuGoToNextHighlight2.Click += new System.EventHandler(this.GoToNextHighlight_Click);
 			// 
@@ -1656,6 +1635,7 @@ namespace MegaBuild
 			this.outputWindow.Location = new System.Drawing.Point(0, 0);
 			this.outputWindow.Name = "outputWindow";
 			this.outputWindow.OwnerWindow = this;
+			this.outputWindow.RemoveLinePrefix = null;
 			this.outputWindow.Size = new System.Drawing.Size(616, 175);
 			this.outputWindow.TabIndex = 0;
 			// 

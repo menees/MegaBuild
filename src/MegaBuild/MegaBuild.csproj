@@ -4,8 +4,24 @@
 		<OutputType>WinExe</OutputType>
 		<TargetFrameworks>netcoreapp3.1;net45</TargetFrameworks>
 		<UseWindowsForms>true</UseWindowsForms>
+		<UseWpf>true</UseWpf>
 		<Description>A utility for automating build processes.</Description>
+		<ApplicationIcon>Images\MegaBuild.ico</ApplicationIcon>
 	</PropertyGroup>
+
+	<ItemGroup>
+	  <PackageReference Include="WindowsAPICodePack-Core" Version="1.1.2">
+	    <NoWarn>NU1701</NoWarn>
+	  </PackageReference>
+	  <PackageReference Include="WindowsAPICodePack-Shell" Version="1.1.1">
+	    <NoWarn>NU1701</NoWarn>
+	  </PackageReference>
+	</ItemGroup>
+
+	<ItemGroup>
+	  <ProjectReference Include="..\MegaBuildSdk\MegaBuildSdk.csproj" />
+	  <ProjectReference Include="..\SampleStep\SampleStep.csproj" />
+	</ItemGroup>
 
 	<ItemGroup>
 		<EmbeddedResource Update="Properties\Resources.resx">
