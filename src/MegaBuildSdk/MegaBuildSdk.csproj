@@ -31,6 +31,16 @@
 			<Generator>SettingsSingleFileGenerator</Generator>
 			<LastGenOutput>Settings.Designer.cs</LastGenOutput>
 		</None>
+		<EmbeddedResource Update="Controls\ListViewItemMover.resx">
+			<DependentUpon>ListViewItemMover.cs</DependentUpon>
+			<!-- In SDK-style projects, .NET Framework would name this resource "MegaBuild.Controls.ListViewItemMover.resources",
+			which isn't what .NET Core does or what an old-style C# project does. The different naming style only matters for this
+			resource because it uses an embedded serialized "Images.ImageStream". The tip about using <LogicalName> came from:
+			https://stackoverflow.com/a/50079488/1882616
+			https://stackoverflow.com/a/3605851/1882616
+			https://docs.microsoft.com/en-us/archive/blogs/msbuild/how-to-change-the-name-of-embedded-resources -->
+			<LogicalName>MegaBuild.ListViewItemMover.resources</LogicalName>
+		</EmbeddedResource>
 	</ItemGroup>
 
 	<ItemGroup>
