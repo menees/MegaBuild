@@ -1,4 +1,4 @@
-![windows build](https://github.com/bmenees/MegaBuild/workflows/windows%20build/badge.svg)
+![windows build](https://github.com/menees/MegaBuild/workflows/windows%20build/badge.svg)
 
 # MegaBuild
 
