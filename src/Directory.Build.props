@@ -16,7 +16,7 @@
 		<AssemblyOriginatorKeyFile>../MegaBuild.snk</AssemblyOriginatorKeyFile>
 
 		<!-- Make the assembly, file, and NuGet package versions the same. -->
-		<Version>4.3.3</Version>
+		<Version>4.3.4</Version>
 	</PropertyGroup>
 
 	<PropertyGroup Condition="'$(Configuration)'=='Debug'">

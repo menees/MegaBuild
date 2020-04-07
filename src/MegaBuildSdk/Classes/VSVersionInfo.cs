@@ -11,6 +11,7 @@ namespace MegaBuild
 	using System.Runtime.InteropServices;
 	using System.Text;
 	using Menees;
+	using Menees.Windows;
 	using Microsoft.VisualStudio.Setup.Configuration;
 
 	#endregion
@@ -131,71 +132,18 @@ namespace MegaBuild
 			return result;
 		}
 
-		[SuppressMessage(
-			"Microsoft.Design",
-			"CA1031:DoNotCatchGeneralExceptionTypes",
-			Justification = "Microsoft's COM API and samples say to catch all exceptions for the SetupConfiguration objects.")]
 		private bool TryGetPathFromSetupConfiguration(bool useExe, out string devEnvPath)
 		{
-			bool result = false;
-			devEnvPath = null;
+			devEnvPath = VisualStudioUtility.ResolvePath(
+				ver => @"Common7\IDE\DevEnv." + (useExe ? "exe" : "com"),
+				(int)this.InternalVersion,
+				(int)this.InternalVersion);
 
-			// VS 2017 allows multiple side-by-side editions to be installed, so it doesn't define a %VS150COMNTOOLS% environment variable.
-			// Instead we have to use a new COM API to enumerate the installed instances of VS.  So we'll just pick the first matching version we find.
-			// https://github.com/mluparu/vs-setup-samples - COM API samples
-			// https://code.msdn.microsoft.com/Visual-Studio-Setup-0cedd331 - More Q&A about the COM API samples
-			// https://blogs.msdn.microsoft.com/vcblog/2017/03/06/finding-the-visual-c-compiler-tools-in-visual-studio-2017/#comment-273625
-			// https://github.com/Microsoft/vswhere - A redistributable .exe for enumerating the VS instances from the command line.
-			// https://blogs.msdn.microsoft.com/heaths/2016/09/15/changes-to-visual-studio-15-setup/
-			const int REGDB_E_CLASSNOTREG = -2147221164; // 0x80040154
-			try
-			{
-				// From MS example: https://github.com/Microsoft/vs-setup-samples/blob/master/Setup.Configuration.CS/Program.cs
-				SetupConfiguration configuration = new SetupConfiguration();
-
-				IEnumSetupInstances instanceEnumerator = configuration.EnumAllInstances();
-				int fetched;
-				ISetupInstance[] instances = new ISetupInstance[1];
-				do
-				{
-					instanceEnumerator.Next(1, instances, out fetched);
-					if (fetched > 0)
-					{
-						ISetupInstance instance = instances[0];
-						if (instance != null
-							&& System.Version.TryParse(instance.GetInstallationVersion(), out Version version)
-							&& version.Major == (int)this.InternalVersion)
-						{
-							InstanceState state = ((ISetupInstance2)instance).GetState();
-							if (state == InstanceState.Complete)
-							{
-								string relativeExecutable = @"Common7\IDE\DevEnv." + (useExe ? "exe" : "com");
-								devEnvPath = instance.ResolvePath(relativeExecutable);
-								result = true;
-								break;
-							}
-						}
-					}
-				}
-				while (fetched > 0);
-			}
-#pragma warning disable CC0004 // Catch block cannot be empty
-			catch (COMException ex) when (ex.HResult == REGDB_E_CLASSNOTREG)
-			{
-				// The SetupConfiguration API is not registered, so assume no instances are installed.
-			}
-#pragma warning restore CC0004 // Catch block cannot be empty
-#pragma warning disable CC0004 // Catch block cannot be empty
-			catch (Exception)
-			{
-				// Heath Stewart (MSFT), the author of the SetupConfiguration API, says to treat any exception as "no instances installed."
-				// https://code.msdn.microsoft.com/windowsdesktop/Visual-Studio-Setup-0cedd331/view/Discussions#content
-			}
-#pragma warning restore CC0004 // Catch block cannot be empty
+			bool result = !string.IsNullOrEmpty(devEnvPath);
 
 			// This must return a non-null, non-empty path, even if it doesn't exist. VSStep depends on getting back
 			// at least an environment variable-based path that it can display to the user.  So we'll make one up here.
-			if (string.IsNullOrEmpty(devEnvPath))
+			if (!result)
 			{
 				// Note: "Edition" should actually be Professional, Communitiy, or Enterprise.
 				// But there's no point being specific about a non-installed edition.

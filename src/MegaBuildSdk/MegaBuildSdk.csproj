@@ -44,10 +44,7 @@
 	</ItemGroup>
 
 	<ItemGroup>
-	  <PackageReference Include="Menees.Windows.Forms" Version="4.9.4" />
-	  <PackageReference Include="Microsoft.VisualStudio.Setup.Configuration.Interop" Version="2.3.2262-g94fae01e">
-			<PrivateAssets>all</PrivateAssets>
-		</PackageReference>
+	  <PackageReference Include="Menees.Windows.Forms" Version="4.9.5" />
 	</ItemGroup>
 
 	<Choose>
@@ -70,9 +67,5 @@
 			</ItemGroup>
 		</Otherwise>
 	</Choose>
-
-	<Target Name="PostBuild" AfterTargets="PostBuildEvent">
-	  <Exec Command="REM The interop types are embedded, so the DLL doesn't need to be deployed.&#xD;&#xA;if exist &quot;$(OutDir)Microsoft.VisualStudio.Setup.Configuration.Interop.dll&quot; del &quot;$(OutDir)Microsoft.VisualStudio.Setup.Configuration.Interop.dll&quot;" />
-	</Target>
 
 </Project>
