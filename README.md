@@ -1,5 +1,5 @@
 ![windows build](https://github.com/menees/MegaBuild/workflows/windows%20build/badge.svg)
- 
+
 # MegaBuild
 
 MegaBuild is an automated build utility. It is primarily intended to build multiple Visual Studio solutions (versions 2002 – 2019), but it also includes steps to run batch files, run PowerShell scripts, build MSBuild projects, send email, add output, wait a specified amount of time, or play sounds. You can also write your own custom step types that integrate into MegaBuild using the provided MegaBuild SDK.
