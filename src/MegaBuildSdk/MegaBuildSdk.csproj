@@ -44,16 +44,14 @@
 	</ItemGroup>
 
 	<ItemGroup>
-	  <PackageReference Include="Menees.Windows.Forms" Version="4.9.5" />
+	  <PackageReference Include="Menees.Windows.Forms" Version="4.9.6" />
 	</ItemGroup>
 
 	<Choose>
 		<When Condition=" '$(TargetFramework)' == 'net45' ">
 			<ItemGroup>
 				<Compile Remove="Classes\JavaScriptUtility.Core.cs" />
-				<Content Include="Classes\JavaScriptUtility.Core.cs">
-					<CopyToOutputDirectory>Never</CopyToOutputDirectory>
-				</Content>
+				<None Include="Classes\JavaScriptUtility.Core.cs" />
 
 				<Reference Include="Microsoft.JScript" />
 			</ItemGroup>
@@ -61,9 +59,7 @@
 		<Otherwise>
 			<ItemGroup>
 				<Compile Remove="Classes\JavaScriptUtility.Framework.cs" />
-				<Content Include="Classes\JavaScriptUtility.Framework.cs">
-					<CopyToOutputDirectory>Never</CopyToOutputDirectory>
-				</Content>
+				<None Include="Classes\JavaScriptUtility.Framework.cs" />
 			</ItemGroup>
 		</Otherwise>
 	</Choose>
