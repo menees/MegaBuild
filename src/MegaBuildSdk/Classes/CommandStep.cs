@@ -187,7 +187,18 @@ namespace MegaBuild
 			// invokes CMD.EXE automatically, but it provides no way to redirect.
 			if (this.RedirectStreams != RedirectStandardStreams.None && this.IsBatchFile)
 			{
-				arguments = string.Format("/c {0} {1}", TextUtility.EnsureQuotes(command), arguments);
+				if (string.IsNullOrEmpty(arguments))
+				{
+					arguments = "/c " + TextUtility.EnsureQuotes(command);
+				}
+				else
+				{
+					// The "Spaces in Program Path + parameters with spaces" example at https://ss64.com/nt/cmd.html
+					// shows another set of double quotes surrounding the quoted program and arguments.
+					// Thanks to Henri Kuiper for this tip!
+					arguments = $"/c \"{TextUtility.EnsureQuotes(command)} {arguments}\"";
+				}
+
 				command = "cmd.exe";
 			}
 
