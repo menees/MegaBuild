@@ -16,6 +16,7 @@ namespace MegaBuild
 	using System.Text;
 	using System.Windows.Forms;
 	using Menees;
+	using Menees.Windows;
 	using Menees.Windows.Forms;
 	using Microsoft.WindowsAPICodePack.Shell;
 	using Microsoft.WindowsAPICodePack.Taskbar;
@@ -25,6 +26,9 @@ namespace MegaBuild
 	internal sealed partial class MainForm : ExtendedForm
 	{
 		#region Private Data Members
+
+		// Don't use \t because the Text Object Model (in OutputWindow) uses huge tab stops, so indents don't line up with tab stops.
+		private const string TimestampPrefixSeparator = "    ";
 
 		private static readonly Color FailedOrTimedOutColor = Color.FromArgb(255, 75, 75);
 
@@ -185,9 +189,6 @@ namespace MegaBuild
 
 		#region Private Methods
 
-		[DllImport("user32.dll")]
-		private static extern int ShowWindow(IntPtr hWnd, uint msg);
-
 		[Conditional("DEBUG")]
 		private static void DebugOutputLine(string line) => Debug.WriteLine("*** " + line + " ***");
 
@@ -287,7 +288,7 @@ namespace MegaBuild
 
 			if (UseTimestampPrefix)
 			{
-				result = DateTime.UtcNow.ToLocalTime().ToString(Options.TimestampFormat) + "\t";
+				result = DateTime.UtcNow.ToLocalTime().ToString(Options.TimestampFormat) + TimestampPrefixSeparator;
 			}
 
 			return result;
@@ -300,7 +301,7 @@ namespace MegaBuild
 			if (!string.IsNullOrWhiteSpace(result) && UseTimestampPrefix)
 			{
 				result = result.Trim();
-				int tabIndex = result.IndexOf('\t');
+				int tabIndex = result.IndexOf(TimestampPrefixSeparator);
 				if (tabIndex > 0 && (tabIndex + 1) < result.Length)
 				{
 					string prefix = result.Substring(0, tabIndex);
@@ -429,6 +430,9 @@ namespace MegaBuild
 		private void FormSave_LoadSettings(object sender, SettingsEventArgs e)
 		{
 			this.loading = true;
+
+			const int IndentSpaces = 2;
+			this.outputWindow.IndentWidth = TextRenderer.MeasureText(new string(' ', IndentSpaces), this.Font).Width;
 
 			// Attach to the manager's Output events so our output stays in sync.
 			Manager.OutputAdded += this.OnOutputAdded;
@@ -1539,17 +1543,11 @@ namespace MegaBuild
 			{
 				DebugOutputLine($"{nameof(this.MainForm_Activated)} forcing window to restore.");
 
+				// We have to use Windows API calls to correctly restore to the previous Normal or Maximized state.
 				// We can't change the WindowState directly inside this Activated handler. If we try to restore from here
 				// to a Maximized state, then it causes one SizeChanged event for the Maximized state and then a second
 				// SizeChanged with a Normal state. So re-maximizing fails, but BeginInvoke gets around that (via PostMessage).
-				this.BeginInvoke(new Action(() =>
-				{
-					// https://stackoverflow.com/a/2725234/1882616
-					const uint SW_RESTORE = 0x09;
-#pragma warning disable CA1806 // Do not ignore method results. The BOOL result only indicates the previous visibility (0).
-					ShowWindow(this.Handle, SW_RESTORE);
-#pragma warning restore CA1806 // Do not ignore method results
-				}));
+				this.BeginInvoke(new Action(() => HandleUtility.BringWindowForward(this.Handle)));
 			}
 
 			if (!this.project.Building)
