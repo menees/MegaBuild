@@ -62,7 +62,7 @@ namespace MegaBuild
 		{
 			get
 			{
-				return this.SupportsAutoColorErrorsAndWarnings ? this.autoColorErrorsAndWarnings : false;
+				return this.SupportsAutoColorErrorsAndWarnings && this.autoColorErrorsAndWarnings;
 			}
 
 			set
@@ -193,7 +193,7 @@ namespace MegaBuild
 		{
 			get
 			{
-				return this.SupportsTimeout ? this.timeout : false;
+				return this.SupportsTimeout && this.timeout;
 			}
 
 			set
@@ -238,7 +238,7 @@ namespace MegaBuild
 		{
 			get
 			{
-				return this.SupportsWaitForCompletion ? this.waitForCompletion : true;
+				return !this.SupportsWaitForCompletion || this.waitForCompletion;
 			}
 
 			set

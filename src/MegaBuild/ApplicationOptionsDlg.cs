@@ -58,6 +58,7 @@ namespace MegaBuild
 			this.chkWordWrap.Checked = Options.WordWrapOutputWindow;
 			this.chkNeverShowProjectComments.Checked = Options.NeverShowProjectComments;
 			this.chkSwitchToFailure.Checked = Options.SwitchTabsOnFailure;
+			this.chkOutputWindowOnRight.Checked = Options.OutputWindowOnRight;
 			this.chkParseOutputCommands.Checked = Manager.ParseOutputCommands;
 			this.chkShowProgressInTaskbar.Checked = Options.ShowProgressInTaskbar;
 			this.chkShowProgressInTaskbar.Enabled = TaskbarManager.IsPlatformSupported;
@@ -85,6 +86,7 @@ namespace MegaBuild
 				Options.WordWrapOutputWindow = this.chkWordWrap.Checked;
 				Options.NeverShowProjectComments = this.chkNeverShowProjectComments.Checked;
 				Options.SwitchTabsOnFailure = this.chkSwitchToFailure.Checked;
+				Options.OutputWindowOnRight = this.chkOutputWindowOnRight.Checked;
 				Manager.ParseOutputCommands = this.chkParseOutputCommands.Checked;
 				Options.ShowProgressInTaskbar = this.chkShowProgressInTaskbar.Checked;
 				Options.TimestampFormat = Convert.ToString(this.timestampFormat.SelectedItem);

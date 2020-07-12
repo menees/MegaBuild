@@ -10,7 +10,9 @@ namespace MegaBuild
 	using System.Drawing;
 	using System.Globalization;
 	using System.IO;
+	using System.Linq;
 	using System.Reflection;
+	using System.Runtime.InteropServices;
 	using System.Text;
 	using System.Windows.Forms;
 	using Menees;
@@ -23,15 +25,6 @@ namespace MegaBuild
 	internal sealed partial class MainForm : ExtendedForm
 	{
 		#region Private Data Members
-
-		private const int ConfirmColumn = 3;
-		private const int DescriptionColumn = 7;
-		private const int IgnoreFailureColumn = 2;
-		private const int InfoColumn = 4;
-		private const int RunTimeColumn = 5;
-		private const int StatusColumn = 6;
-		private const int StepColumn = 0;
-		private const int TypeColumn = 1;
 
 		private static readonly Color FailedOrTimedOutColor = Color.FromArgb(255, 75, 75);
 
@@ -192,18 +185,19 @@ namespace MegaBuild
 
 		#region Private Methods
 
+		[DllImport("user32.dll")]
+		private static extern int ShowWindow(IntPtr hWnd, uint msg);
+
+		[Conditional("DEBUG")]
+		private static void DebugOutputLine(string line) => Debug.WriteLine("*** " + line + " ***");
+
 		private static void ClearOutputWindow()
 		{
 			Manager.ClearOutput();
 		}
 
-		private static void ClearSubItemText(ListViewItem.ListViewSubItem subItem)
-		{
-			if (subItem.Text.Length > 0)
-			{
-				subItem.Text = string.Empty;
-			}
-		}
+		private static void ClearSubItemText(ListViewItem.ListViewSubItemCollection subItems, int index)
+			=> UpdateSubItemText(subItems, index, string.Empty);
 
 		private static void EnableComponents(bool enabled, params Component[] components)
 		{
@@ -275,11 +269,15 @@ namespace MegaBuild
 			Manager.Output(Environment.NewLine, 0, defaultColor);
 		}
 
-		private static void UpdateSubItemText(ListViewItem.ListViewSubItem subItem, string text)
+		private static void UpdateSubItemText(ListViewItem.ListViewSubItemCollection subItems, int index, string text)
 		{
-			if (subItem.Text != text)
+			if (index >= 0)
 			{
-				subItem.Text = text;
+				ListViewItem.ListViewSubItem subItem = subItems[index];
+				if (subItem.Text != text)
+				{
+					subItem.Text = text;
+				}
 			}
 		}
 
@@ -326,6 +324,13 @@ namespace MegaBuild
 			this.TopMost = Options.AlwaysOnTop;
 			this.outputWindow.WordWrap = Options.WordWrapOutputWindow;
 			this.UpdateTaskbarProgress();
+
+			Orientation requiredOrientation = Options.OutputWindowOnRight ? Orientation.Vertical : Orientation.Horizontal;
+			if (this.Splitter.Orientation != requiredOrientation)
+			{
+				this.Splitter.Orientation = requiredOrientation;
+				this.ContentsReset();
+			}
 		}
 
 		private void AutoSizeColumns(ExtendedListView list)
@@ -336,13 +341,35 @@ namespace MegaBuild
 				// Auto-size all of the columns first.
 				list.AutoSizeColumns();
 
-				// Leave some padding on Run-Time and Status.
-				// That way we don't have to auto-size them each
-				// time a step changes.
+				// Leave some padding on Run-Time and maybe Status, so we don't have to auto-size them each time a step changes.
 				const int RunTimeColumnPadding = 10;
 				const int StatusColumnPadding = 40;
 				list.Columns[this.colRunTime.Index].Width += RunTimeColumnPadding;
-				list.Columns[this.colStatus.Index].Width += StatusColumnPadding;
+				ColumnHeader statusColumn = list.Columns[this.colStatus.Index];
+				if (!Options.OutputWindowOnRight)
+				{
+					statusColumn.Width += StatusColumnPadding;
+				}
+				else
+				{
+					// When Status is last, AutoSize sizes it to fill. However, padding the RunTime column scoots Status over,
+					// which forces a horizontal scroll bar. Try to fix that by shrinking Status or just auto-sizing it again.
+					int autoStatusWidth = statusColumn.Width;
+					int availableStatusWidth = autoStatusWidth - RunTimeColumnPadding;
+					const int MinStatusColumnWidth = 100;
+					if (availableStatusWidth >= MinStatusColumnWidth)
+					{
+						statusColumn.Width = availableStatusWidth;
+					}
+					else
+					{
+						list.AutoSizeColumn(statusColumn);
+						if (statusColumn.Width < MinStatusColumnWidth)
+						{
+							statusColumn.Width = MinStatusColumnWidth;
+						}
+					}
+				}
 			}
 			finally
 			{
@@ -377,8 +404,20 @@ namespace MegaBuild
 
 		private void ContentsReset()
 		{
-			this.PopulateList(this.lstBuildSteps, this.project.BuildSteps);
-			this.PopulateList(this.lstFailureSteps, this.project.FailureSteps);
+			if (Options.OutputWindowOnRight)
+			{
+				this.PopulateList(this.lstBuildSteps, this.project.BuildSteps, this.colStep, this.colRunTime, this.colStatus);
+				this.PopulateList(this.lstFailureSteps, this.project.FailureSteps, this.colFStep, this.colFRunTime, this.colFStatus);
+			}
+			else
+			{
+#pragma warning disable SA1117 // Parameters should be on same line or separate lines
+				this.PopulateList(this.lstBuildSteps, this.project.BuildSteps, this.colStep, this.colType, this.colIgnoreFailure, this.colConfirm,
+					this.colInfo, this.colRunTime, this.colStatus, this.colDescription);
+				this.PopulateList(this.lstFailureSteps, this.project.FailureSteps, this.colFStep, this.colFType, this.colFIgnoreFailure, this.colFConfirm,
+					this.colFInfo, this.colFRunTime, this.colFStatus, this.colFDescription);
+#pragma warning restore SA1117 // Parameters should be on same line or separate lines
+			}
 		}
 
 		private void FocusOutputWindow()
@@ -992,13 +1031,20 @@ namespace MegaBuild
 			this.outputWindow.Clear();
 		}
 
-		private void PopulateList(ExtendedListView list, StepCollection steps)
+		private void PopulateList(ExtendedListView list, StepCollection steps, params ColumnHeader[] requiredColumns)
 		{
 			list.BeginUpdate();
 			try
 			{
 				ListView.ListViewItemCollection items = list.Items;
 				items.Clear();
+
+				if (list.Columns.Count != requiredColumns.Length)
+				{
+					list.Columns.Clear();
+					list.Columns.AddRange(requiredColumns);
+				}
+
 				int numSteps = steps.Count;
 				for (int i = 0; i < numSteps; i++)
 				{
@@ -1342,25 +1388,25 @@ namespace MegaBuild
 				subItems.Add(string.Empty);
 			}
 
-			UpdateSubItemText(subItems[StepColumn], step.Name);
-			UpdateSubItemText(subItems[TypeColumn], step.StepTypeInfo.Name);
-			UpdateSubItemText(subItems[InfoColumn], step.StepInformation);
+			UpdateSubItemText(subItems, this.colStep.Index, step.Name);
+			UpdateSubItemText(subItems, this.colType.Index, step.StepTypeInfo.Name);
+			UpdateSubItemText(subItems, this.colInfo.Index, step.StepInformation);
 
 			if (step is ExecutableStep executableStep)
 			{
-				UpdateSubItemText(subItems[IgnoreFailureColumn], executableStep.IgnoreFailure.ToString());
-				UpdateSubItemText(subItems[ConfirmColumn], executableStep.PromptFirst ? "Yes" : "No");
+				UpdateSubItemText(subItems, this.colIgnoreFailure.Index, executableStep.IgnoreFailure.ToString());
+				UpdateSubItemText(subItems, this.colConfirm.Index, executableStep.PromptFirst ? "Yes" : "No");
 
 				if (executableStep.Status != StepStatus.None)
 				{
 					string time = FormatTimeSpan(executableStep.TotalExecutionTime, string.Empty);
-					UpdateSubItemText(subItems[RunTimeColumn], time);
-					UpdateSubItemText(subItems[StatusColumn], executableStep.Status.ToString());
+					UpdateSubItemText(subItems, this.colRunTime.Index, time);
+					UpdateSubItemText(subItems, this.colStatus.Index, executableStep.Status.ToString());
 				}
 				else
 				{
-					ClearSubItemText(subItems[RunTimeColumn]);
-					ClearSubItemText(subItems[StatusColumn]);
+					ClearSubItemText(subItems, this.colRunTime.Index);
+					ClearSubItemText(subItems, this.colStatus.Index);
 				}
 
 				// Set BackColor based on Status, etc.
@@ -1398,10 +1444,10 @@ namespace MegaBuild
 			{
 				// We have to clear these for non-executable steps because StepMoved may move a Group
 				// into an item that used to have an executable step.
-				ClearSubItemText(subItems[IgnoreFailureColumn]);
-				ClearSubItemText(subItems[ConfirmColumn]);
-				ClearSubItemText(subItems[RunTimeColumn]);
-				ClearSubItemText(subItems[StatusColumn]);
+				ClearSubItemText(subItems, this.colIgnoreFailure.Index);
+				ClearSubItemText(subItems, this.colConfirm.Index);
+				ClearSubItemText(subItems, this.colRunTime.Index);
+				ClearSubItemText(subItems, this.colStatus.Index);
 				if (item.BackColor != list.BackColor)
 				{
 					item.BackColor = list.BackColor;
@@ -1409,13 +1455,13 @@ namespace MegaBuild
 			}
 
 			string description = TextUtility.ReplaceControlCharacters(step.Description);
-			UpdateSubItemText(subItems[DescriptionColumn], description);
+			UpdateSubItemText(subItems, this.colDescription.Index, description);
 
 			// Note: Resizing columns causes tremendous flicker because it repaints the entire control at least twice, sometimes
 			// three times (depending on whether the first or second auto-size is bigger.
 			if (resizeFirstColumn)
 			{
-				list.AutoSizeColumn(list.Columns[StepColumn]);
+				list.AutoSizeColumn(list.Columns[this.colStep.Index]);
 			}
 		}
 
@@ -1450,13 +1496,12 @@ namespace MegaBuild
 
 					taskbar.SetProgressState(state, this.Handle);
 				}
-#pragma warning disable CC0004 // Catch block cannot be empty
-				catch (InvalidOperationException)
+				catch (InvalidOperationException ex)
 				{
 					// Sometimes TaskbarManager.get_OwnerHandle will throw with:
 					// "A valid active Window is needed to update the Taskbar"
+					DebugOutputLine(nameof(this.UpdateTaskbarProgress) + " Error: " + ex.Message);
 				}
-#pragma warning restore CC0004 // Catch block cannot be empty
 			}
 		}
 
@@ -1481,6 +1526,32 @@ namespace MegaBuild
 
 		private void MainForm_Activated(object sender, EventArgs e)
 		{
+			DebugOutputLine(nameof(this.MainForm_Activated));
+
+			// This is the fix for the long-standing problem where MegaBuild sometimes wouldn't restore from a minimized state.
+			// I'm still not sure why this is only necessary sometimes, but I was able to consistently reproduce it this way:
+			// 1. Run MegaBuild in the debugger.
+			// 2. Minimize it.
+			// 3. Launch Paint.net 4.2.12
+			// 4. Click on MegaBuild's taskbar icon.
+			// 5. Observe that this Activated handler is called and this.WindowState is still Minimized.
+			if (this.WindowState == FormWindowState.Minimized)
+			{
+				DebugOutputLine($"{nameof(this.MainForm_Activated)} forcing window to restore.");
+
+				// We can't change the WindowState directly inside this Activated handler. If we try to restore from here
+				// to a Maximized state, then it causes one SizeChanged event for the Maximized state and then a second
+				// SizeChanged with a Normal state. So re-maximizing fails, but BeginInvoke gets around that (via PostMessage).
+				this.BeginInvoke(new Action(() =>
+				{
+					// https://stackoverflow.com/a/2725234/1882616
+					const uint SW_RESTORE = 0x09;
+#pragma warning disable CA1806 // Do not ignore method results. The BOOL result only indicates the previous visibility (0).
+					ShowWindow(this.Handle, SW_RESTORE);
+#pragma warning restore CA1806 // Do not ignore method results
+				}));
+			}
+
 			if (!this.project.Building)
 			{
 				// If this app is inactive when Project_BuildStopped fires, it will leave the taskbar in its last state

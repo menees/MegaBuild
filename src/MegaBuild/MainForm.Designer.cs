@@ -83,7 +83,7 @@ namespace MegaBuild
 		private System.Windows.Forms.TabPage tabFailureSteps;
 		private System.Windows.Forms.ColumnHeader colStep;
 		private System.Windows.Forms.ColumnHeader colType;
-		private System.Windows.Forms.ColumnHeader colIgnoreFail;
+		private System.Windows.Forms.ColumnHeader colIgnoreFailure;
 		private System.Windows.Forms.ColumnHeader colRunTime;
 		private System.Windows.Forms.ColumnHeader colStatus;
 		private System.Windows.Forms.ColumnHeader colDescription;
@@ -271,7 +271,7 @@ namespace MegaBuild
 			this.lstBuildSteps = new Menees.Windows.Forms.ExtendedListView();
 			this.colStep = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
 			this.colType = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
-			this.colIgnoreFail = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
+			this.colIgnoreFailure = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
 			this.colConfirm = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
 			this.colInfo = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
 			this.colRunTime = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
@@ -872,7 +872,7 @@ namespace MegaBuild
 			// 
 			this.mnuAbout.MergeIndex = 2;
 			this.mnuAbout.Name = "mnuAbout";
-			this.mnuAbout.Size = new System.Drawing.Size(180, 22);
+			this.mnuAbout.Size = new System.Drawing.Size(116, 22);
 			this.mnuAbout.Text = "&About...";
 			this.mnuAbout.Click += new System.EventHandler(this.About_Click);
 			// 
@@ -1123,7 +1123,7 @@ namespace MegaBuild
 			this.pnlList.Dock = System.Windows.Forms.DockStyle.Fill;
 			this.pnlList.Location = new System.Drawing.Point(0, 0);
 			this.pnlList.Name = "pnlList";
-			this.pnlList.Size = new System.Drawing.Size(616, 178);
+			this.pnlList.Size = new System.Drawing.Size(178, 357);
 			this.pnlList.TabIndex = 1;
 			// 
 			// TabCtrl
@@ -1135,7 +1135,7 @@ namespace MegaBuild
 			this.TabCtrl.Location = new System.Drawing.Point(0, 0);
 			this.TabCtrl.Name = "TabCtrl";
 			this.TabCtrl.SelectedIndex = 0;
-			this.TabCtrl.Size = new System.Drawing.Size(612, 174);
+			this.TabCtrl.Size = new System.Drawing.Size(174, 353);
 			this.TabCtrl.TabIndex = 2;
 			this.TabCtrl.SelectedIndexChanged += new System.EventHandler(this.TabCtrl_SelectedIndexChanged);
 			// 
@@ -1145,7 +1145,7 @@ namespace MegaBuild
 			this.tabBuildSteps.ImageIndex = 0;
 			this.tabBuildSteps.Location = new System.Drawing.Point(4, 24);
 			this.tabBuildSteps.Name = "tabBuildSteps";
-			this.tabBuildSteps.Size = new System.Drawing.Size(604, 146);
+			this.tabBuildSteps.Size = new System.Drawing.Size(166, 325);
 			this.tabBuildSteps.TabIndex = 0;
 			this.tabBuildSteps.Text = "Build Steps";
 			// 
@@ -1155,7 +1155,7 @@ namespace MegaBuild
 			this.lstBuildSteps.Columns.AddRange(new System.Windows.Forms.ColumnHeader[] {
             this.colStep,
             this.colType,
-            this.colIgnoreFail,
+            this.colIgnoreFailure,
             this.colConfirm,
             this.colInfo,
             this.colRunTime,
@@ -1167,7 +1167,7 @@ namespace MegaBuild
 			this.lstBuildSteps.Location = new System.Drawing.Point(0, 0);
 			this.lstBuildSteps.MultiSelect = true;
 			this.lstBuildSteps.Name = "lstBuildSteps";
-			this.lstBuildSteps.Size = new System.Drawing.Size(604, 146);
+			this.lstBuildSteps.Size = new System.Drawing.Size(166, 325);
 			this.lstBuildSteps.SmallImageList = this.images;
 			this.lstBuildSteps.TabIndex = 0;
 			this.lstBuildSteps.UseCompatibleStateImageBehavior = false;
@@ -1182,10 +1182,10 @@ namespace MegaBuild
 			// 
 			this.colType.Text = "Type";
 			// 
-			// colIgnoreFail
+			// colIgnoreFailure
 			// 
-			this.colIgnoreFail.Text = "Ignore Failure";
-			this.colIgnoreFail.Width = 100;
+			this.colIgnoreFailure.Text = "Ignore Failure";
+			this.colIgnoreFailure.Width = 100;
 			// 
 			// colConfirm
 			// 
@@ -1422,7 +1422,7 @@ namespace MegaBuild
 			this.tabFailureSteps.ImageIndex = 1;
 			this.tabFailureSteps.Location = new System.Drawing.Point(4, 24);
 			this.tabFailureSteps.Name = "tabFailureSteps";
-			this.tabFailureSteps.Size = new System.Drawing.Size(604, 146);
+			this.tabFailureSteps.Size = new System.Drawing.Size(166, 325);
 			this.tabFailureSteps.TabIndex = 1;
 			this.tabFailureSteps.Text = "Failure Steps";
 			this.tabFailureSteps.Visible = false;
@@ -1445,7 +1445,7 @@ namespace MegaBuild
 			this.lstFailureSteps.Location = new System.Drawing.Point(0, 0);
 			this.lstFailureSteps.MultiSelect = true;
 			this.lstFailureSteps.Name = "lstFailureSteps";
-			this.lstFailureSteps.Size = new System.Drawing.Size(604, 146);
+			this.lstFailureSteps.Size = new System.Drawing.Size(166, 325);
 			this.lstFailureSteps.SmallImageList = this.images;
 			this.lstFailureSteps.TabIndex = 1;
 			this.lstFailureSteps.UseCompatibleStateImageBehavior = false;
@@ -1614,7 +1614,6 @@ namespace MegaBuild
 			this.Splitter.Dock = System.Windows.Forms.DockStyle.Fill;
 			this.Splitter.Location = new System.Drawing.Point(0, 53);
 			this.Splitter.Name = "Splitter";
-			this.Splitter.Orientation = System.Windows.Forms.Orientation.Horizontal;
 			// 
 			// Splitter.Panel1
 			// 
@@ -1636,7 +1635,7 @@ namespace MegaBuild
 			this.outputWindow.Name = "outputWindow";
 			this.outputWindow.OwnerWindow = this;
 			this.outputWindow.RemoveLinePrefix = null;
-			this.outputWindow.Size = new System.Drawing.Size(616, 175);
+			this.outputWindow.Size = new System.Drawing.Size(434, 357);
 			this.outputWindow.TabIndex = 0;
 			// 
 			// status

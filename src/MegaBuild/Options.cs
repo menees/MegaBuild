@@ -44,6 +44,8 @@ namespace MegaBuild
 
 		public static string TimestampFormat { get; set; }
 
+		public static bool OutputWindowOnRight { get; set; }
+
 		#endregion
 
 		#region Public Methods
@@ -59,6 +61,7 @@ namespace MegaBuild
 			SwitchTabsOnFailure = node.GetValue(nameof(SwitchTabsOnFailure), SwitchTabsOnFailure);
 			ShowProgressInTaskbar = node.GetValue(nameof(ShowProgressInTaskbar), true);
 			TimestampFormat = node.GetValue(nameof(TimestampFormat), DefaultTimestampFormat);
+			OutputWindowOnRight = node.GetValue(nameof(OutputWindowOnRight), true);
 		}
 
 		public static void Save(ISettingsNode node)
@@ -72,6 +75,7 @@ namespace MegaBuild
 			node.SetValue(nameof(SwitchTabsOnFailure), SwitchTabsOnFailure);
 			node.SetValue(nameof(ShowProgressInTaskbar), ShowProgressInTaskbar);
 			node.SetValue(nameof(TimestampFormat), TimestampFormat);
+			node.SetValue(nameof(OutputWindowOnRight), OutputWindowOnRight);
 		}
 
 		#endregion
