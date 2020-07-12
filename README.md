@@ -61,3 +61,12 @@ The SampleStep project provides an example of a custom step type and an editor c
 
 3.	Why should I use MegaBuild instead of MSBuild?
 > MegaBuild is a GUI tool for executing a single sequence of build steps inside of a try..catch (i.e., if a build step fails it will run the failure steps).  Its emphasis is on ease of use for handling a multi-step build.  In contrast, MSBuild is a non-GUI tool that requires you to learn an XML declarative language to use it.  It’s more flexible than MegaBuild, but it has a much steeper learning curve.  MegaBuild was released two years before MSBuild, but it now supports an MSBuild step type in case you need to integrate MSBuild projects into your MegaBuild build processes.
+
+## Background
+MegaBuild started in April 2003 when I needed to automate some build processes at work. A friend wrote a Visual Studio.NET add-in to build multiple solutions in a row, but I wanted a more general utility. At the time, [FinalBuilder](https://www.finalbuilder.com/) was the only Windows GUI build tool I found, and it was too expensive to buy for dozens of developers and build managers. So I created MegaBuild as a free, open source utility, and I've been updating it regularly since then.
+
+I've never found the need to add scripting or significant flow control into MegaBuild since each build step can run scripts or programs to handle complicated cases. MegaBuild just supports a sequence of build steps and an optional sequence of failure steps. At work and at home, most of my MegaBuild projects just execute a sequence of [MSBuild](https://github.com/Microsoft/msbuild) and PowerShell steps. That mirrors what my build servers do at work and what my GitHub Actions workflows do in my personal projects.
+
+Microsoft released MSBuild in 2005 (with .NET 2.0), and it's a powerful .NET command-line build utility. I (and others) still find MegaBuild useful for interactively doing full and partial builds and viewing their output. I probably won't ever make a command-line version of MegaBuild because MSBuild fills that role better.
+
+If you're looking for other Windows GUI build tools, you might want to check out Wikipedia's [List of build automation software](https://en.wikipedia.org/wiki/List_of_build_automation_software).
