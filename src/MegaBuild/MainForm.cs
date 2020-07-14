@@ -113,8 +113,14 @@ namespace MegaBuild
 					mi.Enabled = !building;
 				}
 
+				// We can't safely call Project.CanPasteSteps while minimized! It makes an OLE call to the Clipboard that behaves erratically
+				// when there's no visible window. It seems to be responsible for the long-standing "stuck minimized" bug. I've even seen it
+				// throw an AccessViolationException once in the debugger (while testing for the minimized bug), and that exited the process.
+				// Microsoft's Remarks for AccessViolationException indicate that it bypassed my catch(Exception) block below because it
+				// occurred outside of CLR's managed memory.
+				bool isMinimized = this.WindowState == FormWindowState.Minimized;
 				EnableComponents(!building && numSteps > 0, this.mnuCutStep, this.mnuCutStep2, this.mnuCopyStep, this.mnuCopyStep2);
-				EnableComponents(!building && numSteps <= 1 && Project.CanPasteSteps, this.mnuPasteStep, this.mnuPasteStep2);
+				EnableComponents(!building && numSteps <= 1 && !isMinimized && Project.CanPasteSteps, this.mnuPasteStep, this.mnuPasteStep2);
 				EnableComponents(!building && hasOutput, this.mnuFindInOutput, this.mnuFindNextInOutput, this.mnuFindPreviousInOutput);
 
 				EnableComponents(
@@ -1531,24 +1537,6 @@ namespace MegaBuild
 		private void MainForm_Activated(object sender, EventArgs e)
 		{
 			DebugOutputLine(nameof(this.MainForm_Activated));
-
-			// This is the fix for the long-standing problem where MegaBuild sometimes wouldn't restore from a minimized state.
-			// I'm still not sure why this is only necessary sometimes, but I was able to consistently reproduce it this way:
-			// 1. Run MegaBuild in the debugger.
-			// 2. Minimize it.
-			// 3. Launch Paint.net 4.2.12
-			// 4. Click on MegaBuild's taskbar icon.
-			// 5. Observe that this Activated handler is called and this.WindowState is still Minimized.
-			if (this.WindowState == FormWindowState.Minimized)
-			{
-				DebugOutputLine($"{nameof(this.MainForm_Activated)} forcing window to restore.");
-
-				// We have to use Windows API calls to correctly restore to the previous Normal or Maximized state.
-				// We can't change the WindowState directly inside this Activated handler. If we try to restore from here
-				// to a Maximized state, then it causes one SizeChanged event for the Maximized state and then a second
-				// SizeChanged with a Normal state. So re-maximizing fails, but BeginInvoke gets around that (via PostMessage).
-				this.BeginInvoke(new Action(() => HandleUtility.BringWindowForward(this.Handle)));
-			}
 
 			if (!this.project.Building)
 			{
