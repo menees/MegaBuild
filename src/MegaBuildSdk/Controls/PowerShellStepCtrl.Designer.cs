@@ -35,6 +35,8 @@ namespace MegaBuild
 			this.edtCommand = new System.Windows.Forms.TextBox();
 			this.lblCommand = new System.Windows.Forms.Label();
 			this.OpenDlg = new System.Windows.Forms.OpenFileDialog();
+			this.lblShell = new System.Windows.Forms.Label();
+			this.shell = new System.Windows.Forms.ComboBox();
 			this.SuspendLayout();
 			// 
 			// btnBrowseDirectory
@@ -104,10 +106,36 @@ namespace MegaBuild
 			this.OpenDlg.Filter = "PowerShell Scripts (*.ps1)|*.ps1|All Files (*.*)|*.*";
 			this.OpenDlg.Title = "Select PowerShell Script";
 			// 
+			// lblShell
+			// 
+			this.lblShell.AutoSize = true;
+			this.lblShell.Location = new System.Drawing.Point(10, 104);
+			this.lblShell.Name = "lblShell";
+			this.lblShell.Size = new System.Drawing.Size(35, 15);
+			this.lblShell.TabIndex = 6;
+			this.lblShell.Text = "Shell:";
+			// 
+			// shell
+			// 
+			this.shell.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
+			this.shell.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
+			this.shell.FormattingEnabled = true;
+			this.shell.Items.AddRange(new object[] {
+            "Windows PowerShell",
+            "PowerShell Core",
+            "PowerShell Core or Windows PowerShell"});
+			this.shell.Location = new System.Drawing.Point(10, 120);
+			this.shell.Name = "shell";
+			this.shell.Size = new System.Drawing.Size(384, 23);
+			this.shell.TabIndex = 7;
+			// 
 			// PowerShellStepCtrl
 			// 
 			this.AutoScaleDimensions = new System.Drawing.SizeF(7F, 15F);
 			this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
+			this.Controls.Add(this.shell);
+			this.Controls.Add(this.lblShell);
 			this.Controls.Add(this.btnBrowseDirectory);
 			this.Controls.Add(this.edtWorkingDirectory);
 			this.Controls.Add(this.lblWorkingDirectory);
@@ -131,5 +159,7 @@ namespace MegaBuild
 		private System.Windows.Forms.TextBox edtCommand;
 		private System.Windows.Forms.Label lblCommand;
 		private System.Windows.Forms.OpenFileDialog OpenDlg;
+		private System.Windows.Forms.Label lblShell;
+		private System.Windows.Forms.ComboBox shell;
 	}
 }

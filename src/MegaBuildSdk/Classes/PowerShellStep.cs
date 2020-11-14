@@ -15,7 +15,7 @@ namespace MegaBuild
 
 	#endregion
 
-	[StepDisplay("PowerShell", "Runs a PowerShell script or command.", "Images.PowerShellStep.ico")]
+	[StepDisplay(nameof(PowerShell), "Runs a PowerShell script or command.", "Images.PowerShellStep.ico")]
 	[MayRequireAdministrator]
 	[SuppressMessage("Microsoft.Performance", "CA1812:AvoidUninstantiatedInternalClasses", Justification = "Called by Reflection.")]
 	internal sealed class PowerShellStep : ExecutableStep
@@ -26,6 +26,7 @@ namespace MegaBuild
 
 		private string command;
 		private string workingDirectory;
+		private PowerShell shell;
 
 		#endregion
 
@@ -64,6 +65,19 @@ namespace MegaBuild
 			set
 			{
 				this.SetValue(ref this.workingDirectory, value);
+			}
+		}
+
+		public PowerShell Shell
+		{
+			get
+			{
+				return this.shell;
+			}
+
+			set
+			{
+				this.SetValue(ref this.shell, value);
 			}
 		}
 
@@ -116,9 +130,27 @@ namespace MegaBuild
 				arguments = "-command " + this.GetExpandedCommand(false);
 			}
 
+			const string WindowsFileName = "PowerShell.exe";
+			const string CoreFileName = "pwsh.exe";
+			string fileName;
+			switch (this.Shell)
+			{
+				case PowerShell.Windows:
+					fileName = WindowsFileName;
+					break;
+
+				case PowerShell.Core:
+					fileName = CoreFileName;
+					break;
+
+				default:
+					fileName = SearchPath(CoreFileName) ?? WindowsFileName;
+					break;
+			}
+
 			ExecuteCommandArgs cmdArgs = new ExecuteCommandArgs
 			{
-				FileName = "PowerShell.exe",
+				FileName = fileName,
 				Arguments = arguments,
 				WorkingDirectory = this.WorkingDirectory,
 				WindowStyle = ProcessWindowStyle.Hidden,
@@ -166,6 +198,7 @@ namespace MegaBuild
 			base.Load(key);
 			this.Command = key.GetValue(nameof(this.Command), this.Command);
 			this.WorkingDirectory = key.GetValue(nameof(this.WorkingDirectory), this.WorkingDirectory);
+			this.Shell = key.GetValue(nameof(this.Shell), this.Shell);
 		}
 
 		protected internal override void Save(XmlKey key)
@@ -173,11 +206,43 @@ namespace MegaBuild
 			base.Save(key);
 			key.SetValue(nameof(this.Command), this.Command);
 			key.SetValue(nameof(this.WorkingDirectory), this.WorkingDirectory);
+			key.SetValue(nameof(this.Shell), this.Shell);
 		}
 
 		#endregion
 
 		#region Private Methods
+
+		private static string SearchPath(string fileName)
+		{
+			string result = null;
+
+			string[] pathEntries = (Environment.GetEnvironmentVariable("PATH") ?? string.Empty)
+				.Split(new[] { ';' }, StringSplitOptions.RemoveEmptyEntries)
+				.Select(entry => entry.Trim())
+				.Where(entry => !string.IsNullOrWhiteSpace(entry))
+				.ToArray();
+
+			// The check for duplicates saves time here. On my system, 12 of the 55 entries in PATH are duplicates (ignoring case).
+			// Unfortunately, we can't use LINQ's Distinct() because it returns an unordered sequence, and we have to preserve order.
+			// Note: Windows 10 supports case-sensitive folders, but the PowerShell folders shouldn't be configured that way.
+			HashSet<string> checkedPaths = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
+			foreach (string path in pathEntries)
+			{
+				if (!checkedPaths.Contains(path))
+				{
+					checkedPaths.Add(path);
+					string fullyQualifiedName = Path.Combine(path, fileName);
+					if (File.Exists(fullyQualifiedName))
+					{
+						result = fullyQualifiedName;
+						break;
+					}
+				}
+			}
+
+			return result;
+		}
 
 		private string GetExpandedCommand(bool forShellExecute)
 		{

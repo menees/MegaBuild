@@ -33,7 +33,7 @@ namespace MegaBuild
 
 		#region Public Properties
 
-		public override string DisplayName => "PowerShell";
+		public override string DisplayName => nameof(PowerShell);
 
 		public PowerShellStep Step
 		{
@@ -45,6 +45,7 @@ namespace MegaBuild
 
 					this.edtCommand.Text = this.step.Command;
 					this.edtWorkingDirectory.Text = this.step.WorkingDirectory;
+					this.shell.SelectedIndex = (int)this.step.Shell;
 				}
 			}
 		}
@@ -65,6 +66,7 @@ namespace MegaBuild
 			{
 				this.step.Command = this.edtCommand.Text;
 				this.step.WorkingDirectory = this.edtWorkingDirectory.Text;
+				this.step.Shell = (PowerShell)this.shell.SelectedIndex;
 				result = true;
 			}
 

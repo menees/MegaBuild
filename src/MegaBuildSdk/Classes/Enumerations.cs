@@ -178,7 +178,18 @@ namespace MegaBuild
 
 	#endregion
 
-	#region internal enum SoundStyle
+	#region internal PowerShell
+
+	internal enum PowerShell
+	{
+		Windows,
+		Core,
+		CoreOrWindows,
+	}
+
+	#endregion
+
+	#region internal SoundStyle
 
 	internal enum SoundStyle
 	{

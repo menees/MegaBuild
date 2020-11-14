@@ -15,3 +15,9 @@ csharp_style_prefer_range_operator = true:silent
 csharp_style_prefer_switch_expression = false:silent
 
 csharp_using_directive_placement = inside_namespace
+
+# this. and Me. preferences
+dotnet_style_qualification_for_event = true:silent
+dotnet_style_qualification_for_field = true:silent
+dotnet_style_qualification_for_method = true:silent
+dotnet_style_qualification_for_property = true:silent
