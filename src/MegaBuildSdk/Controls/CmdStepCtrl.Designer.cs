@@ -83,6 +83,7 @@ namespace MegaBuild
 			this.chkRedirectInput = new System.Windows.Forms.CheckBox();
 			this.chkRedirectOutput = new System.Windows.Forms.CheckBox();
 			this.chkRedirectError = new System.Windows.Forms.CheckBox();
+			this.chkErrorAsOutput = new System.Windows.Forms.CheckBox();
 			((System.ComponentModel.ISupportInitialize)(this.numFirstSuccess)).BeginInit();
 			((System.ComponentModel.ISupportInitialize)(this.numLastSuccess)).BeginInit();
 			this.SuspendLayout();
@@ -198,7 +199,7 @@ namespace MegaBuild
 			this.lblSuccessCodes.AutoSize = true;
 			this.lblSuccessCodes.Location = new System.Drawing.Point(12, 192);
 			this.lblSuccessCodes.Name = "lblSuccessCodes";
-			this.lblSuccessCodes.Size = new System.Drawing.Size(108, 15);
+			this.lblSuccessCodes.Size = new System.Drawing.Size(109, 15);
 			this.lblSuccessCodes.TabIndex = 11;
 			this.lblSuccessCodes.Text = "Success Exit Codes:";
 			// 
@@ -232,8 +233,8 @@ namespace MegaBuild
 			this.chkShellExecute.AutoSize = true;
 			this.chkShellExecute.Location = new System.Drawing.Point(12, 256);
 			this.chkShellExecute.Name = "chkShellExecute";
-			this.chkShellExecute.Size = new System.Drawing.Size(185, 19);
-			this.chkShellExecute.TabIndex = 19;
+			this.chkShellExecute.Size = new System.Drawing.Size(184, 19);
+			this.chkShellExecute.TabIndex = 20;
 			this.chkShellExecute.Text = "Use Windows Shell To Execute";
 			this.chkShellExecute.CheckedChanged += new System.EventHandler(this.ShellExecute_CheckedChanged);
 			// 
@@ -242,8 +243,8 @@ namespace MegaBuild
 			this.lblVerb.AutoSize = true;
 			this.lblVerb.Location = new System.Drawing.Point(40, 284);
 			this.lblVerb.Name = "lblVerb";
-			this.lblVerb.Size = new System.Drawing.Size(62, 15);
-			this.lblVerb.TabIndex = 20;
+			this.lblVerb.Size = new System.Drawing.Size(61, 15);
+			this.lblVerb.TabIndex = 21;
 			this.lblVerb.Text = "Shell Verb:";
 			// 
 			// edtVerb
@@ -251,7 +252,7 @@ namespace MegaBuild
 			this.edtVerb.Location = new System.Drawing.Point(140, 280);
 			this.edtVerb.Name = "edtVerb";
 			this.edtVerb.Size = new System.Drawing.Size(122, 23);
-			this.edtVerb.TabIndex = 21;
+			this.edtVerb.TabIndex = 22;
 			// 
 			// OpenDlg
 			// 
@@ -269,7 +270,7 @@ namespace MegaBuild
 			// chkRedirectInput
 			// 
 			this.chkRedirectInput.AutoSize = true;
-			this.chkRedirectInput.Location = new System.Drawing.Point(144, 224);
+			this.chkRedirectInput.Location = new System.Drawing.Point(140, 224);
 			this.chkRedirectInput.Name = "chkRedirectInput";
 			this.chkRedirectInput.Size = new System.Drawing.Size(54, 19);
 			this.chkRedirectInput.TabIndex = 16;
@@ -280,7 +281,7 @@ namespace MegaBuild
 			// chkRedirectOutput
 			// 
 			this.chkRedirectOutput.AutoSize = true;
-			this.chkRedirectOutput.Location = new System.Drawing.Point(220, 224);
+			this.chkRedirectOutput.Location = new System.Drawing.Point(212, 224);
 			this.chkRedirectOutput.Name = "chkRedirectOutput";
 			this.chkRedirectOutput.Size = new System.Drawing.Size(64, 19);
 			this.chkRedirectOutput.TabIndex = 17;
@@ -291,7 +292,7 @@ namespace MegaBuild
 			// chkRedirectError
 			// 
 			this.chkRedirectError.AutoSize = true;
-			this.chkRedirectError.Location = new System.Drawing.Point(304, 224);
+			this.chkRedirectError.Location = new System.Drawing.Point(284, 224);
 			this.chkRedirectError.Name = "chkRedirectError";
 			this.chkRedirectError.Size = new System.Drawing.Size(51, 19);
 			this.chkRedirectError.TabIndex = 18;
@@ -299,9 +300,21 @@ namespace MegaBuild
 			this.chkRedirectError.UseVisualStyleBackColor = true;
 			this.chkRedirectError.CheckedChanged += new System.EventHandler(this.RedirectStreams_CheckedChanged);
 			// 
+			// chkErrorAsOutput
+			// 
+			this.chkErrorAsOutput.AutoSize = true;
+			this.chkErrorAsOutput.Location = new System.Drawing.Point(300, 240);
+			this.chkErrorAsOutput.Name = "chkErrorAsOutput";
+			this.chkErrorAsOutput.Size = new System.Drawing.Size(80, 19);
+			this.chkErrorAsOutput.TabIndex = 19;
+			this.chkErrorAsOutput.Text = "As Output";
+			this.chkErrorAsOutput.UseVisualStyleBackColor = true;
+			this.chkErrorAsOutput.CheckedChanged += new System.EventHandler(this.RedirectStreams_CheckedChanged);
+			// 
 			// CmdStepCtrl
 			// 
 			this.AutoScaleDimensions = new System.Drawing.SizeF(7F, 15F);
+			this.Controls.Add(this.chkErrorAsOutput);
 			this.Controls.Add(this.chkRedirectError);
 			this.Controls.Add(this.chkRedirectOutput);
 			this.Controls.Add(this.chkRedirectInput);
@@ -333,6 +346,8 @@ namespace MegaBuild
 
 		}
 		#endregion
+
+		private CheckBox chkErrorAsOutput;
 	}
 }
 

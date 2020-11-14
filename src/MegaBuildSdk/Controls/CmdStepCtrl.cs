@@ -82,6 +82,12 @@ namespace MegaBuild
 					result |= RedirectStandardStreams.Error;
 				}
 
+				// Set this outside the Error.Checked condition so the returned enum will match the visible states.
+				if (this.chkErrorAsOutput.Checked)
+				{
+					result |= RedirectStandardStreams.TreatErrorAsOutput;
+				}
+
 				return result;
 			}
 
@@ -90,6 +96,7 @@ namespace MegaBuild
 				this.chkRedirectInput.Checked = (value & RedirectStandardStreams.Input) != 0;
 				this.chkRedirectOutput.Checked = (value & RedirectStandardStreams.Output) != 0;
 				this.chkRedirectError.Checked = (value & RedirectStandardStreams.Error) != 0;
+				this.chkErrorAsOutput.Checked = (value & RedirectStandardStreams.TreatErrorAsOutput) != 0;
 			}
 		}
 
@@ -163,6 +170,7 @@ namespace MegaBuild
 					this.chkRedirectInput.Checked = true;
 					this.chkRedirectOutput.Checked = true;
 					this.chkRedirectError.Checked = true;
+					this.chkErrorAsOutput.Checked = false;
 				}
 			}
 		}
@@ -201,6 +209,8 @@ namespace MegaBuild
 
 			this.lblVerb.Enabled = this.chkShellExecute.Checked;
 			this.edtVerb.Enabled = this.chkShellExecute.Checked;
+
+			this.chkErrorAsOutput.Enabled = this.chkRedirectError.Checked;
 		}
 
 		#endregion

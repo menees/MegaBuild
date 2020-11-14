@@ -87,6 +87,10 @@ namespace MegaBuild
 		Error = 4,
 
 		All = Input | Output | Error,
+
+		// Some programs (e.g., Docker and Docker-Compose) write normal output to stderr,
+		// so it can be useful to turn off the error color for their stderr text.
+		TreatErrorAsOutput = 8,
 	}
 
 	#endregion

@@ -369,7 +369,8 @@ namespace MegaBuild
 
 					if (startInfo.RedirectStandardError)
 					{
-						process.ErrorDataReceived += (sender, eData) => this.OutputStreamData(eData, true, args.AllowErrorLine);
+						bool errorData = !args.RedirectStandardStreams.HasFlag(RedirectStandardStreams.TreatErrorAsOutput);
+						process.ErrorDataReceived += (sender, eData) => this.OutputStreamData(eData, errorData, args.AllowErrorLine);
 					}
 
 					// Start the process
