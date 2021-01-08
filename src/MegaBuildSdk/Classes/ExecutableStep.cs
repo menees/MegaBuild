@@ -525,6 +525,19 @@ namespace MegaBuild
 				this.DebugProperty("CreateNoWindow", startInfo.CreateNoWindow);
 			}
 
+			if (args.EnvironmentVariables.Count > 0)
+			{
+				if (args.UseShellExecute)
+				{
+					throw Exceptions.NewInvalidOperationException("Environment variables can't be set when using ShellExecute.");
+				}
+
+				foreach (var pair in args.EnvironmentVariables)
+				{
+					startInfo.EnvironmentVariables[pair.Key] = pair.Value;
+				}
+			}
+
 			return startInfo;
 		}
 

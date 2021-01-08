@@ -3,6 +3,7 @@ namespace MegaBuild
 	#region Using Directives
 
 	using System;
+	using System.Collections.Generic;
 	using System.Diagnostics;
 
 	#endregion
@@ -69,6 +70,8 @@ namespace MegaBuild
 		public ProcessWindowStyle WindowStyle { get; set; }
 
 		public string WorkingDirectory { get; set; }
+
+		public IDictionary<string, string> EnvironmentVariables { get; } = new Dictionary<string, string>();
 
 		#endregion
 	}
