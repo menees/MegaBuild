@@ -46,6 +46,7 @@ namespace MegaBuild
 					this.edtCommand.Text = this.step.Command;
 					this.edtWorkingDirectory.Text = this.step.WorkingDirectory;
 					this.shell.SelectedIndex = (int)this.step.Shell;
+					this.treatErrorAsOutput.Checked = this.step.TreatErrorStreamAsOutput;
 				}
 			}
 		}
@@ -67,6 +68,7 @@ namespace MegaBuild
 				this.step.Command = this.edtCommand.Text;
 				this.step.WorkingDirectory = this.edtWorkingDirectory.Text;
 				this.step.Shell = (PowerShell)this.shell.SelectedIndex;
+				this.step.TreatErrorStreamAsOutput = this.treatErrorAsOutput.Checked;
 				result = true;
 			}
 

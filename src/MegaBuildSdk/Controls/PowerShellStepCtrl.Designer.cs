@@ -37,6 +37,7 @@ namespace MegaBuild
 			this.OpenDlg = new System.Windows.Forms.OpenFileDialog();
 			this.lblShell = new System.Windows.Forms.Label();
 			this.shell = new System.Windows.Forms.ComboBox();
+			this.treatErrorAsOutput = new System.Windows.Forms.CheckBox();
 			this.SuspendLayout();
 			// 
 			// btnBrowseDirectory
@@ -130,10 +131,21 @@ namespace MegaBuild
 			this.shell.Size = new System.Drawing.Size(384, 23);
 			this.shell.TabIndex = 7;
 			// 
+			// treatErrorAsOutput
+			// 
+			this.treatErrorAsOutput.AutoSize = true;
+			this.treatErrorAsOutput.Location = new System.Drawing.Point(12, 152);
+			this.treatErrorAsOutput.Name = "treatErrorAsOutput";
+			this.treatErrorAsOutput.Size = new System.Drawing.Size(176, 19);
+			this.treatErrorAsOutput.TabIndex = 8;
+			this.treatErrorAsOutput.Text = "Treat Error Stream As Output";
+			this.treatErrorAsOutput.UseVisualStyleBackColor = true;
+			// 
 			// PowerShellStepCtrl
 			// 
 			this.AutoScaleDimensions = new System.Drawing.SizeF(7F, 15F);
 			this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
+			this.Controls.Add(this.treatErrorAsOutput);
 			this.Controls.Add(this.shell);
 			this.Controls.Add(this.lblShell);
 			this.Controls.Add(this.btnBrowseDirectory);
@@ -161,5 +173,6 @@ namespace MegaBuild
 		private System.Windows.Forms.OpenFileDialog OpenDlg;
 		private System.Windows.Forms.Label lblShell;
 		private System.Windows.Forms.ComboBox shell;
+		private System.Windows.Forms.CheckBox treatErrorAsOutput;
 	}
 }

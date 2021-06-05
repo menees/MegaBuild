@@ -27,6 +27,7 @@ namespace MegaBuild
 		private string command;
 		private string workingDirectory;
 		private PowerShell shell;
+		private bool treatErrorStreamAsOutput;
 
 		#endregion
 
@@ -78,6 +79,19 @@ namespace MegaBuild
 			set
 			{
 				this.SetValue(ref this.shell, value);
+			}
+		}
+
+		public bool TreatErrorStreamAsOutput
+		{
+			get
+			{
+				return this.treatErrorStreamAsOutput;
+			}
+
+			set
+			{
+				this.SetValue(ref this.treatErrorStreamAsOutput, value);
 			}
 		}
 
@@ -156,7 +170,8 @@ namespace MegaBuild
 				WindowStyle = ProcessWindowStyle.Hidden,
 
 				// PowerShell 1.0 hangs if we redirect StdIn, so we'll always leave that off.
-				RedirectStandardStreams = RedirectStandardStreams.Output | RedirectStandardStreams.Error,
+				RedirectStandardStreams = RedirectStandardStreams.Output | RedirectStandardStreams.Error
+					| (this.TreatErrorStreamAsOutput ? RedirectStandardStreams.TreatErrorAsOutput : RedirectStandardStreams.None),
 			};
 
 			if (fileName != WindowsFileName)
@@ -207,6 +222,7 @@ namespace MegaBuild
 			this.Command = key.GetValue(nameof(this.Command), this.Command);
 			this.WorkingDirectory = key.GetValue(nameof(this.WorkingDirectory), this.WorkingDirectory);
 			this.Shell = key.GetValue(nameof(this.Shell), this.Shell);
+			this.TreatErrorStreamAsOutput = key.GetValue(nameof(this.TreatErrorStreamAsOutput), this.TreatErrorStreamAsOutput);
 		}
 
 		protected internal override void Save(XmlKey key)
@@ -215,6 +231,7 @@ namespace MegaBuild
 			key.SetValue(nameof(this.Command), this.Command);
 			key.SetValue(nameof(this.WorkingDirectory), this.WorkingDirectory);
 			key.SetValue(nameof(this.Shell), this.Shell);
+			key.SetValue(nameof(this.TreatErrorStreamAsOutput), this.TreatErrorStreamAsOutput);
 		}
 
 		#endregion
