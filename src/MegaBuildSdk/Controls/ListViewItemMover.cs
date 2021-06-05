@@ -44,10 +44,7 @@ namespace MegaBuild
 		[DefaultValue(null)]
 		public ListView ListView
 		{
-			get
-			{
-				return this.listView;
-			}
+			get => this.listView;
 
 			set
 			{

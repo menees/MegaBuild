@@ -35,7 +35,6 @@
 
 		#region Constructors
 
-		[SuppressMessage("Microsoft.Performance", "CA1811:AvoidUncalledPrivateCode", Justification = "Called by Reflection.")]
 		public MSBuildStep(Project project, StepCategory category, StepTypeInfo info)
 			: base(project, category, info)
 		{
@@ -47,37 +46,19 @@
 
 		public string CommandLineOptions
 		{
-			get
-			{
-				return this.commandLineOptions;
-			}
-
-			set
-			{
-				this.SetValue(ref this.commandLineOptions, value);
-			}
+			get => this.commandLineOptions;
+			set => this.SetValue(ref this.commandLineOptions, value);
 		}
 
 		public string ProjectFile
 		{
-			get
-			{
-				return this.projectFile;
-			}
-
-			set
-			{
-				this.SetValue(ref this.projectFile, value);
-			}
+			get => this.projectFile;
+			set => this.SetValue(ref this.projectFile, value);
 		}
 
 		public Dictionary<string, string> Properties
 		{
-			get
-			{
-				return this.properties ?? new Dictionary<string, string>();
-			}
-
+			get => this.properties ?? new Dictionary<string, string>();
 			set
 			{
 				var currentValues = this.Properties;
@@ -120,11 +101,7 @@
 
 		public string[] Targets
 		{
-			get
-			{
-				return this.targets ?? CollectionUtility.EmptyArray<string>();
-			}
-
+			get => this.targets ?? CollectionUtility.EmptyArray<string>();
 			set
 			{
 				HashSet<string> currentValues = this.targets != null ? new HashSet<string>(this.targets) : new HashSet<string>();
@@ -140,54 +117,26 @@
 
 		public MSBuildToolsVersion ToolsVersion
 		{
-			get
-			{
-				return this.toolsVersion;
-			}
-
-			set
-			{
-				this.SetValue(ref this.toolsVersion, value);
-			}
+			get => this.toolsVersion;
+			set => this.SetValue(ref this.toolsVersion, value);
 		}
 
 		public bool Use32BitProcess
 		{
-			get
-			{
-				return this.use32BitProcess;
-			}
-
-			set
-			{
-				this.SetValue(ref this.use32BitProcess, value);
-			}
+			get => this.use32BitProcess;
+			set => this.SetValue(ref this.use32BitProcess, value);
 		}
 
 		public MSBuildVerbosity Verbosity
 		{
-			get
-			{
-				return this.verbosity;
-			}
-
-			set
-			{
-				this.SetValue(ref this.verbosity, value);
-			}
+			get => this.verbosity;
+			set => this.SetValue(ref this.verbosity, value);
 		}
 
 		public string WorkingDirectory
 		{
-			get
-			{
-				return this.workingDirectory;
-			}
-
-			set
-			{
-				this.SetValue(ref this.workingDirectory, value);
-			}
+			get => this.workingDirectory;
+			set => this.SetValue(ref this.workingDirectory, value);
 		}
 
 		#endregion
@@ -232,7 +181,7 @@
 				string exePath = Path.Combine(directory, "MSBuild.exe");
 				string commandLineArguments = this.BuildCommandLineArguments();
 
-				ExecuteCommandArgs cmdArgs = new ExecuteCommandArgs
+				ExecuteCommandArgs cmdArgs = new()
 				{
 					FileName = exePath,
 					Arguments = commandLineArguments,
@@ -253,7 +202,6 @@
 		}
 
 		[SuppressMessage("Usage", "CC0022:Should dispose object", Justification = "Caller disposes new controls.")]
-		[SuppressMessage("Reliability", "CA2000:Dispose objects before losing scope", Justification = "Caller disposes new controls.")]
 		public override void GetStepEditorControls(ICollection<StepEditorControl> controls)
 		{
 			base.GetStepEditorControls(controls);
@@ -275,7 +223,7 @@
 			this.CommandLineOptions = key.GetValue(nameof(this.CommandLineOptions), this.commandLineOptions);
 			this.Use32BitProcess = key.GetValue(nameof(this.Use32BitProcess), this.use32BitProcess);
 
-			List<string> targets = new List<string>();
+			List<string> targets = new();
 			XmlKey targetsKey = key.GetSubkey(nameof(this.Targets), string.Empty);
 			foreach (XmlKey targetKey in targetsKey.GetSubkeys())
 			{
@@ -290,7 +238,7 @@
 
 			this.Targets = targets.ToArray();
 
-			Dictionary<string, string> properties = new Dictionary<string, string>();
+			Dictionary<string, string> properties = new();
 			XmlKey propertiesKey = key.GetSubkey(nameof(this.Properties), string.Empty);
 			foreach (XmlKey propertyKey in propertiesKey.GetSubkeys())
 			{
@@ -345,7 +293,7 @@
 
 		private string BuildCommandLineArguments()
 		{
-			StringBuilder sb = new StringBuilder();
+			StringBuilder sb = new();
 			sb.Append("/nologo ");
 
 			var targets = this.Targets;

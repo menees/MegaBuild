@@ -14,7 +14,7 @@ namespace MegaBuild
 	{
 		#region Private Data Members
 
-		private readonly List<Step> steps = new List<Step>();
+		private readonly List<Step> steps = new();
 
 		#endregion
 

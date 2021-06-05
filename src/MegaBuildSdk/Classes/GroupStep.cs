@@ -13,7 +13,6 @@ namespace MegaBuild
 	{
 		#region Constructors
 
-		[SuppressMessage("Microsoft.Performance", "CA1811:AvoidUncalledPrivateCode", Justification = "Called by Reflection.")]
 		public GroupStep(Project project, StepCategory category, StepTypeInfo info)
 			: base(project, category, info)
 		{

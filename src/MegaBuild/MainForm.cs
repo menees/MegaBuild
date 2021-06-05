@@ -32,11 +32,11 @@ namespace MegaBuild
 
 		private static readonly Color FailedOrTimedOutColor = Color.FromArgb(255, 75, 75);
 
-		private readonly CommandLineArgs commandLineArgs = new CommandLineArgs();
-		private readonly FindData findData = new FindData();
+		private readonly CommandLineArgs commandLineArgs = new();
+		private readonly FindData findData = new();
 		private readonly IFindTarget findTarget;
 		private readonly ToolStripMenuItem firstListContextMenuItem;
-		private readonly Stopwatch currentStepTimer = new Stopwatch();
+		private readonly Stopwatch currentStepTimer = new();
 		private bool loading;
 
 		#endregion
@@ -89,10 +89,6 @@ namespace MegaBuild
 
 		#region Internal Methods
 
-		[SuppressMessage(
-			"Microsoft.Design",
-			"CA1031:DoNotCatchGeneralExceptionTypes",
-			Justification = "Application.Idle doesn't catch exceptions and route them to Application.OnThreadException, so we have to.")]
 		internal void OnIdle(object sender, EventArgs e)
 		{
 			try
@@ -432,7 +428,6 @@ namespace MegaBuild
 			this.outputWindow.Focus();
 		}
 
-		[SuppressMessage("Microsoft.Design", "CA1031:DoNotCatchGeneralExceptionTypes", Justification = "Legacy support.")]
 		private void FormSave_LoadSettings(object sender, SettingsEventArgs e)
 		{
 			this.loading = true;
@@ -523,7 +518,6 @@ namespace MegaBuild
 		private Step[] GetSelectedSteps() => GetSelectedSteps(this.ActiveListView);
 
 		[SuppressMessage("Usage", "CC0022:Should dispose object", Justification = "Caller disposes new menu items.")]
-		[SuppressMessage("Reliability", "CA2000:Dispose objects before losing scope", Justification = "Caller disposes new menu items.")]
 		private void ListContextMenu_Opening(object sender, CancelEventArgs e)
 		{
 			// We must call this first to make sure all of the item states are set correctly.  If you right-click off of an item the
@@ -547,10 +541,10 @@ namespace MegaBuild
 				int numVerbs = verbs != null ? verbs.Length : 0;
 				if (numVerbs > 0)
 				{
-					EventHandler eh = new EventHandler(this.OnCustomVerbClicked);
+					EventHandler eh = new(this.OnCustomVerbClicked);
 					for (int i = 0; i < numVerbs; i++)
 					{
-						ToolStripMenuItem mi = new ToolStripMenuItem(verbs[i], null, eh);
+						ToolStripMenuItem mi = new(verbs[i], null, eh);
 						this.listContextMenu.Items.Insert(i, mi);
 					}
 
@@ -655,7 +649,7 @@ namespace MegaBuild
 
 		private void ApplicationOptions_Click(object sender, EventArgs e)
 		{
-			using (ApplicationOptionsDlg dlg = new ApplicationOptionsDlg())
+			using (ApplicationOptionsDlg dlg = new())
 			{
 				if (dlg.Execute(this))
 				{
@@ -1058,7 +1052,7 @@ namespace MegaBuild
 				int numSteps = steps.Count;
 				for (int i = 0; i < numSteps; i++)
 				{
-					ListViewItem item = new ListViewItem();
+					ListViewItem item = new();
 					items.Add(item);
 					this.UpdateListItem(item, steps[i]);
 				}
@@ -1219,7 +1213,7 @@ namespace MegaBuild
 		{
 			if (this.IsHandleCreated && TaskbarManager.IsPlatformSupported)
 			{
-				List<IDisposable> disposables = new List<IDisposable>();
+				List<IDisposable> disposables = new();
 				try
 				{
 					// http://visualstudiomagazine.com/articles/2010/07/29/getting-the-jump-on-jump-lists.aspx
@@ -1230,12 +1224,12 @@ namespace MegaBuild
 					// be associated with the current application.  So we'll simulate it using our own category
 					// with JumpListLinks instead.
 					jumpList.KnownCategoryToDisplay = JumpListKnownCategoryType.Neither;
-					JumpListCustomCategory category = new JumpListCustomCategory("Recent");
+					JumpListCustomCategory category = new("Recent");
 					string exePath = ApplicationInfo.ExecutableFile;
-					IconReference iconRef = new IconReference(exePath, 0);
+					IconReference iconRef = new(exePath, 0);
 					foreach (string fileName in this.recentFiles.Items)
 					{
-						JumpListLink link = new JumpListLink(TextUtility.EnsureQuotes(exePath), Path.GetFileName(fileName))
+						JumpListLink link = new(TextUtility.EnsureQuotes(exePath), Path.GetFileName(fileName))
 						{
 							Arguments = TextUtility.EnsureQuotes(fileName),
 							IconReference = iconRef,
@@ -1313,7 +1307,7 @@ namespace MegaBuild
 
 		private void StepInserted(Step step, int index)
 		{
-			ListViewItem item = new ListViewItem();
+			ListViewItem item = new();
 			ExtendedListView list = this.GetListForStep(step);
 			list.Items.Insert(index, item);
 			this.UpdateListItem(item, step);
@@ -1353,7 +1347,7 @@ namespace MegaBuild
 
 		private void UpdateBuildTime()
 		{
-			StringBuilder sb = new StringBuilder(FormatTimeSpan(DateTime.UtcNow - this.project.BuildStart, "Build: "));
+			StringBuilder sb = new(FormatTimeSpan(DateTime.UtcNow - this.project.BuildStart, "Build: "));
 			if (this.currentStepTimer.IsRunning)
 			{
 				sb.Append(' ').Append(FormatTimeSpan(this.currentStepTimer.Elapsed, "Step: "));
@@ -1517,13 +1511,13 @@ namespace MegaBuild
 
 		private void UpdateWindowTitle()
 		{
-			StringBuilder sb = new StringBuilder();
+			StringBuilder sb = new();
 			sb.Append("MegaBuild - ");
 			sb.Append(this.project.Title);
 
 			if (this.project.Modified)
 			{
-				sb.Append("*");
+				sb.Append('*');
 			}
 
 			if (ApplicationInfo.IsUserRunningAsAdministrator)

@@ -21,7 +21,7 @@ namespace MegaBuild
 	{
 		#region Private Data Members
 
-		private readonly List<string> attachments = new List<string>();
+		private readonly List<string> attachments = new();
 		private bool appendOutput = true;
 		private MailPriority priority = MailPriority.Normal;
 		private string cc = string.Empty;
@@ -35,7 +35,6 @@ namespace MegaBuild
 
 		#region Constructors
 
-		[SuppressMessage("Microsoft.Performance", "CA1811:AvoidUncalledPrivateCode", Justification = "Called by Reflection.")]
 		public EmailStep(Project project, StepCategory category, StepTypeInfo info)
 			: base(project, category, info, ExecSupports.None)
 		{
@@ -47,24 +46,13 @@ namespace MegaBuild
 
 		public bool AppendOutput
 		{
-			get
-			{
-				return this.appendOutput;
-			}
-
-			set
-			{
-				this.SetValue(ref this.appendOutput, value);
-			}
+			get => this.appendOutput;
+			set => this.SetValue(ref this.appendOutput, value);
 		}
 
 		public IList<string> Attachments
 		{
-			get
-			{
-				return this.attachments;
-			}
-
+			get => this.attachments;
 			set
 			{
 				IEnumerable<string> target = value ?? Enumerable.Empty<string>();
@@ -79,93 +67,44 @@ namespace MegaBuild
 
 		public string CC
 		{
-			get
-			{
-				return this.cc;
-			}
-
-			set
-			{
-				this.SetValue(ref this.cc, value);
-			}
+			get => this.cc;
+			set => this.SetValue(ref this.cc, value);
 		}
 
 		public string From
 		{
-			get
-			{
-				return this.from;
-			}
-
-			set
-			{
-				this.SetValue(ref this.from, value);
-			}
+			get => this.from;
+			set => this.SetValue(ref this.from, value);
 		}
 
 		public string Message
 		{
-			get
-			{
-				return this.message;
-			}
-
-			set
-			{
-				this.SetValue(ref this.message, value);
-			}
+			get => this.message;
+			set => this.SetValue(ref this.message, value);
 		}
 
 		public MailPriority Priority
 		{
-			get
-			{
-				return this.priority;
-			}
-
-			set
-			{
-				this.SetValue(ref this.priority, value);
-			}
+			get => this.priority;
+			set => this.SetValue(ref this.priority, value);
 		}
 
 		public string SmtpServer
 		{
-			get
-			{
-				return this.smtpServer;
-			}
-
-			set
-			{
-				this.SetValue(ref this.smtpServer, value);
-			}
+			get => this.smtpServer;
+			set => this.SetValue(ref this.smtpServer, value);
 		}
 
 		public string Subject
 		{
-			get
-			{
-				return this.subject;
-			}
-
-			set
-			{
-				this.SetValue(ref this.subject, value);
-			}
+			get => this.subject;
+			set => this.SetValue(ref this.subject, value);
 		}
 
 		public string To
 		{
-			get
-			{
-				return this.to;
-			}
-
-			set
-			{
-				this.SetValue(ref this.to, value);
-			}
+			get => this.to;
+			set => this.SetValue(ref this.to, value);
 		}
 
 		#endregion
@@ -178,7 +117,7 @@ namespace MegaBuild
 			string to = Manager.ExpandVariables(this.To);
 			string cc = Manager.ExpandVariables(this.CC);
 
-			using (MailMessage mail = new MailMessage())
+			using (MailMessage mail = new())
 			{
 				if (!string.IsNullOrEmpty(from))
 				{
@@ -198,7 +137,7 @@ namespace MegaBuild
 				mail.Subject = Manager.ExpandVariables(this.Subject);
 				mail.Priority = this.Priority;
 
-				StringBuilder sb = new StringBuilder();
+				StringBuilder sb = new();
 				sb.Append(Manager.ExpandVariables(this.Message));
 				if (this.AppendOutput)
 				{
@@ -216,7 +155,7 @@ namespace MegaBuild
 					// Add any attachments
 					foreach (string attachmentPath in this.attachments)
 					{
-						Attachment att = new Attachment(Manager.ExpandVariables(attachmentPath));
+						Attachment att = new(Manager.ExpandVariables(attachmentPath));
 						mail.Attachments.Add(att);
 
 						if (this.StopBuilding)
@@ -230,7 +169,7 @@ namespace MegaBuild
 				{
 					try
 					{
-						using (SmtpClient smtp = new SmtpClient(Manager.ExpandVariables(this.SmtpServer)))
+						using (SmtpClient smtp = new(Manager.ExpandVariables(this.SmtpServer)))
 						{
 							smtp.Send(mail);
 							result = true;
@@ -251,7 +190,6 @@ namespace MegaBuild
 		}
 
 		[SuppressMessage("Usage", "CC0022:Should dispose object", Justification = "Caller disposes new controls.")]
-		[SuppressMessage("Reliability", "CA2000:Dispose objects before losing scope", Justification = "Caller disposes new controls.")]
 		public override void GetStepEditorControls(ICollection<StepEditorControl> controls)
 		{
 			base.GetStepEditorControls(controls);

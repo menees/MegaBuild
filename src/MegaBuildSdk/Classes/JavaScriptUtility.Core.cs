@@ -22,7 +22,7 @@
 			string text = Convert.ToString(value);
 			const string HexDigits = "0123456789ABCDEF";
 			int length = text.Length;
-			StringBuilder stringBuilder = new StringBuilder(length * 2);
+			StringBuilder stringBuilder = new(length * 2);
 			int num = -1;
 			while (++num < length)
 			{
@@ -84,7 +84,7 @@
 
 			string text = Convert.ToString(value);
 			int length = text.Length;
-			StringBuilder stringBuilder = new StringBuilder(length);
+			StringBuilder stringBuilder = new(length);
 			int num = -1;
 			while (++num < length)
 			{

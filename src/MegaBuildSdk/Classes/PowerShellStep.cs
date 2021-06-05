@@ -33,7 +33,6 @@ namespace MegaBuild
 
 		#region Constructors
 
-		[SuppressMessage("Microsoft.Performance", "CA1811:AvoidUncalledPrivateCode", Justification = "Called by Reflection.")]
 		public PowerShellStep(Project project, StepCategory category, StepTypeInfo info)
 			: base(project, category, info)
 		{
@@ -45,54 +44,26 @@ namespace MegaBuild
 
 		public string Command
 		{
-			get
-			{
-				return this.command;
-			}
-
-			set
-			{
-				this.SetValue(ref this.command, value);
-			}
+			get => this.command;
+			set => this.SetValue(ref this.command, value);
 		}
 
 		public string WorkingDirectory
 		{
-			get
-			{
-				return this.workingDirectory;
-			}
-
-			set
-			{
-				this.SetValue(ref this.workingDirectory, value);
-			}
+			get => this.workingDirectory;
+			set => this.SetValue(ref this.workingDirectory, value);
 		}
 
 		public PowerShell Shell
 		{
-			get
-			{
-				return this.shell;
-			}
-
-			set
-			{
-				this.SetValue(ref this.shell, value);
-			}
+			get => this.shell;
+			set => this.SetValue(ref this.shell, value);
 		}
 
 		public bool TreatErrorStreamAsOutput
 		{
-			get
-			{
-				return this.treatErrorStreamAsOutput;
-			}
-
-			set
-			{
-				this.SetValue(ref this.treatErrorStreamAsOutput, value);
-			}
+			get => this.treatErrorStreamAsOutput;
+			set => this.SetValue(ref this.treatErrorStreamAsOutput, value);
 		}
 
 		#endregion
@@ -162,7 +133,7 @@ namespace MegaBuild
 					break;
 			}
 
-			ExecuteCommandArgs cmdArgs = new ExecuteCommandArgs
+			ExecuteCommandArgs cmdArgs = new()
 			{
 				FileName = fileName,
 				Arguments = arguments,
@@ -205,7 +176,6 @@ namespace MegaBuild
 			=> this.IsScript ? new string[] { "Edit Script" } : base.GetCustomVerbs();
 
 		[SuppressMessage("Usage", "CC0022:Should dispose object", Justification = "Caller disposes new controls.")]
-		[SuppressMessage("Reliability", "CA2000:Dispose objects before losing scope", Justification = "Caller disposes new controls.")]
 		public override void GetStepEditorControls(ICollection<StepEditorControl> controls)
 		{
 			base.GetStepEditorControls(controls);
@@ -251,7 +221,7 @@ namespace MegaBuild
 			// The check for duplicates saves time here. On my system, 12 of the 55 entries in PATH are duplicates (ignoring case).
 			// Unfortunately, we can't use LINQ's Distinct() because it returns an unordered sequence, and we have to preserve order.
 			// Note: Windows 10 supports case-sensitive folders, but the PowerShell folders shouldn't be configured that way.
-			HashSet<string> checkedPaths = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
+			HashSet<string> checkedPaths = new(StringComparer.OrdinalIgnoreCase);
 			foreach (string path in pathEntries)
 			{
 				if (!checkedPaths.Contains(path))

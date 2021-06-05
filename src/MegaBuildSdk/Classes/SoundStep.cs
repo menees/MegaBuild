@@ -28,7 +28,6 @@ namespace MegaBuild
 
 		#region Constructors
 
-		[SuppressMessage("Microsoft.Performance", "CA1811:AvoidUncalledPrivateCode", Justification = "Called by Reflection.")]
 		public SoundStep(Project project, StepCategory category, StepTypeInfo info)
 			: base(project, category, info, ExecSupports.None)
 		{
@@ -40,28 +39,14 @@ namespace MegaBuild
 
 		public int Duration
 		{
-			get
-			{
-				return this.duration;
-			}
-
-			set
-			{
-				this.SetValue(ref this.duration, value);
-			}
+			get => this.duration;
+			set => this.SetValue(ref this.duration, value);
 		}
 
 		public int Frequency
 		{
-			get
-			{
-				return this.frequency;
-			}
-
-			set
-			{
-				this.SetValue(ref this.frequency, value);
-			}
+			get => this.frequency;
+			set => this.SetValue(ref this.frequency, value);
 		}
 
 		public override string StepInformation
@@ -95,41 +80,20 @@ namespace MegaBuild
 
 		public SoundStyle Style
 		{
-			get
-			{
-				return this.style;
-			}
-
-			set
-			{
-				this.SetValue(ref this.style, value);
-			}
+			get => this.style;
+			set => this.SetValue(ref this.style, value);
 		}
 
 		public SystemSound SystemSound
 		{
-			get
-			{
-				return this.systemSound;
-			}
-
-			set
-			{
-				this.SetValue(ref this.systemSound, value);
-			}
+			get => this.systemSound;
+			set => this.SetValue(ref this.systemSound, value);
 		}
 
 		public string WavFile
 		{
-			get
-			{
-				return this.wavFile;
-			}
-
-			set
-			{
-				this.SetValue(ref this.wavFile, value);
-			}
+			get => this.wavFile;
+			set => this.SetValue(ref this.wavFile, value);
 		}
 
 		#endregion
@@ -160,7 +124,6 @@ namespace MegaBuild
 		}
 
 		[SuppressMessage("Usage", "CC0022:Should dispose object", Justification = "Caller disposes new controls.")]
-		[SuppressMessage("Reliability", "CA2000:Dispose objects before losing scope", Justification = "Caller disposes new controls.")]
 		public override void GetStepEditorControls(ICollection<StepEditorControl> controls)
 		{
 			base.GetStepEditorControls(controls);

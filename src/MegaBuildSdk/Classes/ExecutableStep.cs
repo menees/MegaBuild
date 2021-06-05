@@ -24,7 +24,7 @@ namespace MegaBuild
 
 		private static readonly List<Regex> ErrorRegexs = ParseRegexes(Properties.Settings.Default.ExecutableStep_ErrorRegexs);
 		private static readonly List<Regex> WarningRegexs = ParseRegexes(Properties.Settings.Default.ExecutableStep_WarningRegexs);
-		private static readonly ConcurrentExclusiveSchedulerPair Schedulers = new ConcurrentExclusiveSchedulerPair();
+		private static readonly ConcurrentExclusiveSchedulerPair Schedulers = new();
 
 		private readonly ExecSupports supportFlags;
 		private bool autoColorErrorsAndWarnings;
@@ -60,37 +60,19 @@ namespace MegaBuild
 
 		public bool AutoColorErrorsAndWarnings
 		{
-			get
-			{
-				return this.SupportsAutoColorErrorsAndWarnings && this.autoColorErrorsAndWarnings;
-			}
-
-			set
-			{
-				this.SetValue(ref this.autoColorErrorsAndWarnings, value);
-			}
+			get => this.SupportsAutoColorErrorsAndWarnings && this.autoColorErrorsAndWarnings;
+			set => this.SetValue(ref this.autoColorErrorsAndWarnings, value);
 		}
 
 		public bool IgnoreFailure
 		{
-			get
-			{
-				return this.ignoreFailure;
-			}
-
-			set
-			{
-				this.SetValue(ref this.ignoreFailure, value);
-			}
+			get => this.ignoreFailure;
+			set => this.SetValue(ref this.ignoreFailure, value);
 		}
 
 		public bool InCurrentBuild
 		{
-			get
-			{
-				return this.inCurrentBuild;
-			}
-
+			get => this.inCurrentBuild;
 			set
 			{
 				if (this.inCurrentBuild != value)
@@ -105,11 +87,7 @@ namespace MegaBuild
 
 		public bool IsAdministratorRequired
 		{
-			get
-			{
-				return this.MayRequireAdministrator && this.isAdministratorRequired;
-			}
-
+			get => this.MayRequireAdministrator && this.isAdministratorRequired;
 			set
 			{
 				if (this.MayRequireAdministrator)
@@ -121,15 +99,8 @@ namespace MegaBuild
 
 		public bool OnlyIfParentSucceeded
 		{
-			get
-			{
-				return this.onlyIfParentSucceeded;
-			}
-
-			set
-			{
-				this.SetValue(ref this.onlyIfParentSucceeded, value);
-			}
+			get => this.onlyIfParentSucceeded;
+			set => this.SetValue(ref this.onlyIfParentSucceeded, value);
 		}
 
 		public Guid OutputStartId { get; internal set; }
@@ -159,24 +130,13 @@ namespace MegaBuild
 
 		public bool PromptFirst
 		{
-			get
-			{
-				return this.promptFirst;
-			}
-
-			set
-			{
-				this.SetValue(ref this.promptFirst, value);
-			}
+			get => this.promptFirst;
+			set => this.SetValue(ref this.promptFirst, value);
 		}
 
 		public StepStatus Status
 		{
-			get
-			{
-				return this.status;
-			}
-
+			get => this.status;
 			set
 			{
 				if (this.status != value)
@@ -191,37 +151,19 @@ namespace MegaBuild
 
 		public bool Timeout
 		{
-			get
-			{
-				return this.SupportsTimeout && this.timeout;
-			}
-
-			set
-			{
-				this.SetValue(ref this.timeout, value);
-			}
+			get => this.SupportsTimeout && this.timeout;
+			set => this.SetValue(ref this.timeout, value);
 		}
 
 		public int TimeoutMinutes
 		{
-			get
-			{
-				return this.timeoutMinutes;
-			}
-
-			set
-			{
-				this.SetValue(ref this.timeoutMinutes, value);
-			}
+			get => this.timeoutMinutes;
+			set => this.SetValue(ref this.timeoutMinutes, value);
 		}
 
 		public TimeSpan TotalExecutionTime
 		{
-			get
-			{
-				return this.totalTime;
-			}
-
+			get => this.totalTime;
 			set
 			{
 				if (this.totalTime != value)
@@ -236,15 +178,8 @@ namespace MegaBuild
 
 		public bool WaitForCompletion
 		{
-			get
-			{
-				return !this.SupportsWaitForCompletion || this.waitForCompletion;
-			}
-
-			set
-			{
-				this.SetValue(ref this.waitForCompletion, value);
-			}
+			get => !this.SupportsWaitForCompletion || this.waitForCompletion;
+			set => this.SetValue(ref this.waitForCompletion, value);
 		}
 
 		#endregion
@@ -293,7 +228,6 @@ namespace MegaBuild
 		public abstract bool Execute(StepExecuteArgs args);
 
 		[SuppressMessage("Usage", "CC0022:Should dispose object", Justification = "Caller disposes new controls.")]
-		[SuppressMessage("Reliability", "CA2000:Dispose objects before losing scope", Justification = "Caller disposes new controls.")]
 		public override void GetStepEditorControls(ICollection<StepEditorControl> controls)
 		{
 			base.GetStepEditorControls(controls);
@@ -357,7 +291,7 @@ namespace MegaBuild
 			{
 				ProcessStartInfo startInfo = this.CreateProcessStartInfo(args);
 
-				using (Process process = new Process())
+				using (Process process = new())
 				{
 					process.StartInfo = startInfo;
 
@@ -471,7 +405,7 @@ namespace MegaBuild
 
 		private static List<Regex> ParseRegexes(StringCollection regexStrings)
 		{
-			List<Regex> result = new List<Regex>();
+			List<Regex> result = new();
 
 			foreach (string regexString in regexStrings)
 			{
@@ -490,7 +424,7 @@ namespace MegaBuild
 
 		private ProcessStartInfo CreateProcessStartInfo(ExecuteCommandArgs args)
 		{
-			ProcessStartInfo startInfo = new ProcessStartInfo
+			ProcessStartInfo startInfo = new()
 			{
 				// Use Manager.ExpandVariables for all strings.
 				FileName = Manager.ExpandVariables(args.FileName),

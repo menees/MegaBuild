@@ -36,10 +36,7 @@ namespace SampleStep
 
 		public BeepStep Step
 		{
-			get
-			{
-				return this.step;
-			}
+			get => this.step;
 
 			set
 			{

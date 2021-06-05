@@ -26,7 +26,7 @@ namespace MegaBuild
 
 		public CommandLineArgs()
 		{
-			CommandLine cmdLine = new CommandLine(false);
+			CommandLine cmdLine = new(false);
 			cmdLine.AddSwitch(nameof(this.Build), string.Empty, value => this.build = value);
 			cmdLine.AddSwitch(nameof(this.Exit), string.Empty, value => this.exit = value);
 			cmdLine.AddValueHandler((value, errors) =>

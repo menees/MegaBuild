@@ -48,7 +48,7 @@ namespace MegaBuild
 
 		internal bool SaveVariables(List<Project.VariableDefinition> variableDefinitions)
 		{
-			List<Project.VariableDefinition> newDefinitions = new List<Project.VariableDefinition>(this.lstVariables.Items.Count);
+			List<Project.VariableDefinition> newDefinitions = new(this.lstVariables.Items.Count);
 			foreach (ListViewItem item in this.lstVariables.Items)
 			{
 				string name = item.SubItems[0].Text;
@@ -96,7 +96,7 @@ namespace MegaBuild
 
 		private void Add_Click(object sender, EventArgs e)
 		{
-			ListViewItem item = new ListViewItem(new string[] { "%%", string.Empty, "False" });
+			ListViewItem item = new(new string[] { "%%", string.Empty, "False" });
 			this.lstVariables.Items.Add(item);
 			item.Selected = true;
 			this.edtName.Focus();

@@ -23,7 +23,7 @@ namespace MegaBuild
 	{
 		#region Private Data Members
 
-		private readonly VSConfigurationList configurations = new VSConfigurationList();
+		private readonly VSConfigurationList configurations = new();
 		private bool redirectStreams = true;
 		private VSAction action = VSAction.Build;
 		private VSVersion version = VSVersionInfo.LatestVersion.Version;
@@ -37,7 +37,6 @@ namespace MegaBuild
 
 		#region Constructors
 
-		[SuppressMessage("Microsoft.Performance", "CA1811:AvoidUncalledPrivateCode", Justification = "Called by Reflection.")]
 		public VSStep(Project project, StepCategory category, StepTypeInfo info)
 			: base(project, category, info)
 		{
@@ -51,82 +50,40 @@ namespace MegaBuild
 
 		public VSAction Action
 		{
-			get
-			{
-				return this.action;
-			}
-
-			set
-			{
-				this.SetValue(ref this.action, value);
-			}
+			get => this.action;
+			set => this.SetValue(ref this.action, value);
 		}
 
 		public string DevEnvArguments
 		{
-			get
-			{
-				return this.devEnvArguments;
-			}
-
-			set
-			{
-				this.SetValue(ref this.devEnvArguments, value);
-			}
+			get => this.devEnvArguments;
+			set => this.SetValue(ref this.devEnvArguments, value);
 		}
 
 		public bool RedirectStreams
 		{
-			get
-			{
-				return this.redirectStreams;
-			}
-
-			set
-			{
-				this.SetValue(ref this.redirectStreams, value);
-			}
+			get => this.redirectStreams;
+			set => this.SetValue(ref this.redirectStreams, value);
 		}
 
 		public string Solution
 		{
-			get
-			{
-				return this.solution;
-			}
-
-			set
-			{
-				this.SetValue(ref this.solution, value);
-			}
+			get => this.solution;
+			set => this.SetValue(ref this.solution, value);
 		}
 
 		public override string StepInformation => this.stepInformation;
 
 		public VSVersion Version
 		{
-			get
-			{
-				return this.version;
-			}
-
-			set
-			{
-				this.SetValue(ref this.version, value);
-			}
+			get => this.version;
+			set => this.SetValue(ref this.version, value);
 		}
 
 		public ProcessWindowStyle WindowState
 		{
-			get
-			{
-				return this.windowState;
-			}
-
-			set
-			{
-				this.SetValue(ref this.windowState, value);
-			}
+			get => this.windowState;
+			set => this.SetValue(ref this.windowState, value);
 		}
 
 		#endregion
@@ -213,7 +170,7 @@ namespace MegaBuild
 							string command = this.GenerateCommand(executableVersion, false);
 							string arguments = this.GenerateArguments(executableVersion, configuration);
 
-							ExecuteCommandArgs cmdArgs = new ExecuteCommandArgs
+							ExecuteCommandArgs cmdArgs = new()
 							{
 								FileName = command,
 								Arguments = arguments,
@@ -223,7 +180,7 @@ namespace MegaBuild
 
 							this.IgnorePackageLoadErrors(cmdArgs);
 
-							using (VSHubWatcher watcher = new VSHubWatcher(executableVersion))
+							using (VSHubWatcher watcher = new(executableVersion))
 							{
 								if (!this.ExecuteCommand(cmdArgs))
 								{
@@ -294,7 +251,6 @@ namespace MegaBuild
 		}
 
 		[SuppressMessage("Usage", "CC0022:Should dispose object", Justification = "Caller disposes new controls.")]
-		[SuppressMessage("Reliability", "CA2000:Dispose objects before losing scope", Justification = "Caller disposes new controls.")]
 		public override void GetStepEditorControls(ICollection<StepEditorControl> controls)
 		{
 			base.GetStepEditorControls(controls);
@@ -412,7 +368,7 @@ namespace MegaBuild
 		private string GenerateArguments(VSVersionInfo executableVersion, string configuration)
 		{
 			const int ExtraBufferLength = 50;
-			StringBuilder sb = new StringBuilder(configuration.Length + this.Solution.Length + this.DevEnvArguments.Length + ExtraBufferLength);
+			StringBuilder sb = new(configuration.Length + this.Solution.Length + this.DevEnvArguments.Length + ExtraBufferLength);
 
 			// Hide the logo.  This only works on 2003 and up.
 			if (executableVersion.Version != VSVersion.V2002)
@@ -494,9 +450,9 @@ namespace MegaBuild
 
 		private void UpdateStepInformation(bool sendChangeNotification)
 		{
-			StringBuilder sb = new StringBuilder();
+			StringBuilder sb = new();
 			sb.Append(this.GetExecutableVersion().DisplayNumber);
-			sb.Append(" ");
+			sb.Append(' ');
 			sb.Append(this.GetExecutableAction());
 			sb.Append(": ");
 

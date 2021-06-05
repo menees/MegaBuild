@@ -33,10 +33,7 @@ namespace SampleStep
 
 		public int Duration
 		{
-			get
-			{
-				return this.duration;
-			}
+			get => this.duration;
 
 			set
 			{
@@ -50,10 +47,7 @@ namespace SampleStep
 
 		public int Frequency
 		{
-			get
-			{
-				return this.frequency;
-			}
+			get => this.frequency;
 
 			set
 			{
@@ -93,7 +87,6 @@ namespace SampleStep
 		}
 
 		[SuppressMessage("Usage", "CC0022:Should dispose object", Justification = "Caller disposes new controls.")]
-		[SuppressMessage("Reliability", "CA2000:Dispose objects before losing scope", Justification = "Caller disposes new controls.")]
 		public override void GetStepEditorControls(ICollection<StepEditorControl> controls)
 		{
 			base.GetStepEditorControls(controls);

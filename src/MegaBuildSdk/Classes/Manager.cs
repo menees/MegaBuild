@@ -28,15 +28,15 @@ namespace MegaBuild
 
 		#region Private Data Members
 
-		private static readonly object LockToken = new object();
-		private static readonly ImageList Images = new ImageList();
-		private static readonly Dictionary<string, string> VariablesMap = new Dictionary<string, string>(StringComparer.CurrentCultureIgnoreCase);
-		private static readonly List<Project> Projects = new List<Project>(1);
+		private static readonly object LockToken = new();
+		private static readonly ImageList Images = new();
+		private static readonly Dictionary<string, string> VariablesMap = new(StringComparer.CurrentCultureIgnoreCase);
+		private static readonly List<Project> Projects = new(1);
 		private static readonly Dictionary<string, StepTypeInfo> TypeNameToStepTypeInfo
-			= new Dictionary<string, StepTypeInfo>(StringComparer.CurrentCultureIgnoreCase);
+			= new(StringComparer.CurrentCultureIgnoreCase);
 
 		private static Form mainForm;
-		private static StringBuilder output = new StringBuilder();
+		private static StringBuilder output = new();
 
 		#endregion
 
@@ -146,7 +146,6 @@ namespace MegaBuild
 			}
 		}
 
-		[SuppressMessage("Microsoft.Design", "CA1024:UsePropertiesWhereAppropriate", Justification = "Not suitable as a property.")]
 		public static string GetOutput()
 		{
 			lock (LockToken)
@@ -218,7 +217,7 @@ namespace MegaBuild
 			var outputAdded = OutputAdded;
 			if (outputAdded != null)
 			{
-				OutputAddedEventArgs e = new OutputAddedEventArgs(message, indent, color, highlight, outputId);
+				OutputAddedEventArgs e = new(message, indent, color, highlight, outputId);
 				if (mainForm != null)
 				{
 					mainForm.BeginInvoke(outputAdded, new object[] { null, e });
@@ -347,7 +346,7 @@ namespace MegaBuild
 		private static Dictionary<string, string> GetCombinedVariables()
 		{
 			// Add the Manager variables first.
-			Dictionary<string, string> result = new Dictionary<string, string>(VariablesMap, StringComparer.CurrentCultureIgnoreCase);
+			Dictionary<string, string> result = new(VariablesMap, StringComparer.CurrentCultureIgnoreCase);
 
 			// Then add each project's variables in project order, so project and sub-project variables
 			// can override existing variable values from Manager or parent projects.

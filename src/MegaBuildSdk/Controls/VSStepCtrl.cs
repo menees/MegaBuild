@@ -188,7 +188,7 @@ namespace MegaBuild
 
 		private static string[] GetConfigurationsFromLines(string[] lines)
 		{
-			List<string> result = new List<string>();
+			List<string> result = new();
 			int numLines = lines.Length;
 
 			// Find the start of the configurations block.
@@ -263,7 +263,7 @@ namespace MegaBuild
 			foreach (string configuration in configurations)
 			{
 				// Make all the configurations initially enabled.
-				ListViewItem item = new ListViewItem(configuration)
+				ListViewItem item = new(configuration)
 				{
 					Checked = true,
 				};

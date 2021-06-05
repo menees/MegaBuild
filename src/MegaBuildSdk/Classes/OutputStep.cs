@@ -26,7 +26,6 @@ namespace MegaBuild
 
 		#region Constructors
 
-		[SuppressMessage("Microsoft.Performance", "CA1811:AvoidUncalledPrivateCode", Justification = "Called by Reflection.")]
 		public OutputStep(Project project, StepCategory category, StepTypeInfo info)
 			: base(project, category, info, ExecSupports.None)
 		{
@@ -38,67 +37,32 @@ namespace MegaBuild
 
 		public bool IncludeTimestamp
 		{
-			get
-			{
-				return this.includeTimestamp;
-			}
-
-			set
-			{
-				this.SetValue(ref this.includeTimestamp, value);
-			}
+			get => this.includeTimestamp;
+			set => this.SetValue(ref this.includeTimestamp, value);
 		}
 
 		public int IndentOutput
 		{
-			get
-			{
-				return this.indentOutput;
-			}
-
-			set
-			{
-				this.SetValue(ref this.indentOutput, value);
-			}
+			get => this.indentOutput;
+			set => this.SetValue(ref this.indentOutput, value);
 		}
 
 		public bool IsHighlight
 		{
-			get
-			{
-				return this.isHighlight;
-			}
-
-			set
-			{
-				this.SetValue(ref this.isHighlight, value);
-			}
+			get => this.isHighlight;
+			set => this.SetValue(ref this.isHighlight, value);
 		}
 
 		public string Message
 		{
-			get
-			{
-				return this.message;
-			}
-
-			set
-			{
-				this.SetValue(ref this.message, value);
-			}
+			get => this.message;
+			set => this.SetValue(ref this.message, value);
 		}
 
 		public Color TextColor
 		{
-			get
-			{
-				return this.textColor;
-			}
-
-			set
-			{
-				this.SetValue(ref this.textColor, value);
-			}
+			get => this.textColor;
+			set => this.SetValue(ref this.textColor, value);
 		}
 
 		#endregion
@@ -118,7 +82,6 @@ namespace MegaBuild
 		}
 
 		[SuppressMessage("Usage", "CC0022:Should dispose object", Justification = "Caller disposes new controls.")]
-		[SuppressMessage("Reliability", "CA2000:Dispose objects before losing scope", Justification = "Caller disposes new controls.")]
 		public override void GetStepEditorControls(ICollection<StepEditorControl> controls)
 		{
 			base.GetStepEditorControls(controls);

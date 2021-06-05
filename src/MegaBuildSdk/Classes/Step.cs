@@ -63,24 +63,13 @@ namespace MegaBuild
 
 		public string Description
 		{
-			get
-			{
-				return this.description;
-			}
-
-			set
-			{
-				this.SetValue(ref this.description, value);
-			}
+			get => this.description;
+			set => this.SetValue(ref this.description, value);
 		}
 
 		public bool IncludeInBuild
 		{
-			get
-			{
-				return this.includeInBuild;
-			}
-
+			get => this.includeInBuild;
 			set
 			{
 				this.SetValue(ref this.includeInBuild, value);
@@ -110,28 +99,14 @@ namespace MegaBuild
 
 		public string Name
 		{
-			get
-			{
-				return this.name;
-			}
-
-			set
-			{
-				this.SetValue(ref this.name, value);
-			}
+			get => this.name;
+			set => this.SetValue(ref this.name, value);
 		}
 
 		public Step Parent
 		{
-			get
-			{
-				return this.parent;
-			}
-
-			set
-			{
-				this.SetValue(ref this.parent, value);
-			}
+			get => this.parent;
+			set => this.SetValue(ref this.parent, value);
 		}
 
 		public Project Project => this.project;
@@ -171,11 +146,9 @@ namespace MegaBuild
 
 		public virtual string[] GetCustomVerbs() => null;
 
-		[SuppressMessage("Microsoft.Design", "CA1024:UsePropertiesWhereAppropriate", Justification = "Not suitable as a property.")]
 		public int GetIndex() => this.CategorySteps.IndexOf(this);
 
 		[SuppressMessage("Usage", "CC0022:Should dispose object", Justification = "Caller disposes new controls.")]
-		[SuppressMessage("Reliability", "CA2000:Dispose objects before losing scope", Justification = "Caller disposes new controls.")]
 		public virtual void GetStepEditorControls(ICollection<StepEditorControl> controls)
 		{
 			controls.Add(new GeneralStepCtrl { Step = this });
@@ -254,7 +227,6 @@ namespace MegaBuild
 			this.EndUpdate();
 		}
 
-		[SuppressMessage("Microsoft.Design", "CA1045:DoNotPassTypesByReference", MessageId = "0#", Justification = "Legacy support.")]
 		protected bool SetValue<T>(ref T data, T value)
 		{
 			bool result = false;

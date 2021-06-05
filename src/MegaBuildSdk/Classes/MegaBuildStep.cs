@@ -31,7 +31,6 @@ namespace MegaBuild
 
 		#region Constructors
 
-		[SuppressMessage("Microsoft.Performance", "CA1811:AvoidUncalledPrivateCode", Justification = "Called by Reflection.")]
 		public MegaBuildStep(Project project, StepCategory category, StepTypeInfo info)
 			: base(project, category, info)
 		{
@@ -43,61 +42,33 @@ namespace MegaBuild
 
 		public bool Exit
 		{
-			get
-			{
-				return this.exit;
-			}
-
-			set
-			{
-				this.SetValue(ref this.exit, value);
-			}
+			get => this.exit;
+			set => this.SetValue(ref this.exit, value);
 		}
 
 		public bool InProc
 		{
-			get
-			{
-				return this.inProc;
-			}
-
-			set
-			{
-				this.SetValue(ref this.inProc, value);
-			}
+			get => this.inProc;
+			set => this.SetValue(ref this.inProc, value);
 		}
 
 		public bool Minimize
 		{
-			get
-			{
-				return this.minimize;
-			}
-
-			set
-			{
-				this.SetValue(ref this.minimize, value);
-			}
+			get => this.minimize;
+			set => this.SetValue(ref this.minimize, value);
 		}
 
 		public string ProjectFile
 		{
-			get
-			{
-				return this.projectFile;
-			}
-
-			set
-			{
-				this.SetValue(ref this.projectFile, value);
-			}
+			get => this.projectFile;
+			set => this.SetValue(ref this.projectFile, value);
 		}
 
 		public override string StepInformation
 		{
 			get
 			{
-				StringBuilder sb = new StringBuilder();
+				StringBuilder sb = new();
 
 				sb.Append(Path.GetFileName(this.ProjectFile));
 
@@ -149,7 +120,6 @@ namespace MegaBuild
 		public override string[] GetCustomVerbs() => new[] { "Open Project", "Open Project In New Instance", "Build Project In New Instance" };
 
 		[SuppressMessage("Usage", "CC0022:Should dispose object", Justification = "Caller disposes new controls.")]
-		[SuppressMessage("Reliability", "CA2000:Dispose objects before losing scope", Justification = "Caller disposes new controls.")]
 		public override void GetStepEditorControls(ICollection<StepEditorControl> controls)
 		{
 			base.GetStepEditorControls(controls);
@@ -190,7 +160,7 @@ namespace MegaBuild
 		{
 			bool result = false;
 
-			using (Project subProject = new Project(this.Level + 2))
+			using (Project subProject = new(this.Level + 2))
 			{
 				// Let the sub-project use the same form, so it can properly
 				// synchronize messages with the GUI thread.
@@ -228,7 +198,7 @@ namespace MegaBuild
 
 		private bool ExecuteOutOfProc()
 		{
-			StringBuilder sb = new StringBuilder();
+			StringBuilder sb = new();
 			sb.Append("/build ");
 			if (this.Exit)
 			{
@@ -241,7 +211,7 @@ namespace MegaBuild
 			// Note: When you're running in the debugger this will NOT minimize the child process.  But it does work outside the debugger.
 			ProcessWindowStyle windowStyle = this.Minimize ? ProcessWindowStyle.Minimized : ProcessWindowStyle.Normal;
 
-			ExecuteCommandArgs cmdArgs = new ExecuteCommandArgs
+			ExecuteCommandArgs cmdArgs = new()
 			{
 				FileName = Application.ExecutablePath,
 				Arguments = args,

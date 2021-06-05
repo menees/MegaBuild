@@ -35,7 +35,6 @@ namespace MegaBuild
 
 		#region Constructors
 
-		[SuppressMessage("Microsoft.Performance", "CA1811:AvoidUncalledPrivateCode", Justification = "Called by Reflection.")]
 		public CommandStep(Project project, StepCategory category, StepTypeInfo info)
 			: base(project, category, info)
 		{
@@ -47,119 +46,56 @@ namespace MegaBuild
 
 		public string Arguments
 		{
-			get
-			{
-				return this.arguments;
-			}
-
-			set
-			{
-				this.SetValue(ref this.arguments, value);
-			}
+			get => this.arguments;
+			set => this.SetValue(ref this.arguments, value);
 		}
 
 		public string Command
 		{
-			get
-			{
-				return this.command;
-			}
-
-			set
-			{
-				this.SetValue(ref this.command, value);
-			}
+			get => this.command;
+			set => this.SetValue(ref this.command, value);
 		}
 
 		public int FirstSuccessCode
 		{
-			get
-			{
-				return this.firstSuccessCode;
-			}
-
-			set
-			{
-				this.SetValue(ref this.firstSuccessCode, value);
-			}
+			get => this.firstSuccessCode;
+			set => this.SetValue(ref this.firstSuccessCode, value);
 		}
 
 		public int LastSuccessCode
 		{
-			get
-			{
-				return this.lastSuccessCode;
-			}
-
-			set
-			{
-				this.SetValue(ref this.lastSuccessCode, value);
-			}
+			get => this.lastSuccessCode;
+			set => this.SetValue(ref this.lastSuccessCode, value);
 		}
 
 		public RedirectStandardStreams RedirectStreams
 		{
-			get
-			{
-				return this.redirectStreams;
-			}
-
-			set
-			{
-				this.SetValue(ref this.redirectStreams, value);
-			}
+			get => this.redirectStreams;
+			set => this.SetValue(ref this.redirectStreams, value);
 		}
 
 		public bool UseShellExecute
 		{
-			get
-			{
-				return this.useShellExecute;
-			}
-
-			set
-			{
-				this.SetValue(ref this.useShellExecute, value);
-			}
+			get => this.useShellExecute;
+			set => this.SetValue(ref this.useShellExecute, value);
 		}
 
 		public string Verb
 		{
-			get
-			{
-				return this.verb;
-			}
-
-			set
-			{
-				this.SetValue(ref this.verb, value);
-			}
+			get => this.verb;
+			set => this.SetValue(ref this.verb, value);
 		}
 
 		public ProcessWindowStyle WindowState
 		{
-			get
-			{
-				return this.windowState;
-			}
-
-			set
-			{
-				this.SetValue(ref this.windowState, value);
-			}
+			get => this.windowState;
+			set => this.SetValue(ref this.windowState, value);
 		}
 
 		public string WorkingDirectory
 		{
-			get
-			{
-				return this.workingDirectory;
-			}
-
-			set
-			{
-				this.SetValue(ref this.workingDirectory, value);
-			}
+			get => this.workingDirectory;
+			set => this.SetValue(ref this.workingDirectory, value);
 		}
 
 		#endregion
@@ -202,7 +138,7 @@ namespace MegaBuild
 				command = "cmd.exe";
 			}
 
-			ExecuteCommandArgs cmdArgs = new ExecuteCommandArgs(
+			ExecuteCommandArgs cmdArgs = new(
 				command,
 				arguments,
 				this.WorkingDirectory,
@@ -249,7 +185,6 @@ namespace MegaBuild
 			=> this.IsBatchFile ? new string[] { "Edit Batch File" } : base.GetCustomVerbs();
 
 		[SuppressMessage("Usage", "CC0022:Should dispose object", Justification = "Caller disposes new controls.")]
-		[SuppressMessage("Reliability", "CA2000:Dispose objects before losing scope", Justification = "Caller disposes new controls.")]
 		public override void GetStepEditorControls(ICollection<StepEditorControl> controls)
 		{
 			base.GetStepEditorControls(controls);

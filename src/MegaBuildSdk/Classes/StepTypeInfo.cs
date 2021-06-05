@@ -56,7 +56,7 @@ namespace MegaBuild
 			if (iconResourceName.Length > 0)
 			{
 				// Load the icon resource by name, put it in Manager.StepImages, and return the image's index.
-				using (Icon icon = new Icon(this.StepType, iconResourceName))
+				using (Icon icon = new(this.StepType, iconResourceName))
 				{
 					ImageList.ImageCollection images = Manager.StepImages.Images;
 					images.Add(icon);

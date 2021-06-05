@@ -52,7 +52,7 @@ namespace MegaBuild
 				step.GetStepEditorControls(this.editorControls);
 				foreach (StepEditorControl editCtrl in this.editorControls)
 				{
-					TabPage page = new TabPage(editCtrl.DisplayName)
+					TabPage page = new(editCtrl.DisplayName)
 					{
 						UseVisualStyleBackColor = true,
 					};

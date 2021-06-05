@@ -119,7 +119,7 @@ namespace MegaBuild
 
 		private void Add_Click(object sender, EventArgs e)
 		{
-			ListViewItem item = new ListViewItem(new string[] { "%%", string.Empty });
+			ListViewItem item = new(new string[] { "%%", string.Empty });
 			this.lstVariables.Items.Add(item);
 			item.Selected = true;
 			this.edtName.Focus();

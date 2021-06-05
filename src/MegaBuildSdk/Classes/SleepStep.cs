@@ -22,7 +22,6 @@ namespace MegaBuild
 
 		#region Constructors
 
-		[SuppressMessage("Microsoft.Performance", "CA1811:AvoidUncalledPrivateCode", Justification = "Called by Reflection.")]
 		public SleepStep(Project project, StepCategory category, StepTypeInfo info)
 			: base(project, category, info, ExecSupports.None)
 		{
@@ -34,15 +33,8 @@ namespace MegaBuild
 
 		public int SleepTimeMilliseconds
 		{
-			get
-			{
-				return this.sleepTimeMilliseconds;
-			}
-
-			set
-			{
-				this.SetValue(ref this.sleepTimeMilliseconds, value);
-			}
+			get => this.sleepTimeMilliseconds;
+			set => this.SetValue(ref this.sleepTimeMilliseconds, value);
 		}
 
 		public override string StepInformation => string.Format("{0} ms", this.SleepTimeMilliseconds);
@@ -88,7 +80,6 @@ namespace MegaBuild
 		}
 
 		[SuppressMessage("Usage", "CC0022:Should dispose object", Justification = "Caller disposes new controls.")]
-		[SuppressMessage("Reliability", "CA2000:Dispose objects before losing scope", Justification = "Caller disposes new controls.")]
 		public override void GetStepEditorControls(ICollection<StepEditorControl> controls)
 		{
 			base.GetStepEditorControls(controls);

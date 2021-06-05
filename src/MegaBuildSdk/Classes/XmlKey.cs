@@ -39,7 +39,7 @@ namespace MegaBuild
 
 		#region Public Methods
 
-		public XmlKey AddSubkey(string subkeyType, string xmlKeyName) => new XmlKey(this.AddSubkeyNode(subkeyType, xmlKeyName));
+		public XmlKey AddSubkey(string subkeyType, string xmlKeyName) => new(this.AddSubkeyNode(subkeyType, xmlKeyName));
 
 		public void DeleteSubkey(string subkeyType, string xmlKeyName)
 		{
@@ -59,11 +59,11 @@ namespace MegaBuild
 			}
 		}
 
-		public XmlKey GetSubkey(string subkeyType, string xmlKeyName) => new XmlKey(this.GetSubkeyNode(subkeyType, xmlKeyName, false));
+		public XmlKey GetSubkey(string subkeyType, string xmlKeyName) => new(this.GetSubkeyNode(subkeyType, xmlKeyName, false));
 
 		public XmlKey[] GetSubkeys()
 		{
-			List<XmlKey> lstKeys = new List<XmlKey>();
+			List<XmlKey> lstKeys = new();
 			if (this.element.HasElements)
 			{
 				foreach (XElement child in this.element.Elements())
@@ -213,7 +213,7 @@ namespace MegaBuild
 
 		private XElement AddSubkeyNode(string subKeyType, string xmlKeyName)
 		{
-			XElement result = new XElement(subKeyType);
+			XElement result = new(subKeyType);
 
 			if (!string.IsNullOrEmpty(xmlKeyName))
 			{

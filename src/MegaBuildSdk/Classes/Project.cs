@@ -29,10 +29,10 @@ namespace MegaBuild
 		private const decimal ProjectVersion = 4M;
 		private readonly int baseIndentLevel;
 
-		private readonly StepCollection buildSteps = new StepCollection();
-		private readonly Dictionary<string, string> cachedVariables = new Dictionary<string, string>(StringComparer.CurrentCultureIgnoreCase);
+		private readonly StepCollection buildSteps = new();
+		private readonly Dictionary<string, string> cachedVariables = new(StringComparer.CurrentCultureIgnoreCase);
 		private readonly object[] eventHandlerParams;
-		private readonly StepCollection failureSteps = new StepCollection();
+		private readonly StepCollection failureSteps = new();
 
 		// Build Data
 		private DateTime buildStart;
@@ -56,7 +56,7 @@ namespace MegaBuild
 		private bool logOutput;
 		private bool logTimestamp = true;
 		private bool modified;
-		private VSConfigurationList overrideConfigurations = new VSConfigurationList();
+		private VSConfigurationList overrideConfigurations = new();
 		private VSAction overrideVSAction = VSAction.Build;
 		private bool overrideVSActions;
 		private bool overrideVSStepConfigurations;
@@ -66,7 +66,7 @@ namespace MegaBuild
 		private bool showComments;
 		private bool showDebugOutput;
 		private BuildStatus status = BuildStatus.None;
-		private List<VariableDefinition> variableDefinitions = new List<VariableDefinition>();
+		private List<VariableDefinition> variableDefinitions = new();
 
 		#endregion
 
@@ -180,10 +180,7 @@ namespace MegaBuild
 		[Browsable(false)]
 		public string FileName
 		{
-			get
-			{
-				return this.fileName;
-			}
+			get => this.fileName;
 
 			set
 			{
@@ -201,10 +198,7 @@ namespace MegaBuild
 		[Browsable(false)]
 		public bool Modified
 		{
-			get
-			{
-				return this.modified;
-			}
+			get => this.modified;
 
 			set
 			{
@@ -324,15 +318,15 @@ namespace MegaBuild
 		public static void CopySteps(Step[] steps)
 		{
 			// Put all the steps into a new collection.
-			StepCollection stepColl = new StepCollection();
+			StepCollection stepColl = new();
 			foreach (Step step in steps)
 			{
 				stepColl.Add(step);
 			}
 
 			// Save the new collection into an XML document.
-			XElement doc = new XElement("MegaBuildCopiedSteps", new XAttribute("CopyVersion", ProjectVersion));
-			XmlKey docKey = new XmlKey(doc);
+			XElement doc = new("MegaBuildCopiedSteps", new XAttribute("CopyVersion", ProjectVersion));
+			XmlKey docKey = new(doc);
 			stepColl.Save(docKey.GetSubkey("Steps", "CopiedSteps"));
 
 			// Get the XML text.
@@ -342,7 +336,7 @@ namespace MegaBuild
 			DataFormats.Format format = DataFormats.GetFormat(CopiedStepFormat);
 
 			// Create a new data object in our format to hold the XML.
-			DataObject data = new DataObject(format.Name, stepXML);
+			DataObject data = new(format.Name, stepXML);
 
 			// Just to be nice, also store the data in text format.
 			// This is useful during testing, and it may be useful to others.
@@ -387,7 +381,7 @@ namespace MegaBuild
 					bool build = true;
 					if (stepsToConfirm.Length > 0 || failureStepsToConfirm.Length > 0)
 					{
-						using (ConfirmStepsDlg dialog = new ConfirmStepsDlg())
+						using (ConfirmStepsDlg dialog = new())
 						{
 							bool autoConfirm = (options & BuildOptions.AutoConfirmSteps) != 0;
 							if (autoConfirm || dialog.Execute(this.Form, ref stepsToConfirm, ref failureStepsToConfirm))
@@ -524,7 +518,7 @@ namespace MegaBuild
 
 		public void DisplayOptions(IWin32Window owner)
 		{
-			using (ProjectOptionsDlg dialog = new ProjectOptionsDlg())
+			using (ProjectOptionsDlg dialog = new())
 			{
 				dialog.chkOverrideActions.Checked = this.overrideVSActions;
 				dialog.chkOverrideVersions.Checked = this.overrideVSVersions;
@@ -607,7 +601,7 @@ namespace MegaBuild
 		{
 			// When any of the step's properties are changed, it will cause a change notification
 			// to be sent once all of the properties are done being changed.
-			using (StepEditorDlg dialog = new StepEditorDlg())
+			using (StepEditorDlg dialog = new())
 			{
 				return dialog.Execute(owner, step, this.insertingStep);
 			}
@@ -618,7 +612,7 @@ namespace MegaBuild
 			Step result = null;
 
 			// Choose a step type
-			using (StepTypeDlg typeDlg = new StepTypeDlg())
+			using (StepTypeDlg typeDlg = new())
 			{
 				typeDlg.Text = caption;
 				if (typeDlg.Execute(owner, out StepTypeInfo info))
@@ -741,7 +735,6 @@ namespace MegaBuild
 			return result;
 		}
 
-		[SuppressMessage("Microsoft.Design", "CA1031:DoNotCatchGeneralExceptionTypes", Justification = "Legacy support.")]
 		public bool Open(string fileName)
 		{
 			bool result = false;
@@ -762,7 +755,7 @@ namespace MegaBuild
 
 					// Load the project from a file
 					XElement doc = XElement.Load(this.FileName);
-					XmlKey docKey = new XmlKey(doc);
+					XmlKey docKey = new(doc);
 
 					// Check the project file version.
 					string version = docKey.GetValue("ProjectVersion", string.Empty);
@@ -954,13 +947,13 @@ namespace MegaBuild
 				IDataObject data = Clipboard.GetDataObject();
 				string stepXml = (string)data.GetData(CopiedStepFormat);
 				XElement doc = XElement.Parse(stepXml);
-				XmlKey docKey = new XmlKey(doc);
+				XmlKey docKey = new(doc);
 
 				// We can't paste steps from a newer version of MegaBuild, but we can paste from older versions.
 				if (decimal.TryParse(docKey.GetValue("CopyVersion", string.Empty), out decimal copyVersion) && copyVersion <= ProjectVersion)
 				{
 					// Convert the XML back into a step collection.
-					StepCollection stepColl = new StepCollection();
+					StepCollection stepColl = new();
 
 					// Set flags so edited and inserted events don't fire.
 					this.loading = true;
@@ -1004,7 +997,6 @@ namespace MegaBuild
 			this.buildStart = DateTime.MinValue;
 		}
 
-		[SuppressMessage("Microsoft.Design", "CA1031:DoNotCatchGeneralExceptionTypes", Justification = "Legacy support.")]
 		public DialogResult Save(bool saveAs)
 		{
 			DialogResult result = DialogResult.No;
@@ -1035,8 +1027,8 @@ namespace MegaBuild
 				try
 				{
 					// Save the project to a file
-					XElement doc = new XElement("MegaBuildProject", new XAttribute("ProjectVersion", ProjectVersion));
-					XmlKey docKey = new XmlKey(doc);
+					XElement doc = new("MegaBuildProject", new XAttribute("ProjectVersion", ProjectVersion));
+					XmlKey docKey = new(doc);
 
 					// Save options
 					XmlKey optionsKey = docKey.GetSubkey("Options", string.Empty);
@@ -1063,7 +1055,7 @@ namespace MegaBuild
 					docKey.Prune();
 
 					// Save the XML with each attribute on a separate line to make visually comparing changes easier in source control.
-					XmlWriterSettings settings = new XmlWriterSettings
+					XmlWriterSettings settings = new()
 					{
 						Indent = true,
 						IndentChars = "\t",
@@ -1158,8 +1150,8 @@ namespace MegaBuild
 
 		private static void GetExecutableSteps(Step[] steps, bool forceIncludeInBuild, out ExecutableStep[] stepsToBuild, out ExecutableStep[] stepsToConfirm)
 		{
-			List<ExecutableStep> stepsToBuildList = new List<ExecutableStep>();
-			List<ExecutableStep> stepsToConfirmList = new List<ExecutableStep>();
+			List<ExecutableStep> stepsToBuildList = new();
+			List<ExecutableStep> stepsToConfirmList = new();
 
 			foreach (Step step in steps)
 			{
@@ -1214,7 +1206,6 @@ namespace MegaBuild
 			}
 		}
 
-		[SuppressMessage("Microsoft.Design", "CA1031:DoNotCatchGeneralExceptionTypes", Justification = "Legacy support.")]
 		private BuildStatus BuildExecutableSteps(ExecutableStep[] steps, string finalProgressMessage)
 		{
 			BuildStatus result = BuildStatus.Succeeded;
@@ -1482,7 +1473,7 @@ namespace MegaBuild
 				// This event is the one event that we will fire on the current thread. It should only be
 				// invoked from the GUI thread because it allows the build to be canceled before the background
 				// thread starts.
-				CancelEventArgs e = new CancelEventArgs(false);
+				CancelEventArgs e = new(false);
 				this.BuildStarting(this, e);
 				result = !e.Cancel;
 			}
@@ -1510,7 +1501,7 @@ namespace MegaBuild
 			Debug.WriteLine("*** FileNameSet ***");
 			if (this.ProjectStepsChanged != null && !this.loading)
 			{
-				ProjectStepsChangedEventArgs e = new ProjectStepsChangedEventArgs(changeType, step, oldIndex, newIndex);
+				ProjectStepsChangedEventArgs e = new(changeType, step, oldIndex, newIndex);
 
 				if (this.Form != null)
 				{
@@ -1581,7 +1572,7 @@ namespace MegaBuild
 
 		private VSConfigurationList GetAllConfigurations()
 		{
-			VSConfigurationList configurations = new VSConfigurationList();
+			VSConfigurationList configurations = new();
 
 			// Get all the configurations from the build and failure steps.
 			GetConfigurationsForSteps(configurations, this.buildSteps);
@@ -1669,7 +1660,7 @@ namespace MegaBuild
 
 			public static List<VariableDefinition> Load(XmlKey optionsKey)
 			{
-				Dictionary<string, VariableDefinition> variables = new Dictionary<string, VariableDefinition>(StringComparer.CurrentCultureIgnoreCase);
+				Dictionary<string, VariableDefinition> variables = new(StringComparer.CurrentCultureIgnoreCase);
 
 				XmlKey variablesKey = optionsKey.GetSubkey(nameof(Variables), string.Empty);
 				XmlKey[] subKeys = variablesKey.GetSubkeys();
@@ -1678,7 +1669,7 @@ namespace MegaBuild
 					string name = subKey.XmlKeyName;
 					string value = subKey.GetValue(nameof(Value), string.Empty);
 					bool expandPath = subKey.GetValue(nameof(ExpandPath), true);
-					VariableDefinition definition = new VariableDefinition(name, value, expandPath);
+					VariableDefinition definition = new(name, value, expandPath);
 					variables[name] = definition;
 				}
 

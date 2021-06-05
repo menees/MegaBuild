@@ -69,7 +69,7 @@ namespace MegaBuild
 				// Don't call Manager.UnexpandVariables.  We called it when files
 				// were added with the Add File button, but if the user manually
 				// edited any entries, then they're responsible for them now.
-				List<string> attachments = new List<string>();
+				List<string> attachments = new();
 				foreach (ListViewItem item in this.lstAttachments.Items)
 				{
 					string text = item.Text.Trim();
@@ -110,7 +110,7 @@ namespace MegaBuild
 
 		private void AddBlank_Click(object sender, EventArgs e)
 		{
-			ListViewItem item = new ListViewItem();
+			ListViewItem item = new();
 			this.lstAttachments.Items.Add(item);
 			this.isModified = true;
 			item.BeginEdit();

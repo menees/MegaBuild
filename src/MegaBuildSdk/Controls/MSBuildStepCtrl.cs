@@ -108,7 +108,7 @@
 			}
 			else
 			{
-				List<string> targets = new List<string>();
+				List<string> targets = new();
 				foreach (string line in this.txtTargets.Lines)
 				{
 					string target = line.Trim();
@@ -119,7 +119,7 @@
 				}
 
 				result = true;
-				Dictionary<string, string> properties = new Dictionary<string, string>();
+				Dictionary<string, string> properties = new();
 				foreach (string line in this.txtProperties.Lines)
 				{
 					string[] parts = line.Trim().Split(new[] { '=' }, StringSplitOptions.RemoveEmptyEntries);
@@ -167,7 +167,7 @@
 			string result = null;
 			if (projectLines.FirstOrDefault() != null)
 			{
-				StringBuilder sb = new StringBuilder("Solution Targets:");
+				StringBuilder sb = new("Solution Targets:");
 				sb.AppendLine();
 
 				foreach (string line in projectLines)
@@ -248,7 +248,7 @@
 
 				if (groups.FirstOrDefault() != null)
 				{
-					StringBuilder sb = new StringBuilder();
+					StringBuilder sb = new();
 					foreach (var g in groups)
 					{
 						sb.Append("Property Group: ");
@@ -302,7 +302,7 @@
 								where !string.IsNullOrEmpty((string)t.Attribute("Name"))
 								select t;
 
-				StringBuilder sb = new StringBuilder();
+				StringBuilder sb = new();
 				if (targets.FirstOrDefault() != null)
 				{
 					sb.AppendLine("Project Target(s):");

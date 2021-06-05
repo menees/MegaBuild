@@ -32,7 +32,7 @@ namespace MegaBuild
 			WindowsUtility.InitializeApplication(nameof(MegaBuild), null);
 
 			// Setup idle time processing.
-			MainForm frmMain = new MainForm();
+			MainForm frmMain = new();
 			Application.Idle += new EventHandler(frmMain.OnIdle);
 
 			// Run the application.

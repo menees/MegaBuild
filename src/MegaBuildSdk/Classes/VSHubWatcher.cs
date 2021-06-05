@@ -19,7 +19,7 @@ namespace MegaBuild
 	{
 		#region Private Data Members
 
-		private static readonly Version FixedVsHubVersion = new Version(14, 0, 23304, 0);
+		private static readonly Version FixedVsHubVersion = new(14, 0, 23304, 0);
 
 		private readonly string devEnvPath;
 
@@ -55,7 +55,7 @@ namespace MegaBuild
 				string vsHubExe = Path.Combine(programFilesx86, @"Common Files\Microsoft Shared\VsHub\1.0.0.0\vshub.exe");
 				if (File.Exists(vsHubExe))
 				{
-					ProcessStartInfo startInfo = new ProcessStartInfo(vsHubExe, " EXECUTE -n vshub --console false")
+					ProcessStartInfo startInfo = new(vsHubExe, " EXECUTE -n vshub --console false")
 					{
 						CreateNoWindow = true,
 						WindowStyle = ProcessWindowStyle.Hidden,
@@ -82,7 +82,7 @@ namespace MegaBuild
 				if (result)
 				{
 					FileVersionInfo info = FileVersionInfo.GetVersionInfo(vsHubClientDll);
-					Version fileVersion = new Version(info.FileMajorPart, info.FileMinorPart, info.FileBuildPart, info.FilePrivatePart);
+					Version fileVersion = new(info.FileMajorPart, info.FileMinorPart, info.FileBuildPart, info.FilePrivatePart);
 					result = fileVersion < FixedVsHubVersion;
 				}
 
