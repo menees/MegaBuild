@@ -248,9 +248,9 @@ namespace MegaBuild
 	// 		Add a new VSVersionInfo instance to its AllVersions collection.
 	// 		Search for all places that VSVersion is used (Entire Solution; Match whole word only).
 	// 		Search for all places 2002 is used.
-	// 		Search for all places the last enum field is used (e.g., V2017).
-	// 		Update MegaBuild.docx.
-	// 		Update MegaBuild.htm on the web site.
+	// 		Search for all places the last enum field is used.
+	// 		Update README.md.
+	// 		Check MegaBuild.htm on the web site; it shouldn't need to change.
 	// 		See comments on MSBuildToolsVersion above.
 	internal enum VSVersion
 	{
@@ -273,6 +273,8 @@ namespace MegaBuild
 		V2017,
 
 		V2019,
+
+		V2022,
 	}
 
 	#endregion

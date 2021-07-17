@@ -165,7 +165,7 @@
 						break;
 
 					case MSBuildToolsVersion.Current:
-						directory = this.GetVsMsBuildBinPath("Current", VSVersion.V2019);
+						directory = this.GetVsMsBuildBinPath("Current", VSVersion.V2022, VSVersion.V2019);
 						break;
 
 					default:
@@ -389,12 +389,23 @@
 			return result;
 		}
 
-		private string GetVsMsBuildBinPath(string msbuildVersion, VSVersion vsVersion)
+		private string GetVsMsBuildBinPath(string msbuildVersion, params VSVersion[] vsVersionsInPreferenceOrder)
 		{
-			VSVersionInfo info = VSVersionInfo.AllVersions.First(ver => ver.Version == vsVersion);
+			VSVersionInfo info = null;
+			bool foundDevEnv = false;
+			string devEnvPath = null;
+			foreach (VSVersion vsVersion in vsVersionsInPreferenceOrder)
+			{
+				info = VSVersionInfo.AllVersions.First(ver => ver.Version == vsVersion);
 
-			// This will always return some path, even if it's just an incorrect guess.
-			bool foundDevEnv = info.TryGetDevEnvPath(true, out string devEnvPath);
+				// This will always return some path, even if it's just an incorrect guess.
+				// This will also find preview/prerelease editions (just like the dotnet CLI app does).
+				foundDevEnv = info.TryGetDevEnvPath(true, out devEnvPath);
+				if (foundDevEnv)
+				{
+					break;
+				}
+			}
 
 			string ideFolder = Path.GetDirectoryName(Environment.ExpandEnvironmentVariables(devEnvPath));
 			string relativePath = Path.Combine(ideFolder, @"..\..\MSBuild", msbuildVersion, "Bin");

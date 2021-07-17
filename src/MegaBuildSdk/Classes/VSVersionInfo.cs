@@ -29,10 +29,11 @@ namespace MegaBuild
 			new VSVersionInfo(VSVersion.V2008, "%VS90COMNTOOLS%", 9, 10),
 			new VSVersionInfo(VSVersion.V2010, "%VS100COMNTOOLS%", 10, 11),
 			new VSVersionInfo(VSVersion.V2012, "%VS110COMNTOOLS%", 11, 12),
-			new VSVersionInfo(VSVersion.V2013, "%VS120COMNTOOLS%", 12, 12), // 2013 and 2012 both use v12 .sln.
-			new VSVersionInfo(VSVersion.V2015, "%VS140COMNTOOLS%", 14, 12, "Visual Studio 14"), // 2015 also uses v12 .sln.
-			new VSVersionInfo(VSVersion.V2017, null, 15, 12, "Visual Studio 15"), // 2017 also uses v12 .sln, but it doesn't define %VS150COMNTOOLS%.
-			new VSVersionInfo(VSVersion.V2019, null, 16, 12, "Visual Studio Version 16"), // 2019 also uses v12 .sln, but it doesn't define %VS160COMNTOOLS%.
+			new VSVersionInfo(VSVersion.V2013, "%VS120COMNTOOLS%", 12, 12),
+			new VSVersionInfo(VSVersion.V2015, "%VS140COMNTOOLS%", 14, 12, "Visual Studio 14"),
+			new VSVersionInfo(VSVersion.V2017, null, 15, 12, "Visual Studio 15"),
+			new VSVersionInfo(VSVersion.V2019, null, 16, 12, "Visual Studio Version 16"),
+			new VSVersionInfo(VSVersion.V2022, null, 17, 12, "Visual Studio Version 17"),
 		};
 
 		public static readonly VSVersionInfo LatestVersion = AllVersions[AllVersions.Count - 1];
@@ -79,6 +80,10 @@ namespace MegaBuild
 		private string ToolsVariable { get; }
 
 		private decimal InternalVersion { get; }
+
+		private bool Is64Bit => this.Version >= VSVersion.V2022;
+
+		private string ProgramFilesVariable => this.Is64Bit ? "%ProgramFiles%" : "%ProgramFiles(x86)%";
 
 		#endregion
 
@@ -147,7 +152,7 @@ namespace MegaBuild
 			{
 				// Note: "Edition" should actually be Professional, Communitiy, or Enterprise.
 				// But there's no point being specific about a non-installed edition.
-				devEnvPath = $@"%ProgramFiles(x86)%\Microsoft Visual Studio\{this.DisplayNumber}\[Missing Edition]\Common7\IDE\devenv.exe";
+				devEnvPath = $@"{this.ProgramFilesVariable}\Microsoft Visual Studio\{this.DisplayNumber}\[Missing Edition]\Common7\IDE\devenv.exe";
 			}
 
 			return result;

@@ -175,6 +175,9 @@ namespace MegaBuild
 					// VS 2019
 					// 		Microsoft Visual Studio Solution File, Format Version 12.00
 					// 		# Visual Studio Version 16
+					// VS 2022
+					// 		Microsoft Visual Studio Solution File, Format Version 12.00
+					// 		# Visual Studio Version 17
 					string versionComment = lines.FirstOrDefault(line => line.StartsWith("# Visual Studio "));
 					if (!string.IsNullOrEmpty(versionComment))
 					{
@@ -202,7 +205,7 @@ namespace MegaBuild
 			// 		Debug = Debug
 			// 		Release = Release
 			// 	EndGlobalSection
-			// In 2005, 2008, 2010, 2012, 2013, 2015, 2017, and 2019 we're looking for a section like:
+			// In 2005, 2008, 2010, 2012, 2013, 2015, 2017, 2019, and 2022 we're looking for a section like:
 			// 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 			// 		Debug|Any CPU = Debug|Any CPU
 			// 		Release|Any CPU = Release|Any CPU

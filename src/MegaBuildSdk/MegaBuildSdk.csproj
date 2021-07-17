@@ -44,7 +44,7 @@
 	</ItemGroup>
 
 	<ItemGroup>
-	  <PackageReference Include="Menees.Windows.Forms" Version="4.9.10" />
+	  <PackageReference Include="Menees.Windows.Forms" Version="4.9.11" />
 	</ItemGroup>
 
 	<Choose>
