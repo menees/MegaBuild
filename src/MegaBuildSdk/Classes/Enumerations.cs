@@ -160,6 +160,13 @@ namespace MegaBuild
 		[Description("15.0")]
 		Fifteen,
 
+		[Description("16.0")]
+		Sixteen,
+
+		[Description("17.0")]
+		Seventeen,
+
+		[Description("Current")] // 17.0 if installed, else 16.0
 		Current,
 	}
 

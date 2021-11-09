@@ -164,6 +164,14 @@
 						directory = this.GetVsMsBuildBinPath("15.0", VSVersion.V2017);
 						break;
 
+					case MSBuildToolsVersion.Sixteen:
+						directory = this.GetVsMsBuildBinPath("Current", VSVersion.V2019);
+						break;
+
+					case MSBuildToolsVersion.Seventeen:
+						directory = this.GetVsMsBuildBinPath("Current", VSVersion.V2022);
+						break;
+
 					case MSBuildToolsVersion.Current:
 						directory = this.GetVsMsBuildBinPath("Current", VSVersion.V2022, VSVersion.V2019);
 						break;
@@ -365,6 +373,8 @@
 					sb.Append("/ToolsVersion:15.0 ");
 					break;
 
+				case MSBuildToolsVersion.Sixteen:
+				case MSBuildToolsVersion.Seventeen:
 				case MSBuildToolsVersion.Current:
 					sb.Append("/ToolsVersion:Current ");
 					break;
