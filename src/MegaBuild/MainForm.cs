@@ -37,6 +37,7 @@ namespace MegaBuild
 		private readonly IFindTarget findTarget;
 		private readonly ToolStripMenuItem firstListContextMenuItem;
 		private readonly Stopwatch currentStepTimer = new();
+		private readonly AnsiCodeHandler ansiCodeHandler = new();
 		private bool loading;
 
 		#endregion
@@ -1026,7 +1027,10 @@ namespace MegaBuild
 					this.outputWindow.Append(timestamp, Color.LightSteelBlue, e.Indent, false, Guid.Empty);
 				}
 
-				this.outputWindow.Append(e.Message, e.Color, e.Indent, e.Highlight, e.OutputId);
+				foreach (Tuple<string, Color> tuple in this.ansiCodeHandler.Split(e.Message, e.Color, () => SystemColors.Window))
+				{
+					this.outputWindow.Append(tuple.Item1, tuple.Item2, e.Indent, e.Highlight, e.OutputId);
+				}
 			}
 		}
 
@@ -1081,6 +1085,7 @@ namespace MegaBuild
 		private void Project_BuildProgress(object sender, MegaBuild.BuildProgressEventArgs e)
 		{
 			this.spName.Text = e.Message;
+			this.ansiCodeHandler.Reset();
 
 			if (e.UseStepNumbers)
 			{

@@ -145,14 +145,6 @@ namespace MegaBuild
 					| (this.TreatErrorStreamAsOutput ? RedirectStandardStreams.TreatErrorAsOutput : RedirectStandardStreams.None),
 			};
 
-			if (fileName != WindowsFileName)
-			{
-				// We need to prevent pwsh v7 from outputing ANSI/VT escape codes for errors (e.g., throw $message).
-				// This setting was implemented in https://github.com/PowerShell/PowerShell/pull/10814 and is mentioned at:
-				// https://docs.microsoft.com/en-us/powershell/scripting/whats-new/what-s-new-in-powershell-70
-				cmdArgs.EnvironmentVariables["__SuppressAnsiEscapeSequences"] = "True";
-			}
-
 			bool result = this.ExecuteCommand(cmdArgs);
 			if (!result)
 			{
