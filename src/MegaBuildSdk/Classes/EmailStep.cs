@@ -215,7 +215,7 @@ namespace MegaBuild
 
 			// Load attachments
 			this.attachments.Clear();
-			XmlKey attachmentsKey = key.GetSubkey(nameof(this.Attachments), string.Empty);
+			XmlKey attachmentsKey = key.GetSubkey(nameof(this.Attachments));
 			foreach (XmlKey attKey in attachmentsKey.GetSubkeys())
 			{
 				Debug.Assert(attKey.KeyType == "Attachment", "Key type must be Attachment.");
@@ -241,7 +241,7 @@ namespace MegaBuild
 			key.SetValue(nameof(this.SmtpServer), this.smtpServer);
 
 			// Save attachments
-			XmlKey attachmentsKey = key.GetSubkey(nameof(this.Attachments), string.Empty);
+			XmlKey attachmentsKey = key.GetSubkey(nameof(this.Attachments));
 			int numAttachments = this.attachments.Count;
 			for (int i = 0; i < numAttachments; i++)
 			{

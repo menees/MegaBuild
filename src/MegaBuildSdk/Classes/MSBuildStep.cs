@@ -232,7 +232,7 @@
 			this.Use32BitProcess = key.GetValue(nameof(this.Use32BitProcess), this.use32BitProcess);
 
 			List<string> targets = new();
-			XmlKey targetsKey = key.GetSubkey(nameof(this.Targets), string.Empty);
+			XmlKey targetsKey = key.GetSubkey(nameof(this.Targets));
 			foreach (XmlKey targetKey in targetsKey.GetSubkeys())
 			{
 				Debug.Assert(targetKey.KeyType == "Target", "Key type must be Target.");
@@ -247,7 +247,7 @@
 			this.Targets = targets.ToArray();
 
 			Dictionary<string, string> properties = new();
-			XmlKey propertiesKey = key.GetSubkey(nameof(this.Properties), string.Empty);
+			XmlKey propertiesKey = key.GetSubkey(nameof(this.Properties));
 			foreach (XmlKey propertyKey in propertiesKey.GetSubkeys())
 			{
 				Debug.Assert(propertyKey.KeyType == "Property", "Key type must be Property.");
@@ -275,7 +275,7 @@
 			key.SetValue(nameof(this.Use32BitProcess), this.Use32BitProcess);
 
 			var targets = this.Targets;
-			XmlKey targetsKey = key.GetSubkey(nameof(this.Targets), string.Empty);
+			XmlKey targetsKey = key.GetSubkey(nameof(this.Targets));
 			int numTargets = targets.Length;
 			for (int i = 0; i < numTargets; i++)
 			{
@@ -284,7 +284,7 @@
 			}
 
 			var properties = this.Properties.ToList();
-			XmlKey propertiesKey = key.GetSubkey(nameof(this.Properties), string.Empty);
+			XmlKey propertiesKey = key.GetSubkey(nameof(this.Properties));
 			int numKeys = properties.Count;
 			for (int i = 0; i < numKeys; i++)
 			{

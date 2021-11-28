@@ -39,25 +39,11 @@ namespace MegaBuild
 
 		#region Public Methods
 
+		public XmlKey AddSubkey(string subkeyType) => this.AddSubkey(subkeyType, string.Empty);
+
 		public XmlKey AddSubkey(string subkeyType, string xmlKeyName) => new(this.AddSubkeyNode(subkeyType, xmlKeyName));
 
-		public void DeleteSubkey(string subkeyType, string xmlKeyName)
-		{
-			XElement node = this.GetSubkeyNode(subkeyType, xmlKeyName, true);
-			if (node != null)
-			{
-				node.Remove();
-			}
-		}
-
-		public void DeleteValue(string name)
-		{
-			XAttribute attribute = this.element.Attribute(name);
-			if (attribute != null)
-			{
-				attribute.Remove();
-			}
-		}
+		public XmlKey GetSubkey(string subkeyType) => this.GetSubkey(subkeyType, string.Empty);
 
 		public XmlKey GetSubkey(string subkeyType, string xmlKeyName) => new(this.GetSubkeyNode(subkeyType, xmlKeyName, false));
 
@@ -131,12 +117,6 @@ namespace MegaBuild
 				result = defaultValue;
 			}
 
-			return result;
-		}
-
-		public string[] GetValueNames()
-		{
-			string[] result = this.element.Attributes().Select(a => a.Name.LocalName).ToArray();
 			return result;
 		}
 
@@ -214,13 +194,13 @@ namespace MegaBuild
 		private XElement AddSubkeyNode(string subKeyType, string xmlKeyName)
 		{
 			XElement result = new(subKeyType);
+			this.element.Add(result);
 
 			if (!string.IsNullOrEmpty(xmlKeyName))
 			{
 				SetValue(result, nameof(this.XmlKeyName), xmlKeyName);
 			}
 
-			this.element.Add(result);
 			return result;
 		}
 

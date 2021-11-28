@@ -150,7 +150,7 @@ namespace MegaBuild
 			for (int i = 0; i < numSteps; i++)
 			{
 				Step step = this[i];
-				XmlKey stepKey = key.AddSubkey(nameof(Step), string.Empty);
+				XmlKey stepKey = key.AddSubkey(nameof(Step));
 				stepKey.SetValue("StepTypeName", step.GetType().FullName);
 				step.Save(stepKey);
 			}

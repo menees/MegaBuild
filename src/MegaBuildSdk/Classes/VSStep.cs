@@ -291,7 +291,7 @@ namespace MegaBuild
 			this.Version = key.GetValue(nameof(this.Version), this.version);
 			this.DevEnvArguments = key.GetValue(nameof(this.DevEnvArguments), this.devEnvArguments);
 			this.WindowState = key.GetValue(nameof(this.WindowState), this.windowState);
-			this.configurations.Load(key.GetSubkey(nameof(this.Configurations), string.Empty));
+			this.configurations.Load(key.GetSubkey(nameof(this.Configurations)));
 
 			// In 1.0.5, I changed the redirect to all streams, so this name changed.
 			// But I need to still read in old project files correctly.
@@ -310,7 +310,7 @@ namespace MegaBuild
 			key.SetValue(nameof(this.RedirectStreams), this.redirectStreams);
 			key.SetValue(nameof(this.DevEnvArguments), this.devEnvArguments);
 			key.SetValue(nameof(this.WindowState), this.windowState);
-			this.configurations.Save(key.GetSubkey(nameof(this.Configurations), string.Empty));
+			this.configurations.Save(key.GetSubkey(nameof(this.Configurations)));
 		}
 
 		protected override void StepEdited()

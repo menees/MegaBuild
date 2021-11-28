@@ -778,7 +778,7 @@ namespace MegaBuild
 					try
 					{
 						// Load options first so load errors can be logged correctly (if necessary).
-						XmlKey optionsKey = docKey.GetSubkey("Options", string.Empty);
+						XmlKey optionsKey = docKey.GetSubkey("Options");
 						this.overrideVSStepConfigurations = optionsKey.GetValue(nameof(this.OverrideVSStepConfigurations), this.overrideVSStepConfigurations);
 						this.logOutput = optionsKey.GetValue("LogOutput", this.logOutput);
 						this.overwriteLog = optionsKey.GetValue("OverwriteLog", this.overwriteLog);
@@ -787,7 +787,7 @@ namespace MegaBuild
 						this.showDebugOutput = optionsKey.GetValue(nameof(this.ShowDebugOutput), this.showDebugOutput);
 						this.logFile = optionsKey.GetValue("LogFile", this.logFile);
 						this.comments = optionsKey.GetValue(nameof(this.Comments), this.comments);
-						this.overrideConfigurations.Load(optionsKey.GetSubkey(nameof(this.OverrideConfigurations), string.Empty));
+						this.overrideConfigurations.Load(optionsKey.GetSubkey(nameof(this.OverrideConfigurations)));
 						this.overrideVSActions = optionsKey.GetValue(nameof(this.OverrideVSActions), this.overrideVSActions);
 						this.overrideVSVersions = optionsKey.GetValue(nameof(this.OverrideVSVersions), this.overrideVSVersions);
 						this.overrideVSAction = optionsKey.GetValue("OverrideVSActionValue", this.overrideVSAction);
@@ -1031,7 +1031,7 @@ namespace MegaBuild
 					XmlKey docKey = new(doc);
 
 					// Save options
-					XmlKey optionsKey = docKey.GetSubkey("Options", string.Empty);
+					XmlKey optionsKey = docKey.GetSubkey("Options");
 					optionsKey.SetValue(nameof(this.OverrideVSStepConfigurations), this.overrideVSStepConfigurations);
 					optionsKey.SetValue("LogOutput", this.logOutput);
 					optionsKey.SetValue("OverwriteLog", this.overwriteLog);
@@ -1040,7 +1040,7 @@ namespace MegaBuild
 					optionsKey.SetValue(nameof(this.ShowDebugOutput), this.showDebugOutput);
 					optionsKey.SetValue("LogFile", this.logFile);
 					optionsKey.SetValue(nameof(this.Comments), this.comments);
-					this.overrideConfigurations.Save(optionsKey.GetSubkey(nameof(this.OverrideConfigurations), string.Empty));
+					this.overrideConfigurations.Save(optionsKey.GetSubkey(nameof(this.OverrideConfigurations)));
 					optionsKey.SetValue(nameof(this.OverrideVSActions), this.overrideVSActions);
 					optionsKey.SetValue(nameof(this.OverrideVSVersions), this.overrideVSVersions);
 					optionsKey.SetValue("OverrideVSActionValue", this.overrideVSAction);
@@ -1662,7 +1662,7 @@ namespace MegaBuild
 			{
 				Dictionary<string, VariableDefinition> variables = new(StringComparer.CurrentCultureIgnoreCase);
 
-				XmlKey variablesKey = optionsKey.GetSubkey(nameof(Variables), string.Empty);
+				XmlKey variablesKey = optionsKey.GetSubkey(nameof(Variables));
 				XmlKey[] subKeys = variablesKey.GetSubkeys();
 				foreach (XmlKey subKey in subKeys)
 				{
@@ -1679,7 +1679,7 @@ namespace MegaBuild
 
 			public static void Save(XmlKey optionsKey, List<VariableDefinition> variableDefinitions)
 			{
-				XmlKey variablesKey = optionsKey.GetSubkey(nameof(Variables), string.Empty);
+				XmlKey variablesKey = optionsKey.GetSubkey(nameof(Variables));
 				foreach (VariableDefinition definition in variableDefinitions.OrderBy(d => d.Name))
 				{
 					XmlKey subKey = variablesKey.GetSubkey("Variable", definition.Name);
