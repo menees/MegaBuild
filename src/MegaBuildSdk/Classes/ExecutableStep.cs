@@ -651,11 +651,11 @@ namespace MegaBuild
 			string output = args.Data;
 			if (output != null && (allowLine == null || allowLine(output)))
 			{
-				// Some lines from VC++ end with an embedded NULL.
-				// We have to strip that off or the Output window
-				// won't display it correctly, and it will hose up
-				// text output logs.
-				if (output.EndsWith("\0"))
+				// Some lines from VC++ end with an embedded NULL. We have to strip that off or the Output window
+				// won't display it correctly, and it will hose up text output logs.
+				// Note: .NET 5+ changed the behavior of EndsWith("\0") to always return true:
+				// https://github.com/dotnet/runtime/issues/55843#issuecomment-882002006
+				if (output.Length > 0 && output[output.Length - 1] == '\0')
 				{
 					output = output.Substring(0, output.Length - 1);
 				}
