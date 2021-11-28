@@ -60,13 +60,13 @@
 			this.foregroundColor = null;
 		}
 
-		public IEnumerable<Tuple<string, Color>> Split(string text, Color defaultColor, Func<Color> getCurrentBackground)
+		public IEnumerable<(string Text, Color Color)> Split(string text, Color defaultColor, Func<Color> getCurrentBackground)
 		{
 			// Most text won't contain ANSI escape codes, so try to short circuit and return quickly.
 			MatchCollection matches;
 			if (string.IsNullOrWhiteSpace(text) || !text.Contains('\u001B') || (matches = ColorExpression.Matches(text)).Count == 0)
 			{
-				yield return new Tuple<string, Color>(text, this.foregroundColor ?? defaultColor);
+				yield return (text, this.foregroundColor ?? defaultColor);
 			}
 			else
 			{
@@ -75,7 +75,7 @@
 				{
 					if (match.Index > startIndex)
 					{
-						yield return new Tuple<string, Color>(text.Substring(startIndex, match.Index - startIndex), this.foregroundColor ?? defaultColor);
+						yield return (text.Substring(startIndex, match.Index - startIndex), this.foregroundColor ?? defaultColor);
 					}
 
 					// According to https://en.wikipedia.org/wiki/ANSI_escape_code#CSI_(Control_Sequence_Introducer)_sequences,
@@ -97,7 +97,7 @@
 
 				if (startIndex < text.Length)
 				{
-					yield return new Tuple<string, Color>(text.Substring(startIndex), this.foregroundColor ?? defaultColor);
+					yield return (text.Substring(startIndex), this.foregroundColor ?? defaultColor);
 				}
 			}
 		}

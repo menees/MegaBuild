@@ -1027,9 +1027,9 @@ namespace MegaBuild
 					this.outputWindow.Append(timestamp, Color.LightSteelBlue, e.Indent, false, Guid.Empty);
 				}
 
-				foreach (Tuple<string, Color> tuple in this.ansiCodeHandler.Split(e.Message, e.Color, () => SystemColors.Window))
+				foreach ((string text, Color color) in this.ansiCodeHandler.Split(e.Message, e.Color, () => SystemColors.Window))
 				{
-					this.outputWindow.Append(tuple.Item1, tuple.Item2, e.Indent, e.Highlight, e.OutputId);
+					this.outputWindow.Append(text, color, e.Indent, e.Highlight, e.OutputId);
 				}
 			}
 		}
