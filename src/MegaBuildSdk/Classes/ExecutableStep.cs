@@ -22,12 +22,12 @@ namespace MegaBuild
 	{
 		#region Private Data Members
 
-		private static readonly List<Regex> ErrorRegexs = ParseRegexes(Properties.Settings.Default.ExecutableStep_ErrorRegexs);
-		private static readonly List<Regex> WarningRegexs = ParseRegexes(Properties.Settings.Default.ExecutableStep_WarningRegexs);
+		private static readonly List<Regex> ErrorRegexes = ParseRegexes(Properties.Settings.Default.ExecutableStep_ErrorRegexs);
+		private static readonly List<Regex> WarningRegexes = ParseRegexes(Properties.Settings.Default.ExecutableStep_WarningRegexs);
 		private static readonly ConcurrentExclusiveSchedulerPair Schedulers = new();
 
 		private readonly ExecSupports supportFlags;
-		private bool autoColorErrorsAndWarnings;
+		private bool autoColorErrorsAndWarnings = true;
 		private bool ignoreFailure;
 		private bool inCurrentBuild;
 		private bool isAdministratorRequired;
@@ -38,6 +38,7 @@ namespace MegaBuild
 		private StepStatus status = StepStatus.None;
 		private int timeoutMinutes = 10;
 		private TimeSpan totalTime;
+		private List<(OutputStyle Style, Regex Pattern)> customOutputStyles;
 
 		#endregion
 
@@ -195,6 +196,26 @@ namespace MegaBuild
 			}
 		}
 
+		internal List<(OutputStyle Style, Regex Pattern)> CustomOutputStyles
+		{
+			get => this.customOutputStyles;
+			set
+			{
+				if (!ReferenceEquals(this.CustomOutputStyles, value))
+				{
+					if ((this.customOutputStyles == null && value != null)
+						|| (this.CustomOutputStyles != null && value == null)
+						|| (this.CustomOutputStyles.Count != value.Count)
+						|| this.CustomOutputStyles.Zip(value, (x, y) => (x, y))
+							.Any(t => t.x.Style != t.y.Style || t.x.Pattern.ToString() != t.y.Pattern.ToString()))
+					{
+						this.customOutputStyles = value;
+						this.SetModified();
+					}
+				}
+			}
+		}
+
 		#endregion
 
 		#region Protected Properties
@@ -232,6 +253,10 @@ namespace MegaBuild
 		{
 			base.GetStepEditorControls(controls);
 			controls.Add(new ExecStepCtrl { Step = this });
+			if (this.SupportsAutoColorErrorsAndWarnings)
+			{
+				controls.Add(new ExecOutputCtrl { Step = this });
+			}
 		}
 
 		public void ResetStatus()
@@ -239,6 +264,30 @@ namespace MegaBuild
 			this.Status = StepStatus.None;
 			this.TotalExecutionTime = TimeSpan.Zero;
 			this.OutputStartId = Guid.Empty;
+		}
+
+		#endregion
+
+		#region Internal Methods
+
+		internal static bool TryParseRegex(string text, out Regex regex)
+		{
+			bool result = false;
+
+			try
+			{
+				// This defaults to case-insensitive to make the built-in patterns simpler.
+				// Custom patterns can include (?-i) to force case-sensitive if they want to.
+				regex = new Regex(text, RegexOptions.Compiled | RegexOptions.IgnoreCase);
+				result = true;
+			}
+			catch (ArgumentException ex)
+			{
+				Log.Error(typeof(ExecutableStep), "Unable to parse regex: " + text, ex);
+				regex = null;
+			}
+
+			return result;
 		}
 
 		#endregion
@@ -259,6 +308,18 @@ namespace MegaBuild
 			{
 				this.IsAdministratorRequired = key.GetValue(nameof(this.IsAdministratorRequired), this.isAdministratorRequired);
 			}
+
+			XmlKey customOutputStyles = key.GetSubkey(nameof(this.CustomOutputStyles));
+			foreach (XmlKey subKey in customOutputStyles.GetSubkeys())
+			{
+				OutputStyle style = subKey.GetValue("Style", OutputStyle.Normal);
+				string pattern = subKey.GetValue("Pattern", string.Empty);
+				if (!string.IsNullOrEmpty(pattern) && TryParseRegex(pattern, out Regex regex))
+				{
+					this.customOutputStyles ??= new();
+					this.customOutputStyles.Add((style, regex));
+				}
+			}
 		}
 
 		protected internal override void Save(XmlKey key)
@@ -272,6 +333,17 @@ namespace MegaBuild
 			key.SetValue(nameof(this.TimeoutMinutes), this.timeoutMinutes);
 			key.SetValue(nameof(this.AutoColorErrorsAndWarnings), this.autoColorErrorsAndWarnings);
 			key.SetValue(nameof(this.IsAdministratorRequired), this.isAdministratorRequired);
+
+			if (this.customOutputStyles != null && this.customOutputStyles.Count > 0)
+			{
+				XmlKey container = key.AddSubkey(nameof(this.CustomOutputStyles));
+				foreach (var tuple in this.customOutputStyles)
+				{
+					XmlKey entry = container.AddSubkey("Output");
+					entry.SetValue(nameof(tuple.Style), tuple.Style);
+					entry.SetValue(nameof(tuple.Pattern), tuple.Pattern.ToString());
+				}
+			}
 		}
 
 		protected bool ExecuteCommand(ExecuteCommandArgs args)
@@ -409,13 +481,9 @@ namespace MegaBuild
 
 			foreach (string regexString in regexStrings)
 			{
-				try
+				if (TryParseRegex(regexString, out Regex regex))
 				{
-					result.Add(new Regex(regexString, RegexOptions.Compiled | RegexOptions.IgnoreCase));
-				}
-				catch (ArgumentException ex)
-				{
-					Log.Error(typeof(ExecutableStep), "Unable to parse regex: " + regexString, ex);
+					result.Add(regex);
 				}
 			}
 
@@ -599,23 +667,46 @@ namespace MegaBuild
 				// when using WinForms.  (WPF doesn't display it at all.)
 				output = output.Replace("\u0008", string.Empty);
 
-				Color color = errorData ? OutputColors.Error : SystemColors.WindowText;
-				bool highlight = false;
-				if (this.AutoColorErrorsAndWarnings && !errorData)
+				OutputStyle style = errorData ? OutputStyle.Error : OutputStyle.Normal;
+				bool appliedCustom = false;
+				if (this.customOutputStyles != null && this.customOutputStyles.Count > 0)
 				{
-					if (ErrorRegexs.Any(regex => regex.IsMatch(output)))
+					foreach ((OutputStyle customStyle, Regex regex) in this.customOutputStyles)
 					{
-						color = OutputColors.Error;
-						highlight = true;
-					}
-					else if (WarningRegexs.Any(regex => regex.IsMatch(output)))
-					{
-						color = OutputColors.Warning;
-						highlight = true;
+						if (regex.IsMatch(output))
+						{
+							style = customStyle;
+							appliedCustom = true;
+							break;
+						}
 					}
 				}
 
-				this.Project.OutputLine(output, color, 0, highlight);
+				if (!appliedCustom && this.AutoColorErrorsAndWarnings && !errorData)
+				{
+					if (ErrorRegexes.Any(regex => regex.IsMatch(output)))
+					{
+						style = OutputStyle.Error;
+					}
+					else if (WarningRegexes.Any(regex => regex.IsMatch(output)))
+					{
+						style = OutputStyle.Warning;
+					}
+				}
+
+				if (style != OutputStyle.None)
+				{
+					Color color = style switch
+					{
+						OutputStyle.Error => OutputColors.Error,
+						OutputStyle.Warning => OutputColors.Warning,
+						OutputStyle.Debug => OutputColors.Debug,
+						_ => SystemColors.WindowText,
+					};
+
+					bool highlight = style >= OutputStyle.Warning;
+					this.Project.OutputLine(output, color, 0, highlight);
+				}
 			}
 		}
 

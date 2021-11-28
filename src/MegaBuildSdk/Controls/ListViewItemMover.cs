@@ -7,6 +7,7 @@ namespace MegaBuild
 	using System.Data;
 	using System.Drawing;
 	using System.Windows.Forms;
+	using Menees;
 	using Menees.Windows.Forms;
 
 	#endregion
@@ -133,10 +134,19 @@ namespace MegaBuild
 
 		private void MoveItem(ListViewItem item, int indexOffset)
 		{
+			// The ListView control won't move items when sorting is enabled.
+			// https://stackoverflow.com/a/30536933/1882616
+			if (this.ListView.ListViewItemSorter != null || this.ListView.Sorting != SortOrder.None)
+			{
+				throw Exceptions.NewInvalidOperationException(
+					$"{nameof(ListViewItemMover)} can't manually move items when ListView sorting is enabled.");
+			}
+
 			int newIndex = item.Index + indexOffset;
 			item.Remove();
 			this.listView.Items.Insert(newIndex, item);
 			item.Selected = true;
+			item.Focused = true;
 			this.listView.ArrangeIcons();
 			item.EnsureVisible();
 		}

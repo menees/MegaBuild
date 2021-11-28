@@ -46,7 +46,6 @@ namespace MegaBuild
 					this.chkPromptFirst.Checked = this.step.PromptFirst;
 					this.chkTimeout.Checked = this.step.Timeout;
 					this.numTimeout.Value = this.step.TimeoutMinutes;
-					this.chkAutoColorErrorsAndWarnings.Checked = this.step.AutoColorErrorsAndWarnings;
 					this.chkRunAsAdministrator.Checked = this.step.IsAdministratorRequired;
 					this.chkRunAsAdministrator.Enabled = this.step.MayRequireAdministrator;
 
@@ -67,7 +66,6 @@ namespace MegaBuild
 			this.step.PromptFirst = this.chkPromptFirst.Checked;
 			this.step.Timeout = this.chkTimeout.Checked;
 			this.step.TimeoutMinutes = (int)this.numTimeout.Value;
-			this.step.AutoColorErrorsAndWarnings = this.chkAutoColorErrorsAndWarnings.Checked;
 			this.step.IsAdministratorRequired = this.chkRunAsAdministrator.Checked;
 
 			return true;
@@ -92,7 +90,6 @@ namespace MegaBuild
 			this.chkWaitForCompletion.Enabled = this.step.SupportsWaitForCompletion;
 			this.chkTimeout.Enabled = this.step.SupportsTimeout && this.chkWaitForCompletion.Checked;
 			this.numTimeout.Enabled = this.chkTimeout.Enabled && this.chkTimeout.Checked;
-			this.chkAutoColorErrorsAndWarnings.Enabled = this.step.SupportsAutoColorErrorsAndWarnings;
 		}
 
 		#endregion

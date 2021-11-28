@@ -20,7 +20,6 @@ namespace MegaBuild
 		/// Required designer variable.
 		/// </summary>
 		private System.ComponentModel.Container components = null;
-		private CheckBox chkAutoColorErrorsAndWarnings;
 		private CheckBox chkRunAsAdministrator;
 
 		/// <summary> 
@@ -47,7 +46,6 @@ namespace MegaBuild
 		{
 			this.grpExecSettings = new System.Windows.Forms.GroupBox();
 			this.chkRunAsAdministrator = new System.Windows.Forms.CheckBox();
-			this.chkAutoColorErrorsAndWarnings = new System.Windows.Forms.CheckBox();
 			this.numTimeout = new System.Windows.Forms.NumericUpDown();
 			this.chkTimeout = new System.Windows.Forms.CheckBox();
 			this.chkIgnoreFailure = new System.Windows.Forms.CheckBox();
@@ -65,14 +63,13 @@ namespace MegaBuild
 			this.grpExecSettings.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
 			this.grpExecSettings.Controls.Add(this.chkRunAsAdministrator);
-			this.grpExecSettings.Controls.Add(this.chkAutoColorErrorsAndWarnings);
 			this.grpExecSettings.Controls.Add(this.numTimeout);
 			this.grpExecSettings.Controls.Add(this.chkTimeout);
 			this.grpExecSettings.Controls.Add(this.chkIgnoreFailure);
 			this.grpExecSettings.Controls.Add(this.chkWaitForCompletion);
 			this.grpExecSettings.Location = new System.Drawing.Point(12, 8);
 			this.grpExecSettings.Name = "grpExecSettings";
-			this.grpExecSettings.Size = new System.Drawing.Size(356, 164);
+			this.grpExecSettings.Size = new System.Drawing.Size(356, 136);
 			this.grpExecSettings.TabIndex = 0;
 			this.grpExecSettings.TabStop = false;
 			this.grpExecSettings.Text = "Settings";
@@ -80,20 +77,11 @@ namespace MegaBuild
 			// chkRunAsAdministrator
 			// 
 			this.chkRunAsAdministrator.AutoSize = true;
-			this.chkRunAsAdministrator.Location = new System.Drawing.Point(16, 132);
+			this.chkRunAsAdministrator.Location = new System.Drawing.Point(16, 104);
 			this.chkRunAsAdministrator.Name = "chkRunAsAdministrator";
 			this.chkRunAsAdministrator.Size = new System.Drawing.Size(168, 19);
 			this.chkRunAsAdministrator.TabIndex = 5;
 			this.chkRunAsAdministrator.Text = "Require Administrator Role";
-			// 
-			// chkAutoColorErrorsAndWarnings
-			// 
-			this.chkAutoColorErrorsAndWarnings.AutoSize = true;
-			this.chkAutoColorErrorsAndWarnings.Location = new System.Drawing.Point(16, 104);
-			this.chkAutoColorErrorsAndWarnings.Name = "chkAutoColorErrorsAndWarnings";
-			this.chkAutoColorErrorsAndWarnings.Size = new System.Drawing.Size(241, 19);
-			this.chkAutoColorErrorsAndWarnings.TabIndex = 4;
-			this.chkAutoColorErrorsAndWarnings.Text = "Highlight Errors And Warnings In Output";
 			// 
 			// numTimeout
 			// 
@@ -123,7 +111,7 @@ namespace MegaBuild
 			this.chkTimeout.AutoSize = true;
 			this.chkTimeout.Location = new System.Drawing.Point(36, 48);
 			this.chkTimeout.Name = "chkTimeout";
-			this.chkTimeout.Size = new System.Drawing.Size(222, 19);
+			this.chkTimeout.Size = new System.Drawing.Size(221, 19);
 			this.chkTimeout.TabIndex = 1;
 			this.chkTimeout.Text = "Timeout After N Minutes, where N = ";
 			this.chkTimeout.CheckedChanged += new System.EventHandler(this.Timeout_CheckedChanged);
@@ -153,7 +141,7 @@ namespace MegaBuild
             | System.Windows.Forms.AnchorStyles.Right)));
 			this.grpConditions.Controls.Add(this.chkOnlyIfParentSucceeded);
 			this.grpConditions.Controls.Add(this.chkPromptFirst);
-			this.grpConditions.Location = new System.Drawing.Point(12, 180);
+			this.grpConditions.Location = new System.Drawing.Point(12, 152);
 			this.grpConditions.Name = "grpConditions";
 			this.grpConditions.Size = new System.Drawing.Size(356, 80);
 			this.grpConditions.TabIndex = 1;
@@ -174,7 +162,7 @@ namespace MegaBuild
 			this.chkPromptFirst.AutoSize = true;
 			this.chkPromptFirst.Location = new System.Drawing.Point(16, 20);
 			this.chkPromptFirst.Name = "chkPromptFirst";
-			this.chkPromptFirst.Size = new System.Drawing.Size(217, 19);
+			this.chkPromptFirst.Size = new System.Drawing.Size(216, 19);
 			this.chkPromptFirst.TabIndex = 0;
 			this.chkPromptFirst.Text = "Confirm This Step When Build Starts";
 			// 

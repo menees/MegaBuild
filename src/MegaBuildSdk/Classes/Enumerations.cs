@@ -189,6 +189,19 @@ namespace MegaBuild
 
 	#endregion
 
+	#region internal OutputStyle
+
+	internal enum OutputStyle
+	{
+		None = -2,
+		Debug = -1,
+		Normal = 0,
+		Warning = 1,
+		Error = 2,
+	}
+
+	#endregion
+
 	#region internal PowerShell
 
 	internal enum PowerShell

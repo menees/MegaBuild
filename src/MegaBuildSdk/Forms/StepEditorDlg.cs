@@ -18,7 +18,7 @@ namespace MegaBuild
 	{
 		#region Private Data Members
 
-		private static readonly string[] TabsToSkipOnEdit = { "General", "Execution" };
+		private static readonly Type[] TabsToSkipOnEdit = { typeof(GeneralStepCtrl), typeof(ExecStepCtrl), typeof(ExecOutputCtrl) };
 
 		private ICollection<StepEditorControl> editorControls;
 
@@ -65,7 +65,7 @@ namespace MegaBuild
 
 					// When we're editing a step, we typically want to
 					// ignore the first couple of tabs.
-					if (!defaultTabSelected && !insertingStep && Array.IndexOf(TabsToSkipOnEdit, editCtrl.DisplayName) < 0)
+					if (!defaultTabSelected && !insertingStep && Array.IndexOf(TabsToSkipOnEdit, editCtrl.GetType()) < 0)
 					{
 						this.TabCtrl.SelectedTab = page;
 						defaultTabSelected = true;
