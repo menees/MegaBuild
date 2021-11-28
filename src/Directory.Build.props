@@ -11,12 +11,15 @@
 		<LangVersion>latest</LangVersion>
 		<Copyright>Copyright © 2003-2021 Bill Menees</Copyright>
 
+		<TargetFrameworks>net6.0-windows;net48</TargetFrameworks>
+		<UseWindowsForms>true</UseWindowsForms>
+
 		<!-- These paths must be relative to the projects that include the property (not to this .props file). -->
 		<CodeAnalysisRuleSet>../MegaBuild.ruleset</CodeAnalysisRuleSet>
 		<AssemblyOriginatorKeyFile>../MegaBuild.snk</AssemblyOriginatorKeyFile>
 
 		<!-- Make the assembly, file, and NuGet package versions the same. -->
-		<Version>4.5.2</Version>
+		<Version>4.6.0</Version>
 	</PropertyGroup>
 
 	<PropertyGroup Condition="'$(Configuration)'=='Debug'">
@@ -33,11 +36,11 @@
 			<PrivateAssets>all</PrivateAssets>
 			<IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
 		</PackageReference>
-		<PackageReference Include="Menees.Analyzers" Version="3.0.3">
+		<PackageReference Include="Menees.Analyzers" Version="3.0.4">
 			<PrivateAssets>all</PrivateAssets>
 			<IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
 		</PackageReference>
-		<PackageReference Include="Microsoft.CodeAnalysis.NetAnalyzers" Version="5.0.3">
+		<PackageReference Include="Microsoft.CodeAnalysis.NetAnalyzers" Version="6.0.0">
 			<PrivateAssets>all</PrivateAssets>
 			<IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
 		</PackageReference>

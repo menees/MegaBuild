@@ -2,8 +2,6 @@
 
 	<PropertyGroup>
 		<OutputType>WinExe</OutputType>
-		<TargetFrameworks>netcoreapp3.1;net45</TargetFrameworks>
-		<UseWindowsForms>true</UseWindowsForms>
 		<UseWpf>true</UseWpf>
 		<Description>A utility for automating build processes.</Description>
 		<ApplicationIcon>Images\MegaBuild.ico</ApplicationIcon>

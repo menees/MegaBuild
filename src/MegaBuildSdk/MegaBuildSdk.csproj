@@ -1,8 +1,6 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk.WindowsDesktop">
 
 	<PropertyGroup>
-		<TargetFrameworks>netcoreapp3.1;net45</TargetFrameworks>
-		<UseWindowsForms>true</UseWindowsForms>
 		<AssemblyTitle>MegaBuild SDK</AssemblyTitle>
 		<Description>Toolkit for developing MegaBuild extension assemblies</Description>
 		<RootNamespace>MegaBuild</RootNamespace>
