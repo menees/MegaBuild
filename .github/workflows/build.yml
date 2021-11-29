@@ -15,7 +15,9 @@ jobs:
     
     - name: Add MSBuild to PATH
       uses: microsoft/setup-msbuild@v1.1
-      
+      with:
+          vs-prerelease: true
+            
     - name: Build everything
       run: |
         & .\eng\build.ps1 -build $true
