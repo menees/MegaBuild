@@ -11,12 +11,13 @@
 		<LangVersion>latest</LangVersion>
 		<Copyright>Copyright © 2003-2021 Bill Menees</Copyright>
 
+		<!-- When TargetFrameworks changes, also update the MegaBuild\Properties\PublishProfiles\*.pubxml files. -->
 		<TargetFrameworks>net6.0-windows;net48</TargetFrameworks>
 		<UseWindowsForms>true</UseWindowsForms>
 
-		<!-- These paths must be relative to the projects that include the property (not to this .props file). -->
-		<CodeAnalysisRuleSet>../MegaBuild.ruleset</CodeAnalysisRuleSet>
-		<AssemblyOriginatorKeyFile>../MegaBuild.snk</AssemblyOriginatorKeyFile>
+		<CodeAnalysisRuleSet>$(SolutionDir)\src\MegaBuild.ruleset</CodeAnalysisRuleSet>
+		<AssemblyOriginatorKeyFile>$(SolutionDir)\src\MegaBuild.snk</AssemblyOriginatorKeyFile>
+		<GenerateResourceUsePreserializedResources>true</GenerateResourceUsePreserializedResources>
 
 		<!-- Make the assembly, file, and NuGet package versions the same. -->
 		<Version>4.6.0</Version>
@@ -32,6 +33,7 @@
 	</PropertyGroup>
 
 	<ItemGroup>
+		<PackageReference Include="System.Resources.Extensions" Version="6.0.0"/>
 		<PackageReference Include="codecracker.CSharp" Version="1.1.0">
 			<PrivateAssets>all</PrivateAssets>
 			<IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>

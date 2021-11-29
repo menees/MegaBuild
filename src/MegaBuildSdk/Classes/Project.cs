@@ -26,7 +26,7 @@ namespace MegaBuild
 		#region Private Data Members
 
 		private const string CopiedStepFormat = "Menees.MegaBuild.CopiedSteps";
-		private const decimal ProjectVersion = 4M;
+		private const decimal ProjectVersion = 5M;
 		private readonly int baseIndentLevel;
 
 		private readonly StepCollection buildSteps = new();
@@ -1100,6 +1100,25 @@ namespace MegaBuild
 		#endregion
 
 		#region Internal Methods
+
+		internal static decimal GetVersion(XElement element)
+		{
+			XElement root = element;
+			XElement parent = root.Parent;
+			while (parent != null)
+			{
+				root = parent;
+				parent = root.Parent;
+			}
+
+			string version = root.GetAttributeValue("ProjectVersion", null) ?? root.GetAttributeValue("CopyVersion", null);
+			if (!decimal.TryParse(version, out decimal result))
+			{
+				result = 0;
+			}
+
+			return result;
+		}
 
 		internal Step CreateStep(StepCategory category, StepTypeInfo info)
 		{

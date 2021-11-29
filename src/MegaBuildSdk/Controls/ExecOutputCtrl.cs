@@ -49,7 +49,6 @@
 					this.step = value;
 					this.chkAutoColorErrorsAndWarnings.Checked = this.step.AutoColorErrorsAndWarnings;
 
-					// TODO: Turn off AutoArrange and Sorting. [Bill, 11/28/2021]
 					ListView.ListViewItemCollection items = this.lstPatterns.Items;
 					this.lstPatterns.BeginUpdate();
 					try

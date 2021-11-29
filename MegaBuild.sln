@@ -1,7 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio Version 16
-VisualStudioVersion = 16.0.29920.165
+# Visual Studio Version 17
+VisualStudioVersion = 17.0.31903.59
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MegaBuild", "src\MegaBuild\MegaBuild.csproj", "{59CADEB9-6546-4038-ABAE-65F0CC9ED9EE}"
 EndProject
@@ -21,6 +21,8 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Src", "Src", "{C941C910-009
 		src\MegaBuild.ruleset = src\MegaBuild.ruleset
 	EndProjectSection
 EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MegaBuildSdk.Tests", "tests\MegaBuildSdk.Tests\MegaBuildSdk.Tests.csproj", "{02C2D215-1241-43FF-B9B3-8E94AA2E65D8}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -39,6 +41,10 @@ Global
 		{7A52A5FE-7935-4746-80AA-AF270F5F00F9}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{7A52A5FE-7935-4746-80AA-AF270F5F00F9}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{7A52A5FE-7935-4746-80AA-AF270F5F00F9}.Release|Any CPU.Build.0 = Release|Any CPU
+		{02C2D215-1241-43FF-B9B3-8E94AA2E65D8}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{02C2D215-1241-43FF-B9B3-8E94AA2E65D8}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{02C2D215-1241-43FF-B9B3-8E94AA2E65D8}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{02C2D215-1241-43FF-B9B3-8E94AA2E65D8}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

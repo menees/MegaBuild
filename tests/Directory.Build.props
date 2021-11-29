@@ -1,0 +1,21 @@
+<Project>
+	<ImportGroup>
+		<!--Include all src folder build props first. From https://stackoverflow.com/a/45976205/1882616 -->
+		<Import Project="$([MSBuild]::GetPathOfFileAbove('Directory.Build.props', '$(MSBuildThisFileDirectory)..\src'))" />
+	</ImportGroup>
+
+	<PropertyGroup>
+		<GenerateSerializationAssemblies>Off</GenerateSerializationAssemblies>
+		<IsPackable>false</IsPackable>
+		<RunSettingsFilePath>$(SolutionDir)\tests\.runsettings</RunSettingsFilePath>
+		<Nullable>enable</Nullable>
+	</PropertyGroup>
+
+	<ItemGroup>
+		<PackageReference Include="Microsoft.NET.Test.Sdk" Version="17.0.0" />
+		<PackageReference Include="MSTest.TestAdapter" Version="2.2.8" />
+		<PackageReference Include="MSTest.TestFramework" Version="2.2.8" />
+		<PackageReference Include="coverlet.collector" Version="3.1.0" />
+		<PackageReference Include="Shouldly" Version="4.0.3" />
+	</ItemGroup>
+</Project>
