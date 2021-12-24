@@ -46,6 +46,9 @@ namespace MegaBuild
 
 		public static bool OutputWindowOnRight { get; set; }
 
+		public static bool UseTimestampPrefix
+			=> !string.IsNullOrEmpty(TimestampFormat) && TimestampFormat != NoTimestampFormat;
+
 		#endregion
 
 		#region Public Methods

@@ -407,9 +407,11 @@ namespace MegaBuild
 
 						if (this.executableBuildSteps.Length > 0)
 						{
-							this.buildThread = new Thread(new ThreadStart(this.ExecuteBackgroundBuild));
-							this.buildThread.IsBackground = true;
-							this.buildThread.Name = "BuildThread-" + this.Title;
+							this.buildThread = new Thread(new ThreadStart(this.ExecuteBackgroundBuild))
+							{
+								IsBackground = true,
+								Name = "BuildThread-" + this.Title,
+							};
 							this.buildThread.Start();
 						}
 						else

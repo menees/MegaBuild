@@ -11,7 +11,12 @@ namespace MegaBuild
 	{
 		#region Constructors
 
-		internal OutputAddedEventArgs(string message, int indent, Color color, bool highlight, Guid outputId)
+		public OutputAddedEventArgs(string message, int indent, Color color)
+			: this(message, indent, color, false, Guid.Empty)
+		{
+		}
+
+		public OutputAddedEventArgs(string message, int indent, Color color, bool highlight, Guid outputId)
 		{
 			this.Message = message;
 			this.Indent = indent;
@@ -33,6 +38,20 @@ namespace MegaBuild
 		public string Message { get; }
 
 		public Guid OutputId { get; }
+
+		#endregion
+
+		#region Public Methods
+
+		public bool IsFormatEqual(OutputAddedEventArgs args)
+		{
+			bool result = args != null
+				&& this.Color == args.Color
+				&& this.Highlight == args.Highlight
+				&& this.Indent == args.Indent
+				&& this.OutputId == args.OutputId;
+			return result;
+		}
 
 		#endregion
 	}

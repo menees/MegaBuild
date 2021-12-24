@@ -27,9 +27,6 @@ namespace MegaBuild
 	{
 		#region Private Data Members
 
-		// Don't use \t because the Text Object Model (in OutputWindow) uses huge tab stops, so indents don't line up with tab stops.
-		private const string TimestampPrefixSeparator = "    ";
-
 		private static readonly Color FailedOrTimedOutColor = Color.FromArgb(255, 75, 75);
 
 		private readonly CommandLineArgs commandLineArgs = new();
@@ -37,6 +34,7 @@ namespace MegaBuild
 		private readonly IFindTarget findTarget;
 		private readonly ToolStripMenuItem firstListContextMenuItem;
 		private readonly Stopwatch currentStepTimer = new();
+		private readonly OutputQueue outputQueue;
 		private readonly AnsiCodeHandler ansiCodeHandler = new();
 		private bool loading;
 
@@ -53,9 +51,10 @@ namespace MegaBuild
 
 			this.firstListContextMenuItem = (ToolStripMenuItem)this.listContextMenu.Items[0];
 
-			this.outputWindow.RemoveLinePrefix = RemoveTimestampPrefix;
+			this.outputWindow.RemoveLinePrefix = OutputQueue.RemoveTimestampPrefix;
 			this.outputWindow.OwnerWindow = this;
 			this.findTarget = this.outputWindow;
+			this.outputQueue = new(this.outputWindow, this.ansiCodeHandler);
 
 			this.OnIdle(this, EventArgs.Empty);
 		}
@@ -63,9 +62,6 @@ namespace MegaBuild
 		#endregion
 
 		#region Private Properties
-
-		private static bool UseTimestampPrefix
-			=> !string.IsNullOrEmpty(Options.TimestampFormat) && Options.TimestampFormat != Options.NoTimestampFormat;
 
 		private ExtendedListView ActiveListView => this.IsBuildStep ? this.lstBuildSteps : this.lstFailureSteps;
 
@@ -190,6 +186,28 @@ namespace MegaBuild
 
 		#endregion
 
+		#region Protected Methods
+
+		/// <summary>
+		/// Clean up any resources being used.
+		/// </summary>
+		protected override void Dispose(bool disposing)
+		{
+			if (disposing)
+			{
+				if (this.components != null)
+				{
+					this.components.Dispose();
+				}
+
+				this.outputQueue.Dispose();
+			}
+
+			base.Dispose(disposing);
+		}
+
+		#endregion
+
 		#region Private Methods
 
 		[Conditional("DEBUG")]
@@ -283,44 +301,6 @@ namespace MegaBuild
 					subItem.Text = text;
 				}
 			}
-		}
-
-		private static string GenerateTimestampPrefix()
-		{
-			string result = null;
-
-			if (UseTimestampPrefix)
-			{
-				result = DateTime.UtcNow.ToLocalTime().ToString(Options.TimestampFormat) + TimestampPrefixSeparator;
-			}
-
-			return result;
-		}
-
-		private static string RemoveTimestampPrefix(string line)
-		{
-			string result = line;
-
-			if (!string.IsNullOrWhiteSpace(result) && UseTimestampPrefix)
-			{
-				result = result.Trim();
-				int tabIndex = result.IndexOf(TimestampPrefixSeparator);
-				if (tabIndex > 0 && (tabIndex + 1) < result.Length)
-				{
-					string prefix = result.Substring(0, tabIndex);
-					if (DateTime.TryParseExact(
-						prefix,
-						Options.TimestampFormat,
-						CultureInfo.CurrentCulture,
-						DateTimeStyles.NoCurrentDateDefault,
-						out _))
-					{
-						result = result.Substring(tabIndex + 1);
-					}
-				}
-			}
-
-			return result;
 		}
 
 		private void ApplyOptions()
@@ -1021,21 +1001,13 @@ namespace MegaBuild
 			// come through after the Close() method has been called.
 			if (!this.Splitter.IsDisposed)
 			{
-				string timestamp = GenerateTimestampPrefix();
-				if (!string.IsNullOrEmpty(timestamp))
-				{
-					this.outputWindow.Append(timestamp, Color.LightSteelBlue, e.Indent, false, Guid.Empty);
-				}
-
-				foreach ((string text, Color color) in this.ansiCodeHandler.Split(e.Message, e.Color, () => SystemColors.Window))
-				{
-					this.outputWindow.Append(text, color, e.Indent, e.Highlight, e.OutputId);
-				}
+				this.outputQueue.Add(e);
 			}
 		}
 
 		private void OnOutputCleared(object sender, EventArgs e)
 		{
+			this.outputQueue.Clear();
 			this.outputWindow.Clear();
 		}
 

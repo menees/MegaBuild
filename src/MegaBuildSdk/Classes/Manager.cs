@@ -28,6 +28,8 @@ namespace MegaBuild
 
 		#region Private Data Members
 
+		private static readonly char IndentChar = IndentString[0];
+
 		private static readonly object LockToken = new();
 		private static readonly ImageList Images = new();
 		private static readonly Dictionary<string, string> VariablesMap = new(StringComparer.CurrentCultureIgnoreCase);
@@ -206,26 +208,19 @@ namespace MegaBuild
 				// Unfortunately, color, highlight, and id information is lost when caching the output this way...
 				for (int i = 0; i < indent; i++)
 				{
-					output.Append(IndentString);
+					output.Append(IndentChar);
 				}
 
 				output.Append(message);
 			}
 
-			// Send these to the main window in a thread-safe way. By using BeginInvoke on the main form, we
-			// force the callbacks to occur on the GUI thread.
+			// Send these to the main window on the current thread. It'll figure out whether the output needs
+			// to be buffered and/or marshaled to the GUI thread.
 			var outputAdded = OutputAdded;
 			if (outputAdded != null)
 			{
 				OutputAddedEventArgs e = new(message, indent, color, highlight, outputId);
-				if (mainForm != null)
-				{
-					mainForm.BeginInvoke(outputAdded, new object[] { null, e });
-				}
-				else
-				{
-					outputAdded(null, e);
-				}
+				outputAdded(null, e);
 			}
 		}
 

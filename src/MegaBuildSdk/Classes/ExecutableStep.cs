@@ -337,11 +337,11 @@ namespace MegaBuild
 			if (this.customOutputStyles != null && this.customOutputStyles.Count > 0)
 			{
 				XmlKey container = key.AddSubkey(nameof(this.CustomOutputStyles));
-				foreach (var tuple in this.customOutputStyles)
+				foreach ((OutputStyle style, Regex pattern) in this.customOutputStyles)
 				{
 					XmlKey entry = container.AddSubkey("Output");
-					entry.SetValue(nameof(tuple.Style), tuple.Style);
-					entry.SetValue(nameof(tuple.Pattern), tuple.Pattern.ToString());
+					entry.SetValue("Style", style);
+					entry.SetValue("Pattern", pattern.ToString());
 				}
 			}
 		}
@@ -673,7 +673,9 @@ namespace MegaBuild
 				{
 					foreach ((OutputStyle customStyle, Regex regex) in this.customOutputStyles)
 					{
+#pragma warning disable CC0081 // Use of Regex.IsMatch might be improved. TryParseRegex creates a compiled Regex.
 						if (regex.IsMatch(output))
+#pragma warning restore CC0081 // Use of Regex.IsMatch might be improved
 						{
 							style = customStyle;
 							appliedCustom = true;
