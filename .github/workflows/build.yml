@@ -8,18 +8,24 @@ on:
 
 jobs:
   build:
-    runs-on: windows-latest
+    runs-on: windows-2022
 
     steps:
     - uses: actions/checkout@v2
     
     - name: Add MSBuild to PATH
-      uses: microsoft/setup-msbuild@v1
-      
+      uses: microsoft/setup-msbuild@v1.1
+      with:
+          vs-prerelease: true
+            
     - name: Build everything
       run: |
         & .\eng\build.ps1 -build $true
       
+    - name: Run unit tests
+      run: |
+        & .\eng\build.ps1 -build $false -test $true
+        
     - name: Test artifact publishing
       run: |
         & .\eng\build.ps1 -build $false -publish $true
