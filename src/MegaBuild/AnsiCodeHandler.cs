@@ -60,7 +60,7 @@
 			this.foregroundColor = null;
 		}
 
-		public IEnumerable<(string Text, Color Color)> Split(string text, Color defaultColor, Func<Color> getCurrentBackground)
+		public IEnumerable<(string Text, Color Color)> Split(string text, Color defaultColor, Func<Color>? getCurrentBackground)
 		{
 			// Most text won't contain ANSI escape codes, so try to short circuit and return quickly.
 			MatchCollection matches;
@@ -118,7 +118,7 @@
 		/// and https://www.codeproject.com/Articles/34328/A-Hue-Brightness-Color-Wheel-Style-Chart-for-Syste
 		/// </remarks>
 		[SuppressMessage("Design", "MEN010:Avoid magic numbers", Justification = "ANSI SGR codes don't have standard names, just effects.")]
-		private bool TryProcessArg(byte arg, Color defaultColor, Func<Color> getCurrentBackground)
+		private bool TryProcessArg(byte arg, Color defaultColor, Func<Color>? getCurrentBackground)
 		{
 			bool result = true;
 
@@ -171,7 +171,7 @@
 			return result;
 		}
 
-		private void TryColor(Color requestedColor, Func<Color> getCurrentBackground)
+		private void TryColor(Color requestedColor, Func<Color>? getCurrentBackground)
 		{
 			// If the requestedColor matches the current background color in ARGB value, then make it darker or lighter.
 			// We only compare by ARGB values because .NET Color values will be considered non-equal if a named color

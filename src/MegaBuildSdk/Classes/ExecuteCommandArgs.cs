@@ -47,9 +47,9 @@ namespace MegaBuild
 
 		#region Public Properties
 
-		public Func<string, bool> AllowErrorLine { get; set; }
+		public Func<string, bool>? AllowErrorLine { get; set; }
 
-		public Func<string, bool> AllowOutputLine { get; set; }
+		public Func<string, bool>? AllowOutputLine { get; set; }
 
 		public string Arguments { get; set; }
 
@@ -69,7 +69,7 @@ namespace MegaBuild
 
 		public ProcessWindowStyle WindowStyle { get; set; }
 
-		public string WorkingDirectory { get; set; }
+		public string? WorkingDirectory { get; set; }
 
 		public IDictionary<string, string> EnvironmentVariables { get; } = new Dictionary<string, string>();
 

@@ -97,7 +97,7 @@ namespace MegaBuild
 
 		public XmlKey GetSubkey(string subkeyType) => this.GetSubkey(subkeyType, string.Empty);
 
-		public XmlKey GetSubkey(string subkeyType, string xmlKeyName) => new(this.GetSubkeyNode(subkeyType, xmlKeyName, false));
+		public XmlKey GetSubkey(string subkeyType, string xmlKeyName) => new(this.GetSubkeyNode(subkeyType, xmlKeyName));
 
 		public XmlKey[] GetSubkeys()
 		{
@@ -115,9 +115,15 @@ namespace MegaBuild
 
 		public string GetValue(string name, string defaultValue)
 		{
-			XAttribute attr = this.element.Attribute(name);
+			string result = this.GetValueN(name, defaultValue) ?? defaultValue;
+			return result;
+		}
 
-			string result = defaultValue;
+		public string? GetValueN(string name, string? defaultValue)
+		{
+			XAttribute? attr = this.element.Attribute(name);
+
+			string? result = defaultValue;
 			if (attr != null)
 			{
 				result = attr.Value;
@@ -171,8 +177,8 @@ namespace MegaBuild
 			//
 			// In v4.1.1 the VSVersion values switched from an initial v to V to make StyleCop happy.
 			// So we'll also ignore case here to make sure an old v2013 value loads as V2013.
-			string textValue = this.GetValue(name, null);
-			if (!string.IsNullOrEmpty(textValue) && !Enum.TryParse<TEnum>(textValue, true, out result))
+			string? textValue = this.GetValueN(name, null);
+			if (!string.IsNullOrEmpty(textValue) && !Enum.TryParse(textValue, true, out result))
 			{
 				result = defaultValue;
 			}
@@ -192,7 +198,7 @@ namespace MegaBuild
 			}
 		}
 
-		public void SetValue(string name, string value)
+		public void SetValue(string name, string? value)
 		{
 			SetValue(this.element, name, value);
 		}
@@ -229,13 +235,13 @@ namespace MegaBuild
 
 		#region Private Methods
 
-		private static void SetValue(XElement element, string name, string value)
+		private static void SetValue(XElement element, string name, string? value)
 		{
-			string escapedValue = null;
+			string? escapedValue = null;
 
 			// Treat an empty value the same as a null value, so we only write attributes with non-empty values.
 			// Note: JScript's escape(null) returns "undefined" (which sucks), but escape(string.Empty) returns string.Empty.
-			if (!string.IsNullOrEmpty(value))
+			if (value.IsNotEmpty())
 			{
 				// We're using attributes to store arbitrary string values, so we have to escape them first to preserve whitespace.
 				// Otherwise, all XML DOMs will normalize the whitespace in ways we don't want (e.g., removing leading/trailing
@@ -271,15 +277,15 @@ namespace MegaBuild
 			return result;
 		}
 
-		private XElement GetSubkeyNode(string subkeyType, string xmlKeyName, bool allowNull)
+		private XElement GetSubkeyNode(string subkeyType, string xmlKeyName)
 		{
 			// This must treat null and empty XmlKeyNames as equal.  We don't write out empty
 			// XmlKeyNames, so they'll be read back in as null, which we'll default to empty
 			// (on both sides of the comparison).
-			XElement result = this.element.Elements(subkeyType)
+			XElement? result = this.element.Elements(subkeyType)
 				.FirstOrDefault(e => e.GetAttributeValue(nameof(this.XmlKeyName), string.Empty) == (xmlKeyName ?? string.Empty));
 
-			if (result == null && !allowNull)
+			if (result == null)
 			{
 				result = this.AddSubkeyNode(subkeyType, xmlKeyName);
 			}

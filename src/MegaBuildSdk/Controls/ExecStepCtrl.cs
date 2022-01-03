@@ -15,7 +15,7 @@ namespace MegaBuild
 	{
 		#region Private Data Members
 
-		private ExecutableStep step;
+		private ExecutableStep? step;
 
 		#endregion
 
@@ -60,15 +60,21 @@ namespace MegaBuild
 
 		public override bool OnOk()
 		{
-			this.step.IgnoreFailure = this.chkIgnoreFailure.Checked;
-			this.step.WaitForCompletion = this.chkWaitForCompletion.Checked;
-			this.step.OnlyIfParentSucceeded = this.chkOnlyIfParentSucceeded.Checked;
-			this.step.PromptFirst = this.chkPromptFirst.Checked;
-			this.step.Timeout = this.chkTimeout.Checked;
-			this.step.TimeoutMinutes = (int)this.numTimeout.Value;
-			this.step.IsAdministratorRequired = this.chkRunAsAdministrator.Checked;
+			bool result = false;
 
-			return true;
+			if (this.step != null)
+			{
+				this.step.IgnoreFailure = this.chkIgnoreFailure.Checked;
+				this.step.WaitForCompletion = this.chkWaitForCompletion.Checked;
+				this.step.OnlyIfParentSucceeded = this.chkOnlyIfParentSucceeded.Checked;
+				this.step.PromptFirst = this.chkPromptFirst.Checked;
+				this.step.Timeout = this.chkTimeout.Checked;
+				this.step.TimeoutMinutes = (int)this.numTimeout.Value;
+				this.step.IsAdministratorRequired = this.chkRunAsAdministrator.Checked;
+				result = true;
+			}
+
+			return result;
 		}
 
 		#endregion
@@ -87,9 +93,12 @@ namespace MegaBuild
 
 		private void UpdateControlStates()
 		{
-			this.chkWaitForCompletion.Enabled = this.step.SupportsWaitForCompletion;
-			this.chkTimeout.Enabled = this.step.SupportsTimeout && this.chkWaitForCompletion.Checked;
-			this.numTimeout.Enabled = this.chkTimeout.Enabled && this.chkTimeout.Checked;
+			if (this.step != null)
+			{
+				this.chkWaitForCompletion.Enabled = this.step.SupportsWaitForCompletion;
+				this.chkTimeout.Enabled = this.step.SupportsTimeout && this.chkWaitForCompletion.Checked;
+				this.numTimeout.Enabled = this.chkTimeout.Enabled && this.chkTimeout.Checked;
+			}
 		}
 
 		#endregion

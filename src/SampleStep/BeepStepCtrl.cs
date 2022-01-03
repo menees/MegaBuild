@@ -17,7 +17,7 @@ namespace SampleStep
 	{
 		#region Private Data Members
 
-		private BeepStep step;
+		private BeepStep? step;
 
 		#endregion
 
@@ -34,7 +34,7 @@ namespace SampleStep
 
 		public override string DisplayName => "Beep";
 
-		public BeepStep Step
+		public BeepStep? Step
 		{
 			get => this.step;
 
@@ -43,9 +43,11 @@ namespace SampleStep
 				if (this.step != value)
 				{
 					this.step = value;
-
-					this.edtFrequency.Value = this.step.Frequency;
-					this.edtDuration.Value = this.step.Duration;
+					if (this.step != null)
+					{
+						this.edtFrequency.Value = this.step.Frequency;
+						this.edtDuration.Value = this.step.Duration;
+					}
 				}
 			}
 		}
@@ -56,9 +58,13 @@ namespace SampleStep
 
 		public override bool OnOk()
 		{
-			this.step.Frequency = (int)this.edtFrequency.Value;
-			this.step.Duration = (int)this.edtDuration.Value;
-			return true;
+			if (this.step != null)
+			{
+				this.step.Frequency = (int)this.edtFrequency.Value;
+				this.step.Duration = (int)this.edtDuration.Value;
+			}
+
+			return this.step != null;
 		}
 
 		#endregion

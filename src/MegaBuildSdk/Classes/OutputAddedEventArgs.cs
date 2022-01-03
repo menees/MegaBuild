@@ -43,7 +43,7 @@ namespace MegaBuild
 
 		#region Public Methods
 
-		public bool IsFormatEqual(OutputAddedEventArgs args)
+		public bool IsFormatEqual(OutputAddedEventArgs? args)
 		{
 			bool result = args != null
 				&& this.Color == args.Color

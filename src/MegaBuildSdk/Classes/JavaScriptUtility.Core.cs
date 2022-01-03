@@ -19,7 +19,7 @@
 		public static string Escape(object value)
 		{
 			// Note: This code was decompiled from .NET Framework's Microsoft.JScript v10.0.0.0 GlobalObject.escape().
-			string text = Convert.ToString(value);
+			string text = Convert.ToString(value) ?? string.Empty;
 			const string HexDigits = "0123456789ABCDEF";
 			int length = text.Length;
 			StringBuilder stringBuilder = new(length * 2);
@@ -82,7 +82,7 @@
 				return -1;
 			}
 
-			string text = Convert.ToString(value);
+			string text = Convert.ToString(value) ?? string.Empty;
 			int length = text.Length;
 			StringBuilder stringBuilder = new(length);
 			int num = -1;

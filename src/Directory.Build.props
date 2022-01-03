@@ -9,31 +9,50 @@
 		<GenerateSerializationAssemblies>Off</GenerateSerializationAssemblies>
 		<SignAssembly>true</SignAssembly>
 		<LangVersion>latest</LangVersion>
-		<Copyright>Copyright © 2003-2021 Bill Menees</Copyright>
+		<Copyright>Copyright © 2003-$([System.DateTime]::UtcNow.ToString(`yyyy`)) Bill Menees</Copyright>
 
-		<!-- When TargetFrameworks changes, also update the MegaBuild\Properties\PublishProfiles\*.pubxml files. -->
-		<TargetFrameworks>net6.0-windows;net48</TargetFrameworks>
+		<!-- When TargetFrameworks changes, also update the app's Properties\PublishProfiles\*.pubxml files. -->
+		<TargetFrameworks>net48;net6.0-windows</TargetFrameworks>
 		<UseWindowsForms>true</UseWindowsForms>
 
-		<CodeAnalysisRuleSet>$(SolutionDir)\src\MegaBuild.ruleset</CodeAnalysisRuleSet>
-		<AssemblyOriginatorKeyFile>$(SolutionDir)\src\MegaBuild.snk</AssemblyOriginatorKeyFile>
+		<RepoSrcFolder>$(MSBuildThisFileDirectory)</RepoSrcFolder>
+		<CodeAnalysisRuleSet>$(RepoSrcFolder)MegaBuild.ruleset</CodeAnalysisRuleSet>
+		<AssemblyOriginatorKeyFile>$(RepoSrcFolder)MegaBuild.snk</AssemblyOriginatorKeyFile>
 		<GenerateResourceUsePreserializedResources>true</GenerateResourceUsePreserializedResources>
+		<UseCustomCodeAnalyzers>true</UseCustomCodeAnalyzers>
+		<Nullable>enable</Nullable>
+		<TreatWarningsAsErrors>true</TreatWarningsAsErrors>
+		<ProduceReferenceAssembly>false</ProduceReferenceAssembly>
 
 		<!-- Make the assembly, file, and NuGet package versions the same. -->
-		<Version>4.6.1</Version>
+		<Version>4.6.2</Version>
 	</PropertyGroup>
 
 	<PropertyGroup Condition="'$(Configuration)'=='Debug'">
 		<DefineConstants>DEBUG;TRACE</DefineConstants>
 		<CheckForOverflowUnderflow>true</CheckForOverflowUnderflow>
+
+		<!-- Only set the BuildTime's date in Debug builds, so it doesn't force a rebuild every time.-->
+		<!-- https://stackoverflow.com/a/6656553/1882616 -->
+		<BuildTime Condition="'$(BuildTime)' == ''">$([System.DateTime]::UtcNow.ToString(`yyyy-MM-dd 00:00:00Z`))</BuildTime>
 	</PropertyGroup>
 
 	<PropertyGroup Condition="'$(Configuration)'=='Release'">
 		<DefineConstants>TRACE</DefineConstants>
+
+		<!-- Set the full BuildTime in Release builds. It will cause a rebuild, but the AssemblyMetadata will be correct. -->
+		<BuildTime Condition="'$(BuildTime)' == ''">$([System.DateTime]::UtcNow.ToString(`yyyy-MM-dd HH:mm:ssZ`))</BuildTime>
 	</PropertyGroup>
 
 	<ItemGroup>
+		<AssemblyMetadata Condition="'$(BuildTime)' != ''" Include="BuildTime" Value="$(BuildTime)" />
+	</ItemGroup>
+
+	<ItemGroup>
 		<PackageReference Include="System.Resources.Extensions" Version="6.0.0"/>
+	</ItemGroup>
+
+	<ItemGroup Condition="$(UseCustomCodeAnalyzers)">
 		<PackageReference Include="codecracker.CSharp" Version="1.1.0">
 			<PrivateAssets>all</PrivateAssets>
 			<IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
@@ -46,7 +65,7 @@
 			<PrivateAssets>all</PrivateAssets>
 			<IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
 		</PackageReference>
-		<PackageReference Include="StyleCop.Analyzers" Version="1.2.0-beta.354">
+		<PackageReference Include="StyleCop.Analyzers" Version="1.2.0-beta.376">
 			<PrivateAssets>all</PrivateAssets>
 			<IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
 		</PackageReference>

@@ -36,8 +36,8 @@
 		private readonly ConcurrentQueue<(OutputAddedEventArgs Args, DateTimeOffset Added)> queue;
 		private readonly Timer timer;
 
-		private string previousTimestamp;
-		private OutputAddedEventArgs previousArgs;
+		private string? previousTimestamp;
+		private OutputAddedEventArgs? previousArgs;
 
 		#endregion
 
@@ -160,7 +160,7 @@
 		}
 
 		// This handler is always invoked on the UI thread.
-		private void Timer_Tick(object sender, EventArgs ea)
+		private void Timer_Tick(object? sender, EventArgs ea)
 		{
 			this.EnableTimer(false);
 
@@ -169,7 +169,7 @@
 				List<OutputAddedEventArgs> segments = this.GetOutputSegments();
 
 				List<OutputAddedEventArgs> formatEqual = new(segments.Count);
-				OutputAddedEventArgs previousSegment = null;
+				OutputAddedEventArgs? previousSegment = null;
 				foreach (OutputAddedEventArgs segment in segments)
 				{
 					// This has to "split" at differences instead of using "group by" because
@@ -193,7 +193,7 @@
 			List<OutputAddedEventArgs> segments = new();
 
 			bool useTimestamps = Options.UseTimestampPrefix;
-			string invisibleTimestamp = null;
+			string? invisibleTimestamp = null;
 
 			while (this.queue.TryDequeue(out (OutputAddedEventArgs Args, DateTimeOffset Added) output))
 			{

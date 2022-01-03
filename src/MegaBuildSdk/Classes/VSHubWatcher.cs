@@ -21,7 +21,7 @@ namespace MegaBuild
 
 		private static readonly Version FixedVsHubVersion = new(14, 0, 23304, 0);
 
-		private readonly string devEnvPath;
+		private readonly string? devEnvPath;
 
 		#endregion
 
@@ -77,7 +77,7 @@ namespace MegaBuild
 		{
 			get
 			{
-				string vsHubClientDll = Path.Combine(Path.GetDirectoryName(this.devEnvPath), @"PrivateAssemblies\Microsoft.VsHub.Client.dll");
+				string vsHubClientDll = Path.Combine(Path.GetDirectoryName(this.devEnvPath) ?? string.Empty, @"PrivateAssemblies\Microsoft.VsHub.Client.dll");
 				bool result = File.Exists(vsHubClientDll);
 				if (result)
 				{

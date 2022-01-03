@@ -22,7 +22,7 @@ namespace MegaBuild
 	{
 		#region Private Data Members
 
-		private VSStep step;
+		private VSStep? step;
 
 		#endregion
 
@@ -76,7 +76,7 @@ namespace MegaBuild
 			{
 				WindowsUtility.ShowError(this, "You must select at least one configuration to build.");
 			}
-			else
+			else if (this.step != null)
 			{
 				this.step.Solution = this.edtSolution.Text;
 				this.step.Action = (VSAction)this.cbAction.SelectedIndex;
@@ -105,7 +105,7 @@ namespace MegaBuild
 
 		private static string[] GetConfigurationsFromSolution(string solutionFile, ref VSVersion solutionVersion)
 		{
-			string[] configurations = null;
+			string[]? configurations = null;
 
 			solutionFile = Manager.ExpandVariables(solutionFile);
 			if (File.Exists(solutionFile))
@@ -130,7 +130,7 @@ namespace MegaBuild
 						version = version.Substring(VersionLinePrefix.Length).Trim();
 
 						// See if we support the solution version.
-						VSVersionInfo versionInfo = GetSolutionVersion(version, lines);
+						VSVersionInfo? versionInfo = GetSolutionVersion(version, lines);
 						if (versionInfo != null)
 						{
 							solutionVersion = versionInfo.Version;
@@ -143,7 +143,7 @@ namespace MegaBuild
 			return configurations ?? CollectionUtility.EmptyArray<string>();
 		}
 
-		private static VSVersionInfo GetSolutionVersion(string version, IEnumerable<string> lines)
+		private static VSVersionInfo? GetSolutionVersion(string version, IEnumerable<string> lines)
 		{
 			// Get the solution version.  Use InvariantInfo since we know the
 			// version number always has a '.' separator.  We don't want this to
@@ -151,7 +151,7 @@ namespace MegaBuild
 			decimal solutionVersionNumber = decimal.Parse(version, NumberFormatInfo.InvariantInfo);
 
 			VSVersionInfo[] versions = VSVersionInfo.AllVersions.Where(v => v.SolutionVersion == solutionVersionNumber).ToArray();
-			VSVersionInfo result = null;
+			VSVersionInfo? result = null;
 			if (versions.Length > 0)
 			{
 				// VS 2002 through VS 2012 use distinct solution versions.
@@ -178,7 +178,7 @@ namespace MegaBuild
 					// VS 2022
 					// 		Microsoft Visual Studio Solution File, Format Version 12.00
 					// 		# Visual Studio Version 17
-					string versionComment = lines.FirstOrDefault(line => line.StartsWith("# Visual Studio "));
+					string? versionComment = lines.FirstOrDefault(line => line.StartsWith("# Visual Studio "));
 					if (!string.IsNullOrEmpty(versionComment))
 					{
 						result = versions.FirstOrDefault(v => versionComment.EndsWith(v.SolutionCommentVersion)) ?? versions[0];

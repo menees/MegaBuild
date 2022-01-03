@@ -24,7 +24,7 @@
 
 		private static readonly string[] BaseSolutionTargets = { string.Empty, "Rebuild", "Clean" };
 
-		private MSBuildStep step;
+		private MSBuildStep? step;
 
 		#endregion
 
@@ -40,8 +40,8 @@
 			foreach (string name in names)
 			{
 				string value = name;
-				DescriptionAttribute description = type.GetMember(name)
-					.Select(m => (DescriptionAttribute)m.GetCustomAttribute(typeof(DescriptionAttribute)))
+				DescriptionAttribute? description = type.GetMember(name)
+					.Select(m => (DescriptionAttribute?)m.GetCustomAttribute(typeof(DescriptionAttribute)))
 					.FirstOrDefault();
 				if (description != null)
 				{
@@ -135,7 +135,7 @@
 					}
 				}
 
-				if (result)
+				if (result && this.step != null)
 				{
 					this.step.ProjectFile = projectFile;
 					this.step.WorkingDirectory = this.edtWorkingDirectory.Text.Trim();
@@ -155,7 +155,7 @@
 
 		#region Private Methods
 
-		private static string FindSolutionTargets(string fileName)
+		private static string? FindSolutionTargets(string fileName)
 		{
 			// According to the MSBuild Command Line Reference (http://msdn.microsoft.com/en-us/library/ms164311.aspx)
 			// the projects referenced by a solution file can be listed as targets if they are colon-suffixed with one of VS's
@@ -164,7 +164,7 @@
 								where line.StartsWith("Project(\"")
 								select line;
 
-			string result = null;
+			string? result = null;
 			if (projectLines.FirstOrDefault() != null)
 			{
 				StringBuilder sb = new("Solution Targets:");
@@ -225,8 +225,8 @@
 		private void SelectWorkingDirectory_Click(object sender, EventArgs e)
 		{
 			string initialFolder = Manager.ExpandVariables(this.edtWorkingDirectory.Text);
-			string selectedFolder = WindowsUtility.SelectFolder(this, "Select Working Directory", initialFolder);
-			if (!string.IsNullOrEmpty(selectedFolder))
+			string? selectedFolder = WindowsUtility.SelectFolder(this, "Select Working Directory", initialFolder);
+			if (selectedFolder.IsNotEmpty())
 			{
 				this.edtWorkingDirectory.Text = Manager.CollapseVariables(selectedFolder);
 			}
@@ -234,7 +234,7 @@
 
 		private void ShowProperties_Click(object sender, EventArgs e)
 		{
-			string message = null;
+			string? message = null;
 			string fileName = this.ExpandedProjectFileName;
 			if (!File.Exists(fileName))
 			{
@@ -252,8 +252,8 @@
 					foreach (var g in groups)
 					{
 						sb.Append("Property Group: ");
-						string condition = (string)g.Attribute("Condition");
-						if (!string.IsNullOrEmpty(condition))
+						string? condition = (string?)g.Attribute("Condition");
+						if (condition.IsNotEmpty())
 						{
 							sb.Append(condition);
 						}
@@ -284,7 +284,7 @@
 
 		private void ShowTargets_Click(object sender, EventArgs e)
 		{
-			string message = null;
+			string? message = null;
 			string fileName = this.ExpandedProjectFileName;
 			if (!File.Exists(fileName))
 			{
@@ -299,7 +299,7 @@
 				XElement doc = XElement.Load(fileName);
 				XNamespace ns = doc.Name.Namespace;
 				var targets = from t in doc.Elements(XName.Get("Target", ns.NamespaceName))
-								where !string.IsNullOrEmpty((string)t.Attribute("Name"))
+								where !string.IsNullOrEmpty((string?)t.Attribute("Name"))
 								select t;
 
 				StringBuilder sb = new();
@@ -308,7 +308,7 @@
 					sb.AppendLine("Project Target(s):");
 					foreach (XElement t in targets)
 					{
-						sb.AppendLine((string)t.Attribute("Name"));
+						sb.AppendLine((string?)t.Attribute("Name"));
 					}
 				}
 				else if (doc.Elements(XName.Get("Import", ns.NamespaceName)).FirstOrDefault() != null)
@@ -316,8 +316,8 @@
 					sb.AppendLine("The project file only contains imported targets.");
 				}
 
-				string defaultTargets = (string)doc.Attribute("DefaultTargets");
-				if (!string.IsNullOrEmpty(defaultTargets))
+				string? defaultTargets = (string?)doc.Attribute("DefaultTargets");
+				if (defaultTargets.IsNotEmpty())
 				{
 					if (sb.Length > 0)
 					{

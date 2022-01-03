@@ -37,16 +37,16 @@ namespace MegaBuild
 		private static readonly Dictionary<string, StepTypeInfo> TypeNameToStepTypeInfo
 			= new(StringComparer.CurrentCultureIgnoreCase);
 
-		private static Form mainForm;
+		private static Form? mainForm;
 		private static StringBuilder output = new();
 
 		#endregion
 
 		#region Public Events
 
-		public static event EventHandler<OutputAddedEventArgs> OutputAdded;
+		public static event EventHandler<OutputAddedEventArgs>? OutputAdded;
 
-		public static event EventHandler OutputCleared;
+		public static event EventHandler? OutputCleared;
 
 		#endregion
 
@@ -75,7 +75,7 @@ namespace MegaBuild
 			{
 				if (mainForm != null)
 				{
-					mainForm.BeginInvoke(outputCleared, new object[] { null, EventArgs.Empty });
+					mainForm.BeginInvoke(outputCleared, new object?[] { null, EventArgs.Empty });
 				}
 				else
 				{
@@ -116,7 +116,7 @@ namespace MegaBuild
 			}
 		}
 
-		public static string ExpandVariables(string text)
+		public static string ExpandVariables(string? text)
 		{
 			lock (LockToken)
 			{
@@ -124,7 +124,7 @@ namespace MegaBuild
 				foreach (KeyValuePair<string, string> entry in combinedVariables)
 				{
 					// If the string is initially empty or becomes empty, then we can quit.
-					if (string.IsNullOrEmpty(text))
+					if (text.IsEmpty())
 					{
 						break;
 					}
@@ -144,7 +144,7 @@ namespace MegaBuild
 					text = Environment.ExpandEnvironmentVariables(text);
 				}
 
-				return text;
+				return text ?? string.Empty;
 			}
 		}
 
@@ -167,7 +167,7 @@ namespace MegaBuild
 
 				// Load variables
 				VariablesMap.Clear();
-				ISettingsNode node = key.GetSubNode(nameof(Variables), false);
+				ISettingsNode? node = key.TryGetSubNode(nameof(Variables));
 				if (node != null)
 				{
 					IList<string> names = node.GetSettingNames();
@@ -234,7 +234,7 @@ namespace MegaBuild
 				key.DeleteSubNode(nameof(Variables));
 				if (VariablesMap.Count > 0)
 				{
-					ISettingsNode varNode = key.GetSubNode(nameof(Variables), true);
+					ISettingsNode varNode = key.GetSubNode(nameof(Variables));
 					foreach (KeyValuePair<string, string> entry in VariablesMap)
 					{
 						varNode.SetValue(entry.Key, entry.Value);
@@ -255,11 +255,11 @@ namespace MegaBuild
 			}
 		}
 
-		internal static StepTypeInfo GetStepTypeInfo(string fullTypeName)
+		internal static StepTypeInfo? GetStepTypeInfo(string fullTypeName)
 		{
 			lock (LockToken)
 			{
-				TypeNameToStepTypeInfo.TryGetValue(fullTypeName, out StepTypeInfo result);
+				TypeNameToStepTypeInfo.TryGetValue(fullTypeName, out StepTypeInfo? result);
 				return result;
 			}
 		}
@@ -297,10 +297,10 @@ namespace MegaBuild
 					{
 						// Some classes may need to do availability checks.
 						bool available = true;
-						MethodInfo checkAvailability = type.GetMethod("CheckAvailability", BindingFlags.Static | BindingFlags.Public);
+						MethodInfo? checkAvailability = type.GetMethod("CheckAvailability", BindingFlags.Static | BindingFlags.Public);
 						if (checkAvailability != null)
 						{
-							string reasonUnavailable = (string)checkAvailability.Invoke(null, CollectionUtility.EmptyArray<object>());
+							string? reasonUnavailable = (string?)checkAvailability.Invoke(null, CollectionUtility.EmptyArray<object>());
 							if (!string.IsNullOrEmpty(reasonUnavailable))
 							{
 								available = false;
@@ -311,7 +311,7 @@ namespace MegaBuild
 
 						if (available)
 						{
-							TypeNameToStepTypeInfo.Add(type.FullName, new StepTypeInfo(type));
+							TypeNameToStepTypeInfo.Add(type.FullName ?? string.Empty, new StepTypeInfo(type));
 						}
 					}
 				}
@@ -327,7 +327,7 @@ namespace MegaBuild
 			CacheAssemblyStepTypes(thisAsm, true);
 
 			// Now scan all the Dlls in the application's directory.
-			string[] dllNames = Directory.GetFileSystemEntries(Path.GetDirectoryName(Application.ExecutablePath), "*.dll");
+			string[] dllNames = Directory.GetFileSystemEntries(Path.GetDirectoryName(Application.ExecutablePath) ?? string.Empty, "*.dll");
 			foreach (string dllName in dllNames)
 			{
 				Assembly asm = Assembly.LoadFrom(dllName);

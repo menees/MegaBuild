@@ -16,7 +16,7 @@ namespace MegaBuild
 	{
 		#region Private Data Members
 
-		private OutputStep step;
+		private OutputStep? step;
 
 		#endregion
 
@@ -62,7 +62,7 @@ namespace MegaBuild
 			{
 				WindowsUtility.ShowError(this, "You must enter a message to be output.");
 			}
-			else
+			else if (this.step != null)
 			{
 				this.step.Message = this.txtMessage.Text;
 				this.step.IncludeTimestamp = this.chkIncludeTimestamp.Checked;

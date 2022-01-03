@@ -181,7 +181,7 @@ namespace MegaBuild
 			}
 		}
 
-		public override string[] GetCustomVerbs()
+		public override string[]? GetCustomVerbs()
 			=> this.IsBatchFile ? new string[] { "Edit Batch File" } : base.GetCustomVerbs();
 
 		[SuppressMessage("Usage", "CC0022:Should dispose object", Justification = "Caller disposes new controls.")]

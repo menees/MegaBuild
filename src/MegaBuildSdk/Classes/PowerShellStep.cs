@@ -24,8 +24,8 @@ namespace MegaBuild
 
 		private static readonly char[] InvalidPathCharacters = Path.GetInvalidPathChars();
 
-		private string command;
-		private string workingDirectory;
+		private string? command;
+		private string? workingDirectory;
 		private PowerShell shell;
 		private bool treatErrorStreamAsOutput;
 
@@ -42,13 +42,13 @@ namespace MegaBuild
 
 		#region Public Properties
 
-		public string Command
+		public string? Command
 		{
 			get => this.command;
 			set => this.SetValue(ref this.command, value);
 		}
 
-		public string WorkingDirectory
+		public string? WorkingDirectory
 		{
 			get => this.workingDirectory;
 			set => this.SetValue(ref this.workingDirectory, value);
@@ -78,8 +78,8 @@ namespace MegaBuild
 
 				try
 				{
-					string unquotedCommand = this.GetExpandedCommand(true);
-					if (!unquotedCommand.Any(ch => InvalidPathCharacters.Contains(ch)))
+					string? unquotedCommand = this.GetExpandedCommand(true);
+					if (unquotedCommand != null && !unquotedCommand.Any(ch => InvalidPathCharacters.Contains(ch)))
 					{
 						string extension = Path.GetExtension(unquotedCommand);
 						result = string.Compare(extension, ".ps1", true) == 0;
@@ -164,7 +164,7 @@ namespace MegaBuild
 			}
 		}
 
-		public override string[] GetCustomVerbs()
+		public override string[]? GetCustomVerbs()
 			=> this.IsScript ? new string[] { "Edit Script" } : base.GetCustomVerbs();
 
 		[SuppressMessage("Usage", "CC0022:Should dispose object", Justification = "Caller disposes new controls.")]
@@ -181,8 +181,8 @@ namespace MegaBuild
 		protected internal override void Load(XmlKey key)
 		{
 			base.Load(key);
-			this.Command = key.GetValue(nameof(this.Command), this.Command);
-			this.WorkingDirectory = key.GetValue(nameof(this.WorkingDirectory), this.WorkingDirectory);
+			this.Command = key.GetValueN(nameof(this.Command), this.Command);
+			this.WorkingDirectory = key.GetValueN(nameof(this.WorkingDirectory), this.WorkingDirectory);
 			this.Shell = key.GetValue(nameof(this.Shell), this.Shell);
 			this.TreatErrorStreamAsOutput = key.GetValue(nameof(this.TreatErrorStreamAsOutput), this.TreatErrorStreamAsOutput);
 		}
@@ -200,9 +200,9 @@ namespace MegaBuild
 
 		#region Private Methods
 
-		private static string SearchPath(string fileName)
+		private static string? SearchPath(string fileName)
 		{
-			string result = null;
+			string? result = null;
 
 			string[] pathEntries = (Environment.GetEnvironmentVariable("PATH") ?? string.Empty)
 				.Split(new[] { ';' }, StringSplitOptions.RemoveEmptyEntries)

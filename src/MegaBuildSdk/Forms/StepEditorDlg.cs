@@ -20,7 +20,7 @@ namespace MegaBuild
 
 		private static readonly Type[] TabsToSkipOnEdit = { typeof(GeneralStepCtrl), typeof(ExecStepCtrl), typeof(ExecOutputCtrl) };
 
-		private ICollection<StepEditorControl> editorControls;
+		private ICollection<StepEditorControl> editorControls = Array.Empty<StepEditorControl>();
 
 		#endregion
 

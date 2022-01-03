@@ -28,7 +28,7 @@ namespace MegaBuild
 			else
 			{
 				this.Name = stepType.Name;
-				this.Description = stepType.FullName;
+				this.Description = stepType.FullName ?? string.Empty;
 				this.ImageIndex = -1;
 			}
 		}

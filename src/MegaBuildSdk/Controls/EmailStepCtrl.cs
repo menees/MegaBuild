@@ -17,7 +17,7 @@ namespace MegaBuild
 	{
 		#region Private Data Members
 
-		private EmailStep step;
+		private EmailStep? step;
 
 		#endregion
 
@@ -74,7 +74,7 @@ namespace MegaBuild
 			{
 				WindowsUtility.ShowError(this, "You must enter something that can be emailed (e.g. Subject, Message, or Append Output).");
 			}
-			else
+			else if (this.step != null)
 			{
 				this.step.From = this.edtFrom.Text;
 				this.step.To = this.edtTo.Text;

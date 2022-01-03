@@ -6,6 +6,7 @@ namespace MegaBuild
 	using System.Collections;
 	using System.Collections.Generic;
 	using System.Drawing;
+	using System.Linq;
 	using Menees;
 
 	#endregion
@@ -89,7 +90,7 @@ namespace MegaBuild
 				if (stepTypeName.Length > 0)
 				{
 					// The StepTypeInfo might not be available (e.g. if the step type's static CheckAvailability() method made the step unavailable).
-					StepTypeInfo info = Manager.GetStepTypeInfo(stepTypeName);
+					StepTypeInfo? info = Manager.GetStepTypeInfo(stepTypeName);
 					if (info != null)
 					{
 						Step step = project.CreateStep(category, info);
@@ -134,13 +135,9 @@ namespace MegaBuild
 
 		internal void ResetStatuses()
 		{
-			foreach (Step step in this.steps)
+			foreach (ExecutableStep executableStep in this.steps.OfType<ExecutableStep>())
 			{
-				ExecutableStep executableStep = step as ExecutableStep;
-				if (executableStep != null)
-				{
-					executableStep.ResetStatus();
-				}
+				executableStep.ResetStatus();
 			}
 		}
 

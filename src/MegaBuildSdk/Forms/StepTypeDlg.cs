@@ -5,6 +5,7 @@ namespace MegaBuild
 	using System;
 	using System.Collections;
 	using System.ComponentModel;
+	using System.Diagnostics.CodeAnalysis;
 	using System.Drawing;
 	using System.Windows.Forms;
 	using Menees;
@@ -25,7 +26,7 @@ namespace MegaBuild
 
 		#region Public Methods
 
-		public bool Execute(IWin32Window owner, out StepTypeInfo resultInfo)
+		public bool Execute(IWin32Window owner, [MaybeNullWhen(false)] out StepTypeInfo resultInfo)
 		{
 			// Add all the available types to the list
 			StepTypeInfo[] typeInfos = Manager.GetStepTypeInfos();

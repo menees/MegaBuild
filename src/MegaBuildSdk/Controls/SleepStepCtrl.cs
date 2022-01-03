@@ -16,7 +16,7 @@ namespace MegaBuild
 	{
 		#region Private Data Members
 
-		private SleepStep step;
+		private SleepStep? step;
 
 		#endregion
 
@@ -52,8 +52,14 @@ namespace MegaBuild
 
 		public override bool OnOk()
 		{
-			this.step.SleepTimeMilliseconds = (int)this.edtSleepTimeMilliseconds.Value;
-			return true;
+			bool result = false;
+			if (this.step != null)
+			{
+				this.step.SleepTimeMilliseconds = (int)this.edtSleepTimeMilliseconds.Value;
+				result = true;
+			}
+
+			return result;
 		}
 
 		#endregion

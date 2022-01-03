@@ -16,7 +16,7 @@ namespace MegaBuild
 	{
 		#region Private Data Members
 
-		private Step step;
+		private Step? step;
 
 		#endregion
 
@@ -60,7 +60,7 @@ namespace MegaBuild
 			{
 				WindowsUtility.ShowError(this, "You must enter a name for the step.");
 			}
-			else
+			else if (this.step != null)
 			{
 				this.step.Name = name;
 				this.step.Description = this.txtDescription.Text;

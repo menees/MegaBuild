@@ -48,7 +48,7 @@ namespace MegaBuild
 
 		#region Constructors
 
-		private VSVersionInfo(VSVersion version, string variable, decimal internalVersion, int solutionVersion, string solutionCommentVersion = null)
+		private VSVersionInfo(VSVersion version, string? variable, decimal internalVersion, int solutionVersion, string? solutionCommentVersion = null)
 		{
 			this.Version = version;
 			this.ToolsVariable = variable;
@@ -77,7 +77,7 @@ namespace MegaBuild
 
 		#region Private Properties
 
-		private string ToolsVariable { get; }
+		private string? ToolsVariable { get; }
 
 		private decimal InternalVersion { get; }
 
@@ -95,7 +95,7 @@ namespace MegaBuild
 			return result;
 		}
 
-		public bool TryGetDevEnvPath(bool useExe, out string devEnvPath)
+		public bool TryGetDevEnvPath(bool useExe, [MaybeNullWhen(false)] out string devEnvPath)
 		{
 			bool result;
 
@@ -117,7 +117,7 @@ namespace MegaBuild
 
 		private bool TryGetPathFromToolsVariable(bool useExe, out string devEnvPath)
 		{
-			devEnvPath = Environment.ExpandEnvironmentVariables(this.ToolsVariable);
+			devEnvPath = Environment.ExpandEnvironmentVariables(this.ToolsVariable ?? string.Empty);
 			bool expandedVariable = devEnvPath != this.ToolsVariable;
 
 			if (expandedVariable && this.Version == VSVersion.V2002)
@@ -137,7 +137,7 @@ namespace MegaBuild
 			return result;
 		}
 
-		private bool TryGetPathFromSetupConfiguration(bool useExe, out string devEnvPath)
+		private bool TryGetPathFromSetupConfiguration(bool useExe, [MaybeNullWhen(false)] out string devEnvPath)
 		{
 			devEnvPath = VisualStudioUtility.ResolvePath(
 				ver => @"Common7\IDE\DevEnv." + (useExe ? "exe" : "com"),

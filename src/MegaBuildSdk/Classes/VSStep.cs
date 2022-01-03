@@ -31,7 +31,7 @@ namespace MegaBuild
 		private string devEnvArguments = string.Empty;
 		private string solution = string.Empty;
 		private string stepInformation = string.Empty;
-		private VSStepExecuteArgs stepExecuteArgs;
+		private VSStepExecuteArgs? stepExecuteArgs;
 
 		#endregion
 
@@ -140,7 +140,7 @@ namespace MegaBuild
 				VSConfigurationList configurations = this.GetExecutableConfigurations();
 				bool overrideConfigurations = this.Project.OverrideVSStepConfigurations;
 
-				string slnName = Path.GetFileNameWithoutExtension(Manager.ExpandVariables(this.Solution));
+				string? slnName = Path.GetFileNameWithoutExtension(Manager.ExpandVariables(this.Solution));
 
 				// Build each configuration.
 				int numConfigurations = configurations.Count;
@@ -413,7 +413,7 @@ namespace MegaBuild
 
 		private string GenerateCommand(VSVersionInfo executableVersion, bool useExe)
 		{
-			if (!executableVersion.TryGetDevEnvPath(useExe, out string devEnvPath))
+			if (!executableVersion.TryGetDevEnvPath(useExe, out string? devEnvPath))
 			{
 				string message =
 					string.IsNullOrEmpty(devEnvPath)
@@ -422,7 +422,7 @@ namespace MegaBuild
 				this.Project.OutputLine(message, OutputColors.Warning, 0, true);
 			}
 
-			return TextUtility.EnsureQuotes(devEnvPath);
+			return TextUtility.EnsureQuotes(devEnvPath ?? string.Empty);
 		}
 
 		private string GenerateSolutionPath() => TextUtility.EnsureQuotes(Manager.ExpandVariables(this.Solution));
@@ -500,7 +500,7 @@ namespace MegaBuild
 
 		private void IgnorePackageLoadErrors(ExecuteCommandArgs cmdArgs)
 		{
-			string[] packageErrorsToIgnore = null;
+			string[]? packageErrorsToIgnore = null;
 			switch (this.Version)
 			{
 				case VSVersion.V2010:

@@ -26,8 +26,8 @@ namespace MegaBuild
 		private bool modified;
 		private int level;
 		private int updateLevel;
-		private Step parent;
-		private StepCollection categorySteps;
+		private Step? parent;
+		private StepCollection? categorySteps;
 		private string description = string.Empty;
 		private string name = string.Empty;
 
@@ -103,7 +103,7 @@ namespace MegaBuild
 			set => this.SetValue(ref this.name, value);
 		}
 
-		public Step Parent
+		public Step? Parent
 		{
 			get => this.parent;
 			set => this.SetValue(ref this.parent, value);
@@ -144,7 +144,7 @@ namespace MegaBuild
 		{
 		}
 
-		public virtual string[] GetCustomVerbs() => null;
+		public virtual string[]? GetCustomVerbs() => null;
 
 		public int GetIndex() => this.CategorySteps.IndexOf(this);
 

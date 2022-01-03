@@ -30,11 +30,11 @@ namespace MegaBuild
 
 		#region Private Properties
 
-		private ListViewItem SelectedItem
+		private ListViewItem? SelectedItem
 		{
 			get
 			{
-				ListViewItem result = null;
+				ListViewItem? result = null;
 
 				if (this.lstVariables.SelectedIndices.Count > 0)
 				{
@@ -89,7 +89,7 @@ namespace MegaBuild
 				Options.OutputWindowOnRight = this.chkOutputWindowOnRight.Checked;
 				Manager.ParseOutputCommands = this.chkParseOutputCommands.Checked;
 				Options.ShowProgressInTaskbar = this.chkShowProgressInTaskbar.Checked;
-				Options.TimestampFormat = Convert.ToString(this.timestampFormat.SelectedItem);
+				Options.TimestampFormat = Convert.ToString(this.timestampFormat.SelectedItem) ?? Options.DefaultTimestampFormat;
 
 				// Save variables
 				Manager.Variables.Clear();
@@ -127,7 +127,7 @@ namespace MegaBuild
 
 		private void Delete_Click(object sender, EventArgs e)
 		{
-			ListViewItem item = this.SelectedItem;
+			ListViewItem? item = this.SelectedItem;
 			if (item != null)
 			{
 				item.Remove();
@@ -197,7 +197,7 @@ namespace MegaBuild
 
 		private void UpdateSelectedItem(TextBox data, int subItemIndex, bool addPercents)
 		{
-			ListViewItem item = this.SelectedItem;
+			ListViewItem? item = this.SelectedItem;
 			if (item != null)
 			{
 				string dataText = data.Text;

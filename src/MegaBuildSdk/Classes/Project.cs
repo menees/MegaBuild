@@ -36,14 +36,14 @@ namespace MegaBuild
 
 		// Build Data
 		private DateTime buildStart;
-		private Thread buildThread;
+		private Thread? buildThread;
 		private string comments = string.Empty;
 
 		// Runtime-only data
-		private System.ComponentModel.Container components;
-		private ExecutableStep[] executableBuildSteps;
-		private ExecutableStep[] executableFailureSteps;
-		private StepExecuteArgs executeArgs;
+		private System.ComponentModel.Container? components;
+		private ExecutableStep[]? executableBuildSteps;
+		private ExecutableStep[]? executableFailureSteps;
+		private StepExecuteArgs? executeArgs;
 
 		// Persisted data and options
 		// Note: If you add a data member here, then make sure you
@@ -97,29 +97,29 @@ namespace MegaBuild
 
 		#region Public Events
 
-		public event EventHandler BuildFailed;
+		public event EventHandler? BuildFailed;
 
-		public event EventHandler<BuildProgressEventArgs> BuildProgress;
+		public event EventHandler<BuildProgressEventArgs>? BuildProgress;
 
-		public event EventHandler BuildStarted;
+		public event EventHandler? BuildStarted;
 
-		public event CancelEventHandler BuildStarting;
+		public event CancelEventHandler? BuildStarting;
 
-		public event EventHandler BuildStopped;
+		public event EventHandler? BuildStopped;
 
-		public event EventHandler ContentsReset;
+		public event EventHandler? ContentsReset;
 
-		public event EventHandler ContentsResetting;
+		public event EventHandler? ContentsResetting;
 
-		public event EventHandler DisplayComments;
+		public event EventHandler? DisplayComments;
 
-		public event EventHandler FileNameSet;
+		public event EventHandler? FileNameSet;
 
-		public event EventHandler ModifiedChanged;
+		public event EventHandler? ModifiedChanged;
 
-		public event EventHandler<ProjectStepsChangedEventArgs> ProjectStepsChanged;
+		public event EventHandler<ProjectStepsChangedEventArgs>? ProjectStepsChanged;
 
-		public event EventHandler RecentFileAdded;
+		public event EventHandler? RecentFileAdded;
 
 		#endregion
 
@@ -235,7 +235,7 @@ namespace MegaBuild
 					this.cachedVariables.Clear();
 
 					// Currently, we only support the $(ProjectDir) token.
-					string projectDir = Path.GetDirectoryName(this.FileName);
+					string? projectDir = Path.GetDirectoryName(this.FileName);
 					if (!string.IsNullOrEmpty(projectDir) && projectDir.EndsWith(@"\"))
 					{
 						projectDir = projectDir.Substring(0, projectDir.Length - 1);
@@ -275,25 +275,25 @@ namespace MegaBuild
 		[DefaultValue(null)]
 		[Category("Helper Objects")]
 		[Description("The form that asynchronous events should be invoked on.")]
-		public Form Form { get; set; }
+		public Form? Form { get; set; }
 
 		[Browsable(true)]
 		[DefaultValue(null)]
 		[Category("Helper Objects")]
 		[Description("The dialog to use when opening a file.")]
-		public OpenFileDialog OpenFileDialog { get; set; }
+		public OpenFileDialog? OpenFileDialog { get; set; }
 
 		[Browsable(true)]
 		[DefaultValue(null)]
 		[Category("Helper Objects")]
 		[Description("The recent file list manager.")]
-		public RecentItemList RecentFiles { get; set; }
+		public RecentItemList? RecentFiles { get; set; }
 
 		[Browsable(true)]
 		[DefaultValue(null)]
 		[Category("Helper Objects")]
 		[Description("The dialog to use when saving a file.")]
-		public SaveFileDialog SaveFileDialog { get; set; }
+		public SaveFileDialog? SaveFileDialog { get; set; }
 
 		#endregion
 
@@ -384,7 +384,7 @@ namespace MegaBuild
 						using (ConfirmStepsDlg dialog = new())
 						{
 							bool autoConfirm = (options & BuildOptions.AutoConfirmSteps) != 0;
-							if (autoConfirm || dialog.Execute(this.Form, ref stepsToConfirm, ref failureStepsToConfirm))
+							if (autoConfirm || (this.Form != null && dialog.Execute(this.Form, ref stepsToConfirm, ref failureStepsToConfirm)))
 							{
 								// Combine confirmed steps and build steps.
 								stepsToBuild = this.CombineConfirmedSteps(StepCategory.Build, stepsToBuild, stepsToConfirm);
@@ -609,15 +609,15 @@ namespace MegaBuild
 			}
 		}
 
-		public Step InsertStep(IWin32Window owner, string caption, StepCategory category, int index)
+		public Step? InsertStep(IWin32Window owner, string caption, StepCategory category, int index)
 		{
-			Step result = null;
+			Step? result = null;
 
 			// Choose a step type
 			using (StepTypeDlg typeDlg = new())
 			{
 				typeDlg.Text = caption;
-				if (typeDlg.Execute(owner, out StepTypeInfo info))
+				if (typeDlg.Execute(owner, out StepTypeInfo? info))
 				{
 					// Create an instance of the step type
 					Step step = this.CreateStep(category, info);
@@ -1106,14 +1106,14 @@ namespace MegaBuild
 		internal static decimal GetVersion(XElement element)
 		{
 			XElement root = element;
-			XElement parent = root.Parent;
+			XElement? parent = root.Parent;
 			while (parent != null)
 			{
 				root = parent;
 				parent = root.Parent;
 			}
 
-			string version = root.GetAttributeValue("ProjectVersion", null) ?? root.GetAttributeValue("CopyVersion", null);
+			string? version = root.GetAttributeValueN("ProjectVersion", null) ?? root.GetAttributeValueN("CopyVersion", null);
 			if (!decimal.TryParse(version, out decimal result))
 			{
 				result = 0;
@@ -1125,7 +1125,8 @@ namespace MegaBuild
 		internal Step CreateStep(StepCategory category, StepTypeInfo info)
 		{
 			object[] constructorParams = { this, category, info };
-			return (Step)Activator.CreateInstance(info.StepType, constructorParams);
+			return (Step?)Activator.CreateInstance(info.StepType, constructorParams)
+				?? throw Exceptions.NewArgumentException($"Unable to create instance of {info.StepType}.");
 		}
 
 		internal void RuntimeStepValueChanged(Step step)
@@ -1146,7 +1147,7 @@ namespace MegaBuild
 		protected override void Dispose(bool disposing)
 		{
 			base.Dispose(disposing);
-			this.components.Dispose();
+			this.components?.Dispose();
 			Manager.RemoveProject(this);
 		}
 
@@ -1193,7 +1194,7 @@ namespace MegaBuild
 			stepsToConfirm = stepsToConfirmList.ToArray();
 		}
 
-		private static void SetInCurrentBuild(ExecutableStep[] steps, bool state)
+		private static void SetInCurrentBuild(ExecutableStep[]? steps, bool state)
 		{
 			if (steps != null)
 			{
@@ -1227,7 +1228,7 @@ namespace MegaBuild
 			}
 		}
 
-		private BuildStatus BuildExecutableSteps(ExecutableStep[] steps, string finalProgressMessage)
+		private BuildStatus BuildExecutableSteps(ExecutableStep[]? steps, string finalProgressMessage)
 		{
 			BuildStatus result = BuildStatus.Succeeded;
 
@@ -1236,7 +1237,7 @@ namespace MegaBuild
 			{
 				result = this.status;
 			}
-			else
+			else if (steps != null)
 			{
 				int baseIndent = this.indentOutput;
 				try
@@ -1272,7 +1273,7 @@ namespace MegaBuild
 							bool execute = false;
 							try
 							{
-								execute = step.Execute(this.executeArgs);
+								execute = step.Execute(this.executeArgs ?? StepExecuteArgs.Empty);
 							}
 							catch (Exception ex)
 							{
@@ -1553,7 +1554,7 @@ namespace MegaBuild
 			this.FireEventHandler(this.DisplayComments);
 		}
 
-		private void FireEventHandler(Delegate eventHandler)
+		private void FireEventHandler(Delegate? eventHandler)
 		{
 			if (eventHandler != null)
 			{

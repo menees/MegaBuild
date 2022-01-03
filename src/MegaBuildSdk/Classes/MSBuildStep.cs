@@ -22,14 +22,14 @@
 	{
 		#region Private Data Members
 
-		private string commandLineOptions;
-		private string projectFile;
-		private Dictionary<string, string> properties;
-		private string[] targets;
+		private string? commandLineOptions;
+		private string? projectFile;
+		private Dictionary<string, string>? properties;
+		private string[]? targets;
 		private MSBuildToolsVersion toolsVersion;
 		private bool use32BitProcess;
 		private MSBuildVerbosity verbosity = MSBuildVerbosity.Normal;
-		private string workingDirectory;
+		private string? workingDirectory;
 
 		#endregion
 
@@ -44,13 +44,13 @@
 
 		#region Public Properties
 
-		public string CommandLineOptions
+		public string? CommandLineOptions
 		{
 			get => this.commandLineOptions;
 			set => this.SetValue(ref this.commandLineOptions, value);
 		}
 
-		public string ProjectFile
+		public string? ProjectFile
 		{
 			get => this.projectFile;
 			set => this.SetValue(ref this.projectFile, value);
@@ -68,7 +68,7 @@
 				{
 					foreach (KeyValuePair<string, string> pair in currentValues)
 					{
-						if (!newValues.TryGetValue(pair.Key, out string newValue) || pair.Value != newValue)
+						if (!newValues.TryGetValue(pair.Key, out string? newValue) || pair.Value != newValue)
 						{
 							areEqual = false;
 							break;
@@ -133,7 +133,7 @@
 			set => this.SetValue(ref this.verbosity, value);
 		}
 
-		public string WorkingDirectory
+		public string? WorkingDirectory
 		{
 			get => this.workingDirectory;
 			set => this.SetValue(ref this.workingDirectory, value);
@@ -224,11 +224,11 @@
 		{
 			base.Load(key);
 
-			this.ProjectFile = key.GetValue(nameof(this.ProjectFile), this.ProjectFile);
-			this.WorkingDirectory = key.GetValue(nameof(this.WorkingDirectory), this.WorkingDirectory);
+			this.ProjectFile = key.GetValueN(nameof(this.ProjectFile), this.ProjectFile);
+			this.WorkingDirectory = key.GetValueN(nameof(this.WorkingDirectory), this.WorkingDirectory);
 			this.Verbosity = key.GetValue(nameof(this.Verbosity), this.verbosity);
 			this.ToolsVersion = key.GetValue(nameof(this.ToolsVersion), this.toolsVersion);
-			this.CommandLineOptions = key.GetValue(nameof(this.CommandLineOptions), this.commandLineOptions);
+			this.CommandLineOptions = key.GetValueN(nameof(this.CommandLineOptions), this.commandLineOptions);
 			this.Use32BitProcess = key.GetValue(nameof(this.Use32BitProcess), this.use32BitProcess);
 
 			List<string> targets = new();
@@ -385,7 +385,7 @@
 				sb.Append(this.commandLineOptions).Append(' ');
 			}
 
-			sb.Append(TextUtility.EnsureQuotes(this.ProjectFile));
+			sb.Append(TextUtility.EnsureQuotes(this.ProjectFile ?? string.Empty));
 
 			return sb.ToString();
 		}
@@ -401,9 +401,9 @@
 
 		private string GetVsMsBuildBinPath(string msbuildVersion, params VSVersion[] vsVersionsInPreferenceOrder)
 		{
-			VSVersionInfo info = null;
+			VSVersionInfo? info = null;
 			bool foundDevEnv = false;
-			string devEnvPath = null;
+			string? devEnvPath = null;
 			foreach (VSVersion vsVersion in vsVersionsInPreferenceOrder)
 			{
 				info = VSVersionInfo.AllVersions.First(ver => ver.Version == vsVersion);
@@ -417,7 +417,7 @@
 				}
 			}
 
-			string ideFolder = Path.GetDirectoryName(Environment.ExpandEnvironmentVariables(devEnvPath));
+			string ideFolder = Path.GetDirectoryName(Environment.ExpandEnvironmentVariables(devEnvPath ?? string.Empty)) ?? string.Empty;
 			string relativePath = Path.Combine(ideFolder, @"..\..\MSBuild", msbuildVersion, "Bin");
 			string result = Path.GetFullPath(relativePath);
 			if (!this.Use32BitProcess)
@@ -428,7 +428,7 @@
 			if (!foundDevEnv)
 			{
 				string message =
-					$"MSBuild {msbuildVersion} cannot be found at {result}.  The {info.FullDisplayName} build tools do not appear to be installed" +
+					$"MSBuild {msbuildVersion} cannot be found at {result}.  The {info?.FullDisplayName} build tools do not appear to be installed" +
 					(string.IsNullOrEmpty(result) ? $"." : $" since \"{devEnvPath}\" does not exist.");
 				this.Project.OutputLine(message, OutputColors.Warning, 0, true);
 			}

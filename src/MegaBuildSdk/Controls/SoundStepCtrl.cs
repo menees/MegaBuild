@@ -18,7 +18,7 @@ namespace MegaBuild
 	{
 		#region Private Data Members
 
-		private SoundStep step;
+		private SoundStep? step;
 
 		#endregion
 
@@ -88,7 +88,7 @@ namespace MegaBuild
 			{
 				WindowsUtility.ShowError(this, "You must specify a .wav filename.");
 			}
-			else
+			else if (this.step != null)
 			{
 				if (this.rbSystemSound.Checked)
 				{

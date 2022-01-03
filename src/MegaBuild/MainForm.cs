@@ -80,13 +80,13 @@ namespace MegaBuild
 
 		private StepCategory SelectedCategory => this.IsBuildStep ? StepCategory.Build : StepCategory.Failure;
 
-		private Step SelectedStep => GetSelectedStep(this.ActiveListView);
+		private Step? SelectedStep => GetSelectedStep(this.ActiveListView);
 
 		#endregion
 
 		#region Internal Methods
 
-		internal void OnIdle(object sender, EventArgs e)
+		internal void OnIdle(object? sender, EventArgs e)
 		{
 			try
 			{
@@ -247,9 +247,9 @@ namespace MegaBuild
 			return string.Format("{0}{1}:{2:D2}:{3:D2}", prefix, (ts.Days * HoursPerDay) + ts.Hours, ts.Minutes, ts.Seconds);
 		}
 
-		private static Step GetSelectedStep(ListView list)
+		private static Step? GetSelectedStep(ListView list)
 		{
-			Step result = null;
+			Step? result = null;
 
 			// If there are 0 or >1 selections, return null.
 			// Then we don't need a separate method like IsSingleStepSelected.
@@ -377,7 +377,7 @@ namespace MegaBuild
 			this.project.Build(steps, options, StepExecuteArgs.Empty);
 		}
 
-		private void BuildTimer_Tick(object sender, EventArgs e)
+		private void BuildTimer_Tick(object? sender, EventArgs e)
 		{
 			// Update overall time.
 			if (this.project.Building)
@@ -409,7 +409,7 @@ namespace MegaBuild
 			this.outputWindow.Focus();
 		}
 
-		private void FormSave_LoadSettings(object sender, SettingsEventArgs e)
+		private void FormSave_LoadSettings(object? sender, SettingsEventArgs e)
 		{
 			this.loading = true;
 
@@ -425,7 +425,7 @@ namespace MegaBuild
 			// Load all the type information now.
 			try
 			{
-				Manager.Load(this, baseNode.GetSubNode(nameof(Manager), true));
+				Manager.Load(this, baseNode.GetSubNode(nameof(Manager)));
 			}
 			catch (Exception ex)
 			{
@@ -437,7 +437,7 @@ namespace MegaBuild
 			}
 
 			// Load app settings.
-			Options.Load(baseNode.GetSubNode(nameof(Options), true));
+			Options.Load(baseNode.GetSubNode(nameof(Options)));
 			this.ApplyOptions();
 
 			if (this.WindowState != FormWindowState.Minimized)
@@ -479,7 +479,7 @@ namespace MegaBuild
 			this.BeginInvoke(new EventHandler(this.OnFinishedLoading), new object[] { this, EventArgs.Empty });
 		}
 
-		private void FormSave_SaveSettings(object sender, SettingsEventArgs e)
+		private void FormSave_SaveSettings(object? sender, SettingsEventArgs e)
 		{
 			// Only save out the options if we finished loading successfully.
 			// If an exception occurred during loading, then the settings probably
@@ -488,8 +488,8 @@ namespace MegaBuild
 			if (!this.loading)
 			{
 				ISettingsNode baseNode = e.SettingsNode;
-				Manager.Save(baseNode.GetSubNode(nameof(Manager), true));
-				Options.Save(baseNode.GetSubNode(nameof(Options), true));
+				Manager.Save(baseNode.GetSubNode(nameof(Manager)));
+				Options.Save(baseNode.GetSubNode(nameof(Options)));
 				baseNode.SetValue("SplitterPos", this.Splitter.SplitterDistance);
 			}
 		}
@@ -499,7 +499,7 @@ namespace MegaBuild
 		private Step[] GetSelectedSteps() => GetSelectedSteps(this.ActiveListView);
 
 		[SuppressMessage("Usage", "CC0022:Should dispose object", Justification = "Caller disposes new menu items.")]
-		private void ListContextMenu_Opening(object sender, CancelEventArgs e)
+		private void ListContextMenu_Opening(object? sender, CancelEventArgs e)
 		{
 			// We must call this first to make sure all of the item states are set correctly.  If you right-click off of an item the
 			// selection changes and the Popup occurs before OnIdle gets a normal chance to fire.  So we have to force it.
@@ -512,20 +512,20 @@ namespace MegaBuild
 			}
 
 			// Add any new verbs, but only if a single step is selected.
-			Step step = this.SelectedStep;
+			Step? step = this.SelectedStep;
 			if (step != null)
 			{
 				// These verbs will all be enabled, even if we're building.
 				// If a verb isn't appropriate to use while building, then
 				// it shouldn't be returned.
-				string[] verbs = step.GetCustomVerbs();
+				string[]? verbs = step.GetCustomVerbs();
 				int numVerbs = verbs != null ? verbs.Length : 0;
 				if (numVerbs > 0)
 				{
 					EventHandler eh = new(this.OnCustomVerbClicked);
 					for (int i = 0; i < numVerbs; i++)
 					{
-						ToolStripMenuItem mi = new(verbs[i], null, eh);
+						ToolStripMenuItem mi = new(verbs![i], null, eh);
 						this.listContextMenu.Items.Insert(i, mi);
 					}
 
@@ -535,7 +535,7 @@ namespace MegaBuild
 			}
 		}
 
-		private void Steps_DoubleClick(object sender, EventArgs e)
+		private void Steps_DoubleClick(object? sender, EventArgs e)
 		{
 			if (!this.project.Building)
 			{
@@ -558,7 +558,7 @@ namespace MegaBuild
 			}
 		}
 
-		private void Steps_ItemCheck(object sender, ItemCheckEventArgs e)
+		private void Steps_ItemCheck(object? sender, ItemCheckEventArgs e)
 		{
 			if (!this.project.Building && sender is ExtendedListView list)
 			{
@@ -574,13 +574,13 @@ namespace MegaBuild
 			}
 		}
 
-		private void MainForm_Closed(object sender, EventArgs e)
+		private void MainForm_Closed(object? sender, EventArgs e)
 		{
 			// Make sure the build is stopped since the app is closing.
 			this.StopBuild();
 		}
 
-		private void MainForm_Closing(object sender, CancelEventArgs e)
+		private void MainForm_Closing(object? sender, CancelEventArgs e)
 		{
 			if (this.project.CanClose() != DialogResult.Yes)
 			{
@@ -588,9 +588,9 @@ namespace MegaBuild
 			}
 		}
 
-		private void MainForm_DragDrop(object sender, DragEventArgs e)
+		private void MainForm_DragDrop(object? sender, DragEventArgs e)
 		{
-			if (e.Data.GetDataPresent(DataFormats.FileDrop))
+			if (e.Data != null && e.Data.GetDataPresent(DataFormats.FileDrop))
 			{
 				string[] files = (string[])e.Data.GetData(DataFormats.FileDrop);
 				if (files.Length == 1)
@@ -604,10 +604,10 @@ namespace MegaBuild
 		}
 
 #pragma warning disable CC0091 // Use static method. Designer likes instance event handlers.
-		private void MainForm_DragEnter(object sender, DragEventArgs e)
+		private void MainForm_DragEnter(object? sender, DragEventArgs e)
 #pragma warning restore CC0091 // Use static method
 		{
-			if (e.Data.GetDataPresent(DataFormats.FileDrop))
+			if (e.Data != null && e.Data.GetDataPresent(DataFormats.FileDrop))
 			{
 				e.Effect = DragDropEffects.Copy;
 			}
@@ -617,18 +617,18 @@ namespace MegaBuild
 			}
 		}
 
-		private void About_Click(object sender, EventArgs e)
+		private void About_Click(object? sender, EventArgs e)
 		{
 			WindowsUtility.ShowAboutBox(this, Assembly.GetExecutingAssembly());
 		}
 
-		private void AddStep1_Click(object sender, EventArgs e)
+		private void AddStep1_Click(object? sender, EventArgs e)
 		{
 			int index = this.IsBuildStep ? this.project.BuildSteps.Count : this.project.FailureSteps.Count;
 			this.project.InsertStep(this, "Add Step", this.SelectedCategory, index);
 		}
 
-		private void ApplicationOptions_Click(object sender, EventArgs e)
+		private void ApplicationOptions_Click(object? sender, EventArgs e)
 		{
 			using (ApplicationOptionsDlg dlg = new())
 			{
@@ -639,9 +639,9 @@ namespace MegaBuild
 			}
 		}
 
-		private void BuildFromSelectedStep1_Click(object sender, EventArgs e)
+		private void BuildFromSelectedStep1_Click(object? sender, EventArgs e)
 		{
-			Step step = GetSelectedStep(this.lstBuildSteps);
+			Step? step = GetSelectedStep(this.lstBuildSteps);
 			if (step != null)
 			{
 				StepCollection steps = step.CategorySteps;
@@ -653,19 +653,19 @@ namespace MegaBuild
 			}
 		}
 
-		private void BuildProject_Click(object sender, EventArgs e)
+		private void BuildProject_Click(object? sender, EventArgs e)
 		{
 			this.BuildProject(BuildOptions.None);
 		}
 
-		private void BuildSelectedStepOnly1_Click(object sender, EventArgs e)
+		private void BuildSelectedStepOnly1_Click(object? sender, EventArgs e)
 		{
 			this.BuildSteps(GetSelectedSteps(this.ActiveListView), BuildOptions.ForceStepsToBeIncludedInBuild);
 		}
 
-		private void BuildToSelectedStep1_Click(object sender, EventArgs e)
+		private void BuildToSelectedStep1_Click(object? sender, EventArgs e)
 		{
-			Step step = GetSelectedStep(this.lstBuildSteps);
+			Step? step = GetSelectedStep(this.lstBuildSteps);
 			if (step != null)
 			{
 				int count = step.GetIndex() + 1;
@@ -676,18 +676,18 @@ namespace MegaBuild
 		}
 
 #pragma warning disable CC0091 // Use static method. Designer likes instance event handlers.
-		private void ClearOutputWindow_Click(object sender, EventArgs e)
+		private void ClearOutputWindow_Click(object? sender, EventArgs e)
 #pragma warning restore CC0091 // Use static method
 		{
 			ClearOutputWindow();
 		}
 
-		private void CopyOutput_Click(object sender, EventArgs e)
+		private void CopyOutput_Click(object? sender, EventArgs e)
 		{
 			this.outputWindow.Copy();
 		}
 
-		private void CopyStep_Click(object sender, EventArgs e)
+		private void CopyStep_Click(object? sender, EventArgs e)
 		{
 			// The Ctrl+C shortcut maps to here.
 			if (this.outputWindow.IsFocused)
@@ -704,7 +704,7 @@ namespace MegaBuild
 			}
 		}
 
-		private void CutStep_Click(object sender, EventArgs e)
+		private void CutStep_Click(object? sender, EventArgs e)
 		{
 			Step[] steps = this.GetSelectedSteps();
 			if (steps.Length > 0)
@@ -713,7 +713,7 @@ namespace MegaBuild
 			}
 		}
 
-		private void DeleteStep1_Click(object sender, EventArgs e)
+		private void DeleteStep1_Click(object? sender, EventArgs e)
 		{
 			Step[] steps = this.GetSelectedSteps();
 			if (steps.Length > 0)
@@ -738,16 +738,16 @@ namespace MegaBuild
 			}
 		}
 
-		private void EditStep1_Click(object sender, EventArgs e)
+		private void EditStep1_Click(object? sender, EventArgs e)
 		{
-			Step step = this.SelectedStep;
+			Step? step = this.SelectedStep;
 			if (step != null)
 			{
 				this.project.EditStep(this, step);
 			}
 		}
 
-		private void Exit_Click(object sender, EventArgs e)
+		private void Exit_Click(object? sender, EventArgs e)
 		{
 			this.Close();
 		}
@@ -761,32 +761,32 @@ namespace MegaBuild
 			}
 		}
 
-		private void FindInOutput_Click(object sender, EventArgs e)
+		private void FindInOutput_Click(object? sender, EventArgs e)
 		{
 			this.FindInOutput(FindMode.ShowDialog);
 		}
 
-		private void FindNextInOutput_Click(object sender, EventArgs e)
+		private void FindNextInOutput_Click(object? sender, EventArgs e)
 		{
 			this.FindInOutput(FindMode.FindNext);
 		}
 
-		private void FindPreviousInOutput_Click(object sender, EventArgs e)
+		private void FindPreviousInOutput_Click(object? sender, EventArgs e)
 		{
 			this.FindInOutput(FindMode.FindPrevious);
 		}
 
-		private void GoToNextHighlight_Click(object sender, EventArgs e)
+		private void GoToNextHighlight_Click(object? sender, EventArgs e)
 		{
 			this.outputWindow.FindNextHighlightPosition(true, true);
 		}
 
-		private void GoToPreviousHighlight_Click(object sender, EventArgs e)
+		private void GoToPreviousHighlight_Click(object? sender, EventArgs e)
 		{
 			this.outputWindow.FindNextHighlightPosition(false, true);
 		}
 
-		private void GoToStepOutput_Click(object sender, EventArgs e)
+		private void GoToStepOutput_Click(object? sender, EventArgs e)
 		{
 			if (this.SelectedStep is ExecutableStep step)
 			{
@@ -794,7 +794,7 @@ namespace MegaBuild
 			}
 		}
 
-		private void IncludeInBuild1_Click(object sender, EventArgs e)
+		private void IncludeInBuild1_Click(object? sender, EventArgs e)
 		{
 			Step[] steps = this.GetSelectedSteps();
 			if (steps.Length > 0)
@@ -810,7 +810,7 @@ namespace MegaBuild
 			}
 		}
 
-		private void Indent1_Click(object sender, EventArgs e)
+		private void Indent1_Click(object? sender, EventArgs e)
 		{
 			Step[] steps = this.GetSelectedSteps();
 			foreach (Step step in steps)
@@ -819,13 +819,13 @@ namespace MegaBuild
 			}
 		}
 
-		private void InsertStep1_Click(object sender, EventArgs e)
+		private void InsertStep1_Click(object? sender, EventArgs e)
 		{
 			int index = -1;
 
 			// If there's a single selected step OR if there are no steps
 			// then we can insert.  If multiple steps are selected, we can't.
-			Step step = this.SelectedStep;
+			Step? step = this.SelectedStep;
 			if (step != null)
 			{
 				index = step.GetIndex();
@@ -841,35 +841,35 @@ namespace MegaBuild
 			}
 		}
 
-		private void MoveDown1_Click(object sender, EventArgs e)
+		private void MoveDown1_Click(object? sender, EventArgs e)
 		{
-			Step step = this.SelectedStep;
+			Step? step = this.SelectedStep;
 			if (step != null)
 			{
 				this.project.MoveDown(step);
 			}
 		}
 
-		private void MoveUp1_Click(object sender, EventArgs e)
+		private void MoveUp1_Click(object? sender, EventArgs e)
 		{
-			Step step = this.SelectedStep;
+			Step? step = this.SelectedStep;
 			if (step != null)
 			{
 				this.project.MoveUp(step);
 			}
 		}
 
-		private void New_Click(object sender, EventArgs e)
+		private void New_Click(object? sender, EventArgs e)
 		{
 			this.project.New();
 		}
 
-		private void Open_Click(object sender, EventArgs e)
+		private void Open_Click(object? sender, EventArgs e)
 		{
 			this.project.Open();
 		}
 
-		private void PasteStep_Click(object sender, EventArgs e)
+		private void PasteStep_Click(object? sender, EventArgs e)
 		{
 			if (Project.CanPasteSteps)
 			{
@@ -877,7 +877,7 @@ namespace MegaBuild
 
 				// If there's a single selected step paste at its index.
 				// Otherwise, paste at the end.
-				Step step = this.SelectedStep;
+				Step? step = this.SelectedStep;
 				if (step != null)
 				{
 					index = step.GetIndex();
@@ -892,34 +892,34 @@ namespace MegaBuild
 			}
 		}
 
-		private void ProjectOptions_Click(object sender, EventArgs e)
+		private void ProjectOptions_Click(object? sender, EventArgs e)
 		{
 			this.project.DisplayOptions(this);
 		}
 
-		private void ResetAndClear_Click(object sender, EventArgs e)
+		private void ResetAndClear_Click(object? sender, EventArgs e)
 		{
 			this.ResetStatus_Click(sender, e);
 			this.ClearOutputWindow_Click(sender, e);
 		}
 
-		private void ResetStatus_Click(object sender, EventArgs e)
+		private void ResetStatus_Click(object? sender, EventArgs e)
 		{
 			this.project.ResetStatuses();
 			this.ResetStatusBar();
 		}
 
-		private void Save_Click(object sender, EventArgs e)
+		private void Save_Click(object? sender, EventArgs e)
 		{
 			this.project.Save(false);
 		}
 
-		private void SaveAs_Click(object sender, EventArgs e)
+		private void SaveAs_Click(object? sender, EventArgs e)
 		{
 			this.project.Save(true);
 		}
 
-		private void SaveOutputAs_Click(object sender, EventArgs e)
+		private void SaveOutputAs_Click(object? sender, EventArgs e)
 		{
 			if (this.saveOutputDlg.ShowDialog(this) == DialogResult.OK)
 			{
@@ -929,12 +929,12 @@ namespace MegaBuild
 			}
 		}
 
-		private void SelectAll_Click(object sender, EventArgs e)
+		private void SelectAll_Click(object? sender, EventArgs e)
 		{
 			this.outputWindow.SelectAll();
 		}
 
-		private void SelectAllSteps_Click(object sender, EventArgs e)
+		private void SelectAllSteps_Click(object? sender, EventArgs e)
 		{
 			// The Ctrl+A shortcut maps to here.
 			if (this.outputWindow.IsFocused)
@@ -950,12 +950,12 @@ namespace MegaBuild
 			}
 		}
 
-		private void StopBuild_Click(object sender, EventArgs e)
+		private void StopBuild_Click(object? sender, EventArgs e)
 		{
 			this.StopBuild();
 		}
 
-		private void Unindent1_Click(object sender, EventArgs e)
+		private void Unindent1_Click(object? sender, EventArgs e)
 		{
 			Step[] steps = this.GetSelectedSteps();
 			foreach (Step step in steps)
@@ -964,11 +964,11 @@ namespace MegaBuild
 			}
 		}
 
-		private void OnCustomVerbClicked(object sender, EventArgs e)
+		private void OnCustomVerbClicked(object? sender, EventArgs e)
 		{
 			if (sender is ToolStripMenuItem mi)
 			{
-				Step step = this.SelectedStep;
+				Step? step = this.SelectedStep;
 				if (step != null)
 				{
 					step.ExecuteCustomVerb(mi.Text);
@@ -976,7 +976,7 @@ namespace MegaBuild
 			}
 		}
 
-		private void OnFinishedLoading(object sender, EventArgs e)
+		private void OnFinishedLoading(object? sender, EventArgs e)
 		{
 			this.loading = false;
 
@@ -995,7 +995,7 @@ namespace MegaBuild
 			}
 		}
 
-		private void OnOutputAdded(object sender, OutputAddedEventArgs e)
+		private void OnOutputAdded(object? sender, OutputAddedEventArgs e)
 		{
 			// Command-line builds that use the /exit switch will have output
 			// come through after the Close() method has been called.
@@ -1005,7 +1005,7 @@ namespace MegaBuild
 			}
 		}
 
-		private void OnOutputCleared(object sender, EventArgs e)
+		private void OnOutputCleared(object? sender, EventArgs e)
 		{
 			this.outputQueue.Clear();
 			this.outputWindow.Clear();
@@ -1041,7 +1041,7 @@ namespace MegaBuild
 			}
 		}
 
-		private void Project_BuildFailed(object sender, EventArgs e)
+		private void Project_BuildFailed(object? sender, EventArgs e)
 		{
 			// Make the taskbar progress turn red even if there are no failure steps.
 			this.UpdateTaskbarProgress();
@@ -1054,7 +1054,7 @@ namespace MegaBuild
 			}
 		}
 
-		private void Project_BuildProgress(object sender, MegaBuild.BuildProgressEventArgs e)
+		private void Project_BuildProgress(object? sender, MegaBuild.BuildProgressEventArgs e)
 		{
 			this.spName.Text = e.Message;
 			this.ansiCodeHandler.Reset();
@@ -1067,7 +1067,7 @@ namespace MegaBuild
 			}
 		}
 
-		private void Project_BuildStarted(object sender, EventArgs e)
+		private void Project_BuildStarted(object? sender, EventArgs e)
 		{
 			// Reset status bar
 			this.ResetStatusBar();
@@ -1083,7 +1083,7 @@ namespace MegaBuild
 			this.lstFailureSteps.AllowItemCheck = false;
 		}
 
-		private void Project_BuildStarting(object sender, CancelEventArgs e)
+		private void Project_BuildStarting(object? sender, CancelEventArgs e)
 		{
 			// Save if necessary.
 			if (Options.SaveChangesBeforeBuild && this.project.Save(false) != DialogResult.Yes)
@@ -1098,7 +1098,7 @@ namespace MegaBuild
 			}
 		}
 
-		private void Project_BuildStopped(object sender, EventArgs e)
+		private void Project_BuildStopped(object? sender, EventArgs e)
 		{
 			// Stop the clock.
 			this.buildTimer.Enabled = false;
@@ -1131,12 +1131,12 @@ namespace MegaBuild
 			}
 		}
 
-		private void Project_ContentsReset(object sender, EventArgs e)
+		private void Project_ContentsReset(object? sender, EventArgs e)
 		{
 			this.ContentsReset();
 		}
 
-		private void Project_ContentsResetting(object sender, EventArgs e)
+		private void Project_ContentsResetting(object? sender, EventArgs e)
 		{
 			// We want any loading errors to still be displayed.
 			if (!this.loading)
@@ -1146,7 +1146,7 @@ namespace MegaBuild
 			}
 		}
 
-		private void Project_DisplayComments(object sender, EventArgs e)
+		private void Project_DisplayComments(object? sender, EventArgs e)
 		{
 			if (!Options.NeverShowProjectComments && !this.commandLineArgs.Build)
 			{
@@ -1154,17 +1154,17 @@ namespace MegaBuild
 			}
 		}
 
-		private void Project_FileNameSet(object sender, EventArgs e)
+		private void Project_FileNameSet(object? sender, EventArgs e)
 		{
 			this.UpdateWindowTitle();
 		}
 
-		private void Project_ModifiedChanged(object sender, EventArgs e)
+		private void Project_ModifiedChanged(object? sender, EventArgs e)
 		{
 			this.UpdateWindowTitle();
 		}
 
-		private void Project_ProjectStepsChanged(object sender, MegaBuild.ProjectStepsChangedEventArgs e)
+		private void Project_ProjectStepsChanged(object? sender, MegaBuild.ProjectStepsChangedEventArgs e)
 		{
 			switch (e.ChangeType)
 			{
@@ -1186,7 +1186,7 @@ namespace MegaBuild
 			}
 		}
 
-		private void Project_RecentFileAdded(object sender, EventArgs e)
+		private void Project_RecentFileAdded(object? sender, EventArgs e)
 		{
 			if (this.IsHandleCreated && TaskbarManager.IsPlatformSupported)
 			{
@@ -1241,7 +1241,7 @@ namespace MegaBuild
 			}
 		}
 
-		private void RecentFiles_FileClick(object sender, RecentItemClickEventArgs e)
+		private void RecentFiles_FileClick(object? sender, RecentItemClickEventArgs e)
 		{
 			if (File.Exists(e.Item))
 			{
@@ -1317,7 +1317,7 @@ namespace MegaBuild
 			this.project.StopBuild();
 		}
 
-		private void TabCtrl_SelectedIndexChanged(object sender, EventArgs e)
+		private void TabCtrl_SelectedIndexChanged(object? sender, EventArgs e)
 		{
 			this.ActiveListView.Focus();
 		}
@@ -1335,7 +1335,7 @@ namespace MegaBuild
 
 		private void UpdateListItem(ListViewItem item, Step step)
 		{
-			Debug.Assert(item.ListView != null, "The list item must already be in the ListView");
+			Conditions.RequireReference(item.ListView, nameof(item.ListView));
 
 			item.Tag = step;
 
@@ -1505,7 +1505,7 @@ namespace MegaBuild
 			this.Text = sb.ToString();
 		}
 
-		private void MainForm_Activated(object sender, EventArgs e)
+		private void MainForm_Activated(object? sender, EventArgs e)
 		{
 			DebugOutputLine(nameof(this.MainForm_Activated));
 

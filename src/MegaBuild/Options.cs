@@ -42,7 +42,7 @@ namespace MegaBuild
 
 		public static bool ShowProgressInTaskbar { get; set; }
 
-		public static string TimestampFormat { get; set; }
+		public static string TimestampFormat { get; set; } = DefaultTimestampFormat;
 
 		public static bool OutputWindowOnRight { get; set; }
 

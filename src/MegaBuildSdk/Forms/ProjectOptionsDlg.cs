@@ -30,7 +30,7 @@ namespace MegaBuild
 
 		#region Private Properties
 
-		private ListViewItem SelectedItem
+		private ListViewItem? SelectedItem
 			=> this.lstVariables.SelectedIndices.Count > 0 ? this.lstVariables.SelectedItems[0] : null;
 
 		#endregion
@@ -104,7 +104,7 @@ namespace MegaBuild
 
 		private void Delete_Click(object sender, EventArgs e)
 		{
-			ListViewItem item = this.SelectedItem;
+			ListViewItem? item = this.SelectedItem;
 			if (item != null)
 			{
 				item.Remove();
@@ -163,7 +163,7 @@ namespace MegaBuild
 
 		private void ExpandPath_CheckedChanged(object sender, EventArgs e)
 		{
-			ListViewItem item = this.SelectedItem;
+			ListViewItem? item = this.SelectedItem;
 			if (item != null)
 			{
 				item.SubItems[2].Text = this.chkExpandPath.Checked.ToString();
@@ -243,7 +243,7 @@ namespace MegaBuild
 
 		private void UpdateSelectedItem(TextBox data, int subItemIndex, bool addPercents)
 		{
-			ListViewItem item = this.SelectedItem;
+			ListViewItem? item = this.SelectedItem;
 			if (item != null)
 			{
 				string dataText = data.Text;

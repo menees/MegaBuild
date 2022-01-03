@@ -17,7 +17,7 @@ namespace MegaBuild
 	{
 		#region Private Data Members
 
-		private MegaBuildStep step;
+		private MegaBuildStep? step;
 
 		#endregion
 
@@ -65,7 +65,7 @@ namespace MegaBuild
 			{
 				WindowsUtility.ShowError(this, "You must enter a MegaBuild project for the step.");
 			}
-			else
+			else if (this.step != null)
 			{
 				this.step.ProjectFile = this.edtProject.Text.Trim();
 				this.step.InProc = !this.chkOutOfProc.Checked;

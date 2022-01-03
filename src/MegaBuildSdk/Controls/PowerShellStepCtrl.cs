@@ -18,7 +18,7 @@ namespace MegaBuild
 	{
 		#region Private Data Members
 
-		private PowerShellStep step;
+		private PowerShellStep? step;
 
 		#endregion
 
@@ -63,7 +63,7 @@ namespace MegaBuild
 			{
 				WindowsUtility.ShowError(this, "You must enter a script or command.");
 			}
-			else
+			else if (this.step != null)
 			{
 				this.step.Command = this.edtCommand.Text;
 				this.step.WorkingDirectory = this.edtWorkingDirectory.Text;
@@ -91,8 +91,8 @@ namespace MegaBuild
 		private void BrowseDirectory_Click(object sender, EventArgs e)
 		{
 			string initialFolder = Manager.ExpandVariables(this.edtWorkingDirectory.Text);
-			string selectedFolder = WindowsUtility.SelectFolder(this, "Select Working Directory", initialFolder);
-			if (!string.IsNullOrEmpty(selectedFolder))
+			string? selectedFolder = WindowsUtility.SelectFolder(this, "Select Working Directory", initialFolder);
+			if (selectedFolder.IsNotEmpty())
 			{
 				this.edtWorkingDirectory.Text = Manager.CollapseVariables(selectedFolder);
 			}

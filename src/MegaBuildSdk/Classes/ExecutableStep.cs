@@ -38,7 +38,7 @@ namespace MegaBuild
 		private StepStatus status = StepStatus.None;
 		private int timeoutMinutes = 10;
 		private TimeSpan totalTime;
-		private List<(OutputStyle Style, Regex Pattern)> customOutputStyles;
+		private List<(OutputStyle Style, Regex Pattern)>? customOutputStyles;
 
 		#endregion
 
@@ -111,7 +111,7 @@ namespace MegaBuild
 			get
 			{
 				// Check all the way up the parent chain if necessary.
-				ExecutableStep executableParent = this.Parent as ExecutableStep;
+				ExecutableStep? executableParent = this.Parent as ExecutableStep;
 
 				bool result = true;
 				while (executableParent != null && executableParent.InCurrentBuild)
@@ -196,7 +196,7 @@ namespace MegaBuild
 			}
 		}
 
-		internal List<(OutputStyle Style, Regex Pattern)> CustomOutputStyles
+		internal List<(OutputStyle Style, Regex Pattern)>? CustomOutputStyles
 		{
 			get => this.customOutputStyles;
 			set
@@ -205,7 +205,7 @@ namespace MegaBuild
 				{
 					if ((this.customOutputStyles == null && value != null)
 						|| (this.CustomOutputStyles != null && value == null)
-						|| (this.CustomOutputStyles.Count != value.Count)
+						|| (this.CustomOutputStyles!.Count != value!.Count)
 						|| this.CustomOutputStyles.Zip(value, (x, y) => (x, y))
 							.Any(t => t.x.Style != t.y.Style || t.x.Pattern.ToString() != t.y.Pattern.ToString()))
 					{
@@ -270,16 +270,20 @@ namespace MegaBuild
 
 		#region Internal Methods
 
-		internal static bool TryParseRegex(string text, out Regex regex)
+		internal static bool TryParseRegex(string? text, [MaybeNullWhen(false)] out Regex regex)
 		{
 			bool result = false;
+			regex = null;
 
 			try
 			{
-				// This defaults to case-insensitive to make the built-in patterns simpler.
-				// Custom patterns can include (?-i) to force case-sensitive if they want to.
-				regex = new Regex(text, RegexOptions.Compiled | RegexOptions.IgnoreCase);
-				result = true;
+				if (text.IsNotEmpty())
+				{
+					// This defaults to case-insensitive to make the built-in patterns simpler.
+					// Custom patterns can include (?-i) to force case-sensitive if they want to.
+					regex = new Regex(text, RegexOptions.Compiled | RegexOptions.IgnoreCase);
+					result = true;
+				}
 			}
 			catch (ArgumentException ex)
 			{
@@ -314,7 +318,7 @@ namespace MegaBuild
 			{
 				OutputStyle style = subKey.GetValue("Style", OutputStyle.Normal);
 				string pattern = subKey.GetValue("Pattern", string.Empty);
-				if (!string.IsNullOrEmpty(pattern) && TryParseRegex(pattern, out Regex regex))
+				if (!string.IsNullOrEmpty(pattern) && TryParseRegex(pattern, out Regex? regex))
 				{
 					this.customOutputStyles ??= new();
 					this.customOutputStyles.Add((style, regex));
@@ -465,7 +469,7 @@ namespace MegaBuild
 			{
 				foreach (object value in values ?? Enumerable.Empty<object>())
 				{
-					string message = value?.ToString();
+					string? message = value?.ToString();
 					this.Project.Output(message + Environment.NewLine, OutputColors.Debug);
 				}
 			}
@@ -479,9 +483,9 @@ namespace MegaBuild
 		{
 			List<Regex> result = new();
 
-			foreach (string regexString in regexStrings)
+			foreach (string? regexString in regexStrings)
 			{
-				if (TryParseRegex(regexString, out Regex regex))
+				if (TryParseRegex(regexString, out Regex? regex))
 				{
 					result.Add(regex);
 				}
@@ -545,7 +549,7 @@ namespace MegaBuild
 
 		private void DebugProperty(string property, object value)
 		{
-			string text = value?.ToString();
+			string? text = value?.ToString();
 			if (!string.IsNullOrEmpty(text))
 			{
 				this.DebugOutput($"{property}:\t{value}");
@@ -631,7 +635,7 @@ namespace MegaBuild
 			}
 		}
 
-		private void OutputStreamData(DataReceivedEventArgs args, bool errorData, Func<string, bool> allowLine)
+		private void OutputStreamData(DataReceivedEventArgs args, bool errorData, Func<string, bool>? allowLine)
 		{
 			// Fork this off to another thread to try to minimize the chance of deadlocking
 			// while reading from the console output streams.  Use the exclusive scheduler
@@ -643,12 +647,12 @@ namespace MegaBuild
 				Schedulers.ExclusiveScheduler);
 		}
 
-		private void OutputStreamDataBackground(DataReceivedEventArgs args, bool errorData, Func<string, bool> allowLine)
+		private void OutputStreamDataBackground(DataReceivedEventArgs args, bool errorData, Func<string, bool>? allowLine)
 		{
 			// Sometimes we get null data.  I'm just ignoring those cases.  From digging through the Process
 			// implementation, we get null data as the last notification when the stream has ended.
 			// Some users (e.g., http://stackoverflow.com/a/7608823) depend on that implementation.
-			string output = args.Data;
+			string? output = args.Data;
 			if (output != null && (allowLine == null || allowLine(output)))
 			{
 				// Some lines from VC++ end with an embedded NULL. We have to strip that off or the Output window

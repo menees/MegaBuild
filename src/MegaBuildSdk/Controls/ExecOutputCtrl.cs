@@ -19,7 +19,7 @@
 	{
 		#region Private Data Members
 
-		private ExecutableStep step;
+		private ExecutableStep? step;
 
 		#endregion
 
@@ -56,9 +56,9 @@
 						items.Clear();
 						if (this.step.CustomOutputStyles != null)
 						{
-							foreach (var tuple in this.step.CustomOutputStyles)
+							foreach ((OutputStyle style, Regex pattern) in this.step.CustomOutputStyles)
 							{
-								ListViewItem item = new(new[] { tuple.Style.ToString(), tuple.Pattern.ToString() });
+								ListViewItem item = new(new[] { style.ToString(), pattern.ToString() });
 								items.Add(item);
 							}
 						}
@@ -79,11 +79,11 @@
 
 		#region Private Properties
 
-		private ListViewItem SelectedItem
+		private ListViewItem? SelectedItem
 		{
 			get
 			{
-				ListViewItem result = null;
+				ListViewItem? result = null;
 
 				if (this.lstPatterns.SelectedIndices.Count > 0)
 				{
@@ -102,11 +102,11 @@
 		{
 			bool result = true;
 
-			List<(OutputStyle Style, Regex Pattern)> list = null;
+			List<(OutputStyle Style, Regex Pattern)>? list = null;
 			foreach (ListViewItem item in this.lstPatterns.Items)
 			{
 				if (Enum.TryParse(item.SubItems[0].Text, out OutputStyle style) &&
-					ExecutableStep.TryParseRegex(item.SubItems[1].Text, out Regex regex))
+					ExecutableStep.TryParseRegex(item.SubItems[1].Text, out Regex? regex))
 				{
 					list ??= new();
 					list.Add((style, regex));
@@ -123,7 +123,7 @@
 				}
 			}
 
-			if (result)
+			if (result && this.step != null)
 			{
 				this.step.AutoColorErrorsAndWarnings = this.chkAutoColorErrorsAndWarnings.Checked;
 				this.step.CustomOutputStyles = list;
@@ -136,22 +136,22 @@
 
 		#region Private Methods
 
-		private bool UpdateControlStates()
+		private ListViewItem? UpdateControlStates()
 		{
-			bool hasSelection = this.SelectedItem != null;
+			ListViewItem? item = this.SelectedItem;
+			bool hasSelection = item != null;
 			this.btnDelete.Enabled = hasSelection;
 			this.cbStyle.Enabled = hasSelection;
 			this.edtRegex.Enabled = hasSelection;
-			return hasSelection;
+			return item;
 		}
 
 		private void Patterns_SelectedIndexChanged(object sender, EventArgs e)
 		{
-			bool hasSelection = this.UpdateControlStates();
+			ListViewItem? item = this.UpdateControlStates();
 
-			if (hasSelection)
+			if (item != null)
 			{
-				ListViewItem item = this.SelectedItem;
 				this.cbStyle.SelectedItem = item.SubItems[0].Text;
 				this.edtRegex.Text = item.SubItems[1].Text;
 			}
@@ -173,7 +173,7 @@
 
 		private void Delete_Click(object sender, EventArgs e)
 		{
-			ListViewItem item = this.SelectedItem;
+			ListViewItem? item = this.SelectedItem;
 			if (item != null)
 			{
 				item.Remove();
@@ -192,7 +192,7 @@
 
 		private void UpdateSelectedItem(string text, int subItemIndex)
 		{
-			ListViewItem item = this.SelectedItem;
+			ListViewItem? item = this.SelectedItem;
 			if (item != null)
 			{
 				item.SubItems[subItemIndex].Text = text;

@@ -19,7 +19,7 @@ namespace MegaBuild
 		#region Private Data Members
 
 		private bool isModified;
-		private EmailStep step;
+		private EmailStep? step;
 
 		#endregion
 
@@ -64,7 +64,7 @@ namespace MegaBuild
 
 		public override bool OnOk()
 		{
-			if (this.isModified)
+			if (this.isModified && this.step != null)
 			{
 				// Don't call Manager.UnexpandVariables.  We called it when files
 				// were added with the Add File button, but if the user manually
