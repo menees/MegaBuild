@@ -209,7 +209,9 @@
 					if (timestamp == this.previousTimestamp && args.IsFormatEqual(this.previousArgs))
 					{
 						invisibleTimestamp ??= BuildInvisibleTimestamp();
-						segments.Add(new(invisibleTimestamp, args.Indent, args.Color, args.Highlight, args.OutputId));
+
+						// We never want to highlight invisible whitespace.
+						segments.Add(new(invisibleTimestamp, args.Indent, args.Color, false, Guid.Empty));
 					}
 					else
 					{
@@ -226,9 +228,15 @@
 					this.previousArgs = args;
 				}
 
+				// Only highlight the first segment (if any). We don't want every color change to be a separately highlighted region.
+				// Also, only use the unique output Guid (if any) at the beginning of the output.
+				bool highlight = args.Highlight;
+				Guid outputId = args.OutputId;
 				foreach ((string text, Color color) in this.ansiCodeHandler.Split(args.Message, args.Color, () => SystemColors.Window))
 				{
-					segments.Add(new(text, args.Indent, color, args.Highlight, args.OutputId));
+					segments.Add(new(text, args.Indent, color, highlight, outputId));
+					highlight = false;
+					outputId = Guid.Empty;
 				}
 			}
 

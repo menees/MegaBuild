@@ -710,7 +710,7 @@ namespace MegaBuild
 						_ => SystemColors.WindowText,
 					};
 
-					bool highlight = style >= OutputStyle.Warning;
+					bool highlight = style >= OutputStyle.Warning && output.IsNotBlank();
 					this.Project.OutputLine(output, color, 0, highlight);
 				}
 			}
