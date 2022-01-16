@@ -33,23 +33,7 @@
 		public MSBuildStepCtrl()
 		{
 			this.InitializeComponent();
-
-			// https://www.codementor.io/cerkit/giving-an-enum-a-string-value-using-the-description-attribute-6b4fwdle0
-			Type type = typeof(MSBuildToolsVersion);
-			string[] names = Enum.GetNames(type);
-			foreach (string name in names)
-			{
-				string value = name;
-				DescriptionAttribute? description = type.GetMember(name)
-					.Select(m => (DescriptionAttribute?)m.GetCustomAttribute(typeof(DescriptionAttribute)))
-					.FirstOrDefault();
-				if (description != null)
-				{
-					value = description.Description;
-				}
-
-				this.cbToolsVersion.Items.Add(value);
-			}
+			AddVersions(this.cbToolsVersion, _ => true);
 		}
 
 		#endregion
@@ -73,7 +57,7 @@
 													orderby p.Key
 													select p.Key + "=" + p.Value).ToArray();
 					this.cbVerbosity.SelectedIndex = (int)this.step.Verbosity;
-					this.cbToolsVersion.SelectedIndex = (int)this.step.ToolsVersion;
+					this.cbToolsVersion.SelectedValue = this.step.ToolsVersion;
 					this.edtOtherOptions.Text = this.step.CommandLineOptions;
 					this.chk32Bit.Checked = this.step.Use32BitProcess;
 				}
@@ -96,6 +80,35 @@
 		#endregion
 
 		#region Public Methods
+
+		public static void AddVersions(ComboBox comboBox, Predicate<MSBuildToolsVersion> include)
+		{
+			List<KeyValuePair<MSBuildToolsVersion, string>> versionDescriptions = new();
+
+			// https://www.codementor.io/cerkit/giving-an-enum-a-string-value-using-the-description-attribute-6b4fwdle0
+			Type type = typeof(MSBuildToolsVersion);
+			foreach (MSBuildToolsVersion version in Enum.GetValues(typeof(MSBuildToolsVersion)))
+			{
+				if (include(version))
+				{
+					string value = version.ToString();
+					DescriptionAttribute? description = type.GetMember(value)
+						.Select(m => (DescriptionAttribute?)m.GetCustomAttribute(typeof(DescriptionAttribute)))
+						.FirstOrDefault();
+					if (description != null)
+					{
+						value = description.Description;
+					}
+
+					versionDescriptions.Add(new(version, value));
+				}
+			}
+
+			// https://stackoverflow.com/a/33749237/1882616
+			comboBox.DataSource = versionDescriptions;
+			comboBox.DisplayMember = nameof(KeyValuePair<MSBuildToolsVersion, string>.Value);
+			comboBox.ValueMember = nameof(KeyValuePair<MSBuildToolsVersion, string>.Key);
+		}
 
 		public override bool OnOk()
 		{
@@ -142,7 +155,7 @@
 					this.step.Targets = targets.ToArray();
 					this.step.Properties = properties;
 					this.step.Verbosity = (MSBuildVerbosity)this.cbVerbosity.SelectedIndex;
-					this.step.ToolsVersion = (MSBuildToolsVersion)this.cbToolsVersion.SelectedIndex;
+					this.step.ToolsVersion = (MSBuildToolsVersion)this.cbToolsVersion.SelectedValue;
 					this.step.CommandLineOptions = this.edtOtherOptions.Text;
 					this.step.Use32BitProcess = this.chk32Bit.Checked;
 				}

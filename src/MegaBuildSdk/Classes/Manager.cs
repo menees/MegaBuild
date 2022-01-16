@@ -31,7 +31,7 @@ namespace MegaBuild
 		private static readonly char IndentChar = IndentString[0];
 
 		private static readonly object LockToken = new();
-		private static readonly ImageList Images = new();
+		private static readonly ImageList Images = new() { ColorDepth = ColorDepth.Depth32Bit };
 		private static readonly Dictionary<string, string> VariablesMap = new(StringComparer.CurrentCultureIgnoreCase);
 		private static readonly List<Project> Projects = new(1);
 		private static readonly Dictionary<string, StepTypeInfo> TypeNameToStepTypeInfo

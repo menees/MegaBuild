@@ -95,6 +95,39 @@ namespace MegaBuild
 			return result;
 		}
 
+		public static string GetUtilityPath(Project project, string displayName, string relativeToDevEnvPath, params VSVersion[] vsVersionsInPreferenceOrder)
+		{
+			VSVersionInfo? info = null;
+			bool foundDevEnv = false;
+			string? devEnvPath = null;
+			foreach (VSVersion vsVersion in vsVersionsInPreferenceOrder)
+			{
+				info = GetInfo(vsVersion);
+
+				// This will always return some path, even if it's just an incorrect guess.
+				// This will also find preview/prerelease editions (just like the dotnet CLI app does).
+				foundDevEnv = info.TryGetDevEnvPath(true, out devEnvPath);
+				if (foundDevEnv)
+				{
+					break;
+				}
+			}
+
+			string ideFolder = Path.GetDirectoryName(Environment.ExpandEnvironmentVariables(devEnvPath ?? string.Empty)) ?? string.Empty;
+			string relativePath = Path.Combine(ideFolder, relativeToDevEnvPath);
+			string result = Path.GetFullPath(relativePath);
+
+			if (!foundDevEnv)
+			{
+				string message =
+					$"{displayName} cannot be found at {result}.  The {info?.FullDisplayName} build tools do not appear to be installed" +
+					(string.IsNullOrEmpty(result) ? $"." : $" since \"{devEnvPath}\" does not exist.");
+				project.OutputLine(message, OutputColors.Warning, 0, true);
+			}
+
+			return result;
+		}
+
 		public bool TryGetDevEnvPath(bool useExe, [MaybeNullWhen(false)] out string devEnvPath)
 		{
 			bool result;

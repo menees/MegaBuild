@@ -401,38 +401,13 @@
 
 		private string GetVsMsBuildBinPath(string msbuildVersion, params VSVersion[] vsVersionsInPreferenceOrder)
 		{
-			VSVersionInfo? info = null;
-			bool foundDevEnv = false;
-			string? devEnvPath = null;
-			foreach (VSVersion vsVersion in vsVersionsInPreferenceOrder)
-			{
-				info = VSVersionInfo.AllVersions.First(ver => ver.Version == vsVersion);
-
-				// This will always return some path, even if it's just an incorrect guess.
-				// This will also find preview/prerelease editions (just like the dotnet CLI app does).
-				foundDevEnv = info.TryGetDevEnvPath(true, out devEnvPath);
-				if (foundDevEnv)
-				{
-					break;
-				}
-			}
-
-			string ideFolder = Path.GetDirectoryName(Environment.ExpandEnvironmentVariables(devEnvPath ?? string.Empty)) ?? string.Empty;
-			string relativePath = Path.Combine(ideFolder, @"..\..\MSBuild", msbuildVersion, "Bin");
-			string result = Path.GetFullPath(relativePath);
+			string relativeFolder = Path.Combine(@"..\..\MSBuild", msbuildVersion, "Bin");
 			if (!this.Use32BitProcess)
 			{
-				result = Path.Combine(result, "amd64");
+				relativeFolder = Path.Combine(relativeFolder, "amd64");
 			}
 
-			if (!foundDevEnv)
-			{
-				string message =
-					$"MSBuild {msbuildVersion} cannot be found at {result}.  The {info?.FullDisplayName} build tools do not appear to be installed" +
-					(string.IsNullOrEmpty(result) ? $"." : $" since \"{devEnvPath}\" does not exist.");
-				this.Project.OutputLine(message, OutputColors.Warning, 0, true);
-			}
-
+			string result = VSVersionInfo.GetUtilityPath(this.Project, $"MSBuild {msbuildVersion}", relativeFolder, vsVersionsInPreferenceOrder);
 			return result;
 		}
 

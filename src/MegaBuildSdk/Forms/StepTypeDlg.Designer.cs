@@ -49,7 +49,7 @@ namespace MegaBuild
 			// 
 			this.btnCancel.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
 			this.btnCancel.DialogResult = System.Windows.Forms.DialogResult.Cancel;
-			this.btnCancel.Location = new System.Drawing.Point(484, 280);
+			this.btnCancel.Location = new System.Drawing.Point(484, 299);
 			this.btnCancel.Name = "btnCancel";
 			this.btnCancel.Size = new System.Drawing.Size(90, 28);
 			this.btnCancel.TabIndex = 2;
@@ -59,7 +59,7 @@ namespace MegaBuild
 			// 
 			this.btnOK.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
 			this.btnOK.DialogResult = System.Windows.Forms.DialogResult.OK;
-			this.btnOK.Location = new System.Drawing.Point(384, 280);
+			this.btnOK.Location = new System.Drawing.Point(384, 299);
 			this.btnOK.Name = "btnOK";
 			this.btnOK.Size = new System.Drawing.Size(90, 28);
 			this.btnOK.TabIndex = 1;
@@ -76,7 +76,7 @@ namespace MegaBuild
 			this.List.HeaderStyle = System.Windows.Forms.ColumnHeaderStyle.Nonclickable;
 			this.List.Location = new System.Drawing.Point(14, 20);
 			this.List.Name = "List";
-			this.List.Size = new System.Drawing.Size(559, 243);
+			this.List.Size = new System.Drawing.Size(559, 262);
 			this.List.Sorting = System.Windows.Forms.SortOrder.Ascending;
 			this.List.TabIndex = 0;
 			this.List.UseCompatibleStateImageBehavior = false;
@@ -98,7 +98,7 @@ namespace MegaBuild
 			this.AcceptButton = this.btnOK;
 			this.AutoScaleDimensions = new System.Drawing.SizeF(7F, 15F);
 			this.CancelButton = this.btnCancel;
-			this.ClientSize = new System.Drawing.Size(590, 322);
+			this.ClientSize = new System.Drawing.Size(590, 341);
 			this.Controls.Add(this.List);
 			this.Controls.Add(this.btnCancel);
 			this.Controls.Add(this.btnOK);

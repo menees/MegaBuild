@@ -8,6 +8,7 @@
 
 	<ItemGroup>
 	  <EmbeddedResource Include="Images\CommandStep.ico" />
+	  <EmbeddedResource Include="Images\CsiStep.ico" />
 	  <EmbeddedResource Include="Images\EmailStep.ico" />
 	  <EmbeddedResource Include="Images\GroupStep.ico" />
 	  <EmbeddedResource Include="Images\MegaBuildStep.ico" />
