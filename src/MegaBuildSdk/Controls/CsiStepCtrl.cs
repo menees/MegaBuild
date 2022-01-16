@@ -46,11 +46,11 @@ namespace MegaBuild
 					this.step = value;
 
 					this.edtScript.Text = this.step.ScriptFile;
-					this.edtScriptArgs.Text = this.step.ScriptArguments!;
+					this.edtScriptArgs.Text = this.step.ScriptArguments;
 					this.edtWorkingDirectory.Text = this.step.WorkingDirectory;
 					this.cbToolsVersion.SelectedValue = this.step.CsiVersion;
 					this.treatErrorAsOutput.Checked = this.step.TreatErrorStreamAsOutput;
-					this.edtCsiOptions.Text = this.step.CsiOptions!;
+					this.edtCsiOptions.Text = this.step.CsiOptions;
 				}
 			}
 		}

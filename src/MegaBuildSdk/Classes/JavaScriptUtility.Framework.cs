@@ -13,9 +13,9 @@
 	{
 		#region Public Methods
 
-		public static string Escape(string value) => GlobalObject.escape(value);
+		public static string Escape(object value) => GlobalObject.escape(value);
 
-		public static string Unescape(string value) => GlobalObject.unescape(value);
+		public static string Unescape(object value) => GlobalObject.unescape(value);
 
 		#endregion
 	}
