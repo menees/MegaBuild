@@ -1,0 +1,6 @@
+<Project>
+	<ImportGroup>
+		<!--Include all src folder build targets first. From https://stackoverflow.com/a/45976205/1882616 -->
+		<Import Project="$([MSBuild]::GetPathOfFileAbove('Directory.Build.targets', '$(MSBuildThisFileDirectory)..\src'))" />
+	</ImportGroup>
+</Project>

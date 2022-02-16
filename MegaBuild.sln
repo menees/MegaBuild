@@ -18,10 +18,18 @@ EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Src", "Src", "{C941C910-0097-4DF0-90A3-FBB01C1E6A70}"
 	ProjectSection(SolutionItems) = preProject
 		src\Directory.Build.props = src\Directory.Build.props
+		src\Directory.Build.targets = src\Directory.Build.targets
 		src\MegaBuild.ruleset = src\MegaBuild.ruleset
 	EndProjectSection
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MegaBuildSdk.Tests", "tests\MegaBuildSdk.Tests\MegaBuildSdk.Tests.csproj", "{02C2D215-1241-43FF-B9B3-8E94AA2E65D8}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Tests", "Tests", "{0C4750D1-8F46-4D68-9C25-3A288116F57D}"
+	ProjectSection(SolutionItems) = preProject
+		tests\.runsettings = tests\.runsettings
+		tests\Directory.Build.props = tests\Directory.Build.props
+		tests\Directory.Build.targets = tests\Directory.Build.targets
+	EndProjectSection
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -48,6 +56,9 @@ Global
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+		{02C2D215-1241-43FF-B9B3-8E94AA2E65D8} = {0C4750D1-8F46-4D68-9C25-3A288116F57D}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {94B7CC71-5ABD-4EBB-AB83-C25C768BF3A4}
