@@ -33,6 +33,7 @@ namespace MegaBuild
 		private readonly Dictionary<string, string> cachedVariables = new(StringComparer.CurrentCultureIgnoreCase);
 		private readonly object[] eventHandlerParams;
 		private readonly StepCollection failureSteps = new();
+		private readonly ProjectFileWatcher fileWatcher;
 
 		// Build Data
 		private DateTime buildStart;
@@ -77,12 +78,8 @@ namespace MegaBuild
 			container.Add(this);
 			this.InitializeComponent();
 			this.eventHandlerParams = new object[] { this, EventArgs.Empty };
+			this.fileWatcher = new(this);
 			Manager.AddProject(this);
-		}
-
-		public Project()
-			: this(0)
-		{
 		}
 
 		internal Project(int baseIndentLevel)
@@ -90,6 +87,7 @@ namespace MegaBuild
 			this.InitializeComponent();
 			this.eventHandlerParams = new object[] { this, EventArgs.Empty };
 			this.baseIndentLevel = baseIndentLevel;
+			this.fileWatcher = new(this);
 			Manager.AddProject(this);
 		}
 
@@ -184,6 +182,11 @@ namespace MegaBuild
 
 			set
 			{
+				// Disable file watching while the file name is changing.
+				// The ProjectFileWatcher's FileNameSet event handler
+				// will re-enable itself if it gets a fully-qualified file name.
+				this.fileWatcher.IsEnabled = false;
+
 				// Don't check for changes.  We always want to
 				// refire the event.  This ensures notifications
 				// go out even if someone does New(), New(), New()...
@@ -424,19 +427,19 @@ namespace MegaBuild
 			}
 		}
 
-		public DialogResult CanClose()
+		public DialogResult CanClose(string? prompt = null, bool saveAs = false)
 		{
 			DialogResult result;
 
 			if (this.Modified)
 			{
-				string prompt = string.Format("Do you want to save the changes to \"{0}\"?", this.Title);
-				result = MessageBox.Show(prompt, "Save Changes", MessageBoxButtons.YesNoCancel, MessageBoxIcon.Question);
+				prompt ??= $"Do you want to save the changes to \"{this.Title}\"?";
+				result = MessageBox.Show(this.Form, prompt, "Save Changes", MessageBoxButtons.YesNoCancel, MessageBoxIcon.Question);
 
 				if (result == DialogResult.Yes)
 				{
 					// They said "Yes" to saving changes.
-					result = this.Save(false);
+					result = this.Save(saveAs);
 
 					// Save() will return Yes, No, or Cancel. If Save returns "No" we want to treat it like Cancel
 					// since the user previously said they wanted to save changes.
@@ -1063,6 +1066,8 @@ namespace MegaBuild
 						IndentChars = "\t",
 						NewLineOnAttributes = true,
 					};
+
+					using (this.fileWatcher.BeginUpdate())
 					using (XmlWriter writer = XmlWriter.Create(this.fileName, settings))
 					{
 						doc.Save(writer);
@@ -1148,6 +1153,7 @@ namespace MegaBuild
 		{
 			base.Dispose(disposing);
 			this.components?.Dispose();
+			this.fileWatcher.Dispose();
 			Manager.RemoveProject(this);
 		}
 
