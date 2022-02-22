@@ -27,6 +27,7 @@
 
 		private DateTime ignoreUntil;
 		private int updateCount;
+		private bool isPromptShowing;
 
 		#endregion
 
@@ -145,20 +146,45 @@
 			{
 				this.project.Form?.BeginInvoke(() =>
 				{
-					string prompt = $"The \"{this.project.Title}\" project has changed on disk and needs to be reloaded. "
-						+ "However, you have unsaved changes in memory too.\n\n"
-						+ $"Do you want to save the in-memory changes to a new file (using Save As) "
-						+ $"so the changes to \"{this.project.Title}\" on disk are preserved?";
-
-					if (this.project.CanClose(prompt, saveAs: true) == DialogResult.Yes)
+					if (!this.isPromptShowing)
 					{
-						// If the user clicked "No, don't save changes" , then CanClose
-						// will return DialogResult.Yes even though it didn't save.
-						// So we need to call Close to make sure the Modified flag is
-						// cleared, so Open won't show another CanClose prompt.
-						string fileName = this.project.FileName;
-						this.project.Close();
-						this.project.Open(fileName);
+						try
+						{
+							if (this.project.Building)
+							{
+								this.isPromptShowing = true;
+								MessageBox.Show(
+									this.project.Form,
+									$"The \"{this.project.Title}\" project has changed on disk. You'll need to manually reload it after the build finishes.",
+									"Project Changed On Disk",
+									MessageBoxButtons.OK,
+									MessageBoxIcon.Warning);
+							}
+							else
+							{
+								string prompt = $"The \"{this.project.Title}\" project has changed on disk and needs to be reloaded. "
+									+ "However, you have unsaved changes in memory too.\n\n"
+									+ $"Do you want to save the in-memory changes to a new file (using Save As) "
+									+ $"so the changes to \"{this.project.Title}\" on disk are preserved?";
+								this.isPromptShowing = true;
+								if (this.project.CanClose(prompt, saveAs: true) == DialogResult.Yes)
+								{
+									this.isPromptShowing = false;
+
+									// If the user clicked "No, don't save changes" , then CanClose
+									// will return DialogResult.Yes even though it didn't save.
+									// So we need to call Close to make sure the Modified flag is
+									// cleared, so Open won't show another CanClose prompt.
+									string fileName = this.project.FileName;
+									this.project.Close();
+									this.project.Open(fileName);
+								}
+							}
+						}
+						finally
+						{
+							this.isPromptShowing = false;
+						}
 					}
 				});
 			}
