@@ -19,7 +19,6 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Src", "Src", "{C941C910-009
 	ProjectSection(SolutionItems) = preProject
 		src\Directory.Build.props = src\Directory.Build.props
 		src\Directory.Build.targets = src\Directory.Build.targets
-		global.json = global.json
 		src\MegaBuild.ruleset = src\MegaBuild.ruleset
 	EndProjectSection
 EndProject

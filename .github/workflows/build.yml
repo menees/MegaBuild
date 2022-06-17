@@ -12,9 +12,6 @@ jobs:
 
     steps:
     - uses: actions/checkout@v2
-    - uses: actions/setup-dotnet@v1
-      with:
-        dotnet-version: '6.0.101' # SDK Version to use; x will use the latest version of the 6.0 channel. Force 101 for global.json compatibility.
 
     - name: Add MSBuild to PATH
       uses: microsoft/setup-msbuild@v1.1

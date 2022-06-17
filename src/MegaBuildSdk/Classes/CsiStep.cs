@@ -173,7 +173,7 @@
 
 			void Append(string? argument, bool ensureQuotes = false)
 			{
-				if (argument.IsNotBlank())
+				if (argument.IsNotWhiteSpace())
 				{
 					if (sb.Length > 0)
 					{

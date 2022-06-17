@@ -123,7 +123,7 @@ namespace MegaBuild
 
 		private static string ScrubLines(string text)
 		{
-			string result = string.Join(Environment.NewLine, text.Split('\r', '\n').Where(line => line.IsNotBlank()).Select(line => line.Trim()));
+			string result = string.Join(Environment.NewLine, text.Split('\r', '\n').Where(line => line.IsNotWhiteSpace()).Select(line => line.Trim()));
 			return result;
 		}
 
@@ -189,7 +189,7 @@ namespace MegaBuild
 			{
 				bool result = false;
 
-				if (value.IsNotBlank())
+				if (value.IsNotWhiteSpace())
 				{
 					char ch = value[0];
 					if (ch == '_' || char.IsLetter(ch))
@@ -225,7 +225,7 @@ namespace MegaBuild
 					return errorMessage;
 				});
 
-			if (input.IsNotBlank())
+			if (input.IsNotWhiteSpace())
 			{
 				this.AppendOption("/u:", input);
 			}
