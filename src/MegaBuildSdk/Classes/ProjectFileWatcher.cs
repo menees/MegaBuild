@@ -4,6 +4,7 @@
 
 	using System;
 	using System.Collections.Generic;
+	using System.Diagnostics;
 	using System.IO;
 	using System.Linq;
 	using System.Text;
@@ -37,7 +38,7 @@
 		{
 			this.project = project;
 			this.project.FileNameSet += this.Project_FileNameSet;
-			this.fileWatcher.NotifyFilter = NotifyFilters.LastWrite;
+			this.fileWatcher.NotifyFilter = NotifyFilters.LastWrite | NotifyFilters.Size | NotifyFilters.CreationTime;
 			this.fileWatcher.Changed += this.FileWatcher_Changed;
 			this.fileWatcher.Error += this.FileWatcher_Error;
 		}
@@ -89,16 +90,20 @@
 		private void Project_FileNameSet(object? sender, EventArgs e)
 		{
 			string fileName = this.project.FileName;
-			if (!string.IsNullOrEmpty(fileName))
+
+			// The FileSystemWatcher.Path property defaults to an empty string. However, it can't be (re)set to empty explicitly,
+			// and it can't be set to a directory that doesn't exist. Either of those throw an ArgumentException.
+			// https://github.com/dotnet/runtime/blob/715c71ae6af5775402e54d3b8ab6c4a888da3cb5/src/libraries/System.IO.FileSystem.Watcher/src/System/IO/FileSystemWatcher.cs#L259
+			string path = (fileName.IsNotWhiteSpace() ? Path.GetDirectoryName(fileName) : null) ?? string.Empty;
+			if (path.IsNotWhiteSpace() && Directory.Exists(path))
 			{
-				this.fileWatcher.Path = Path.GetDirectoryName(fileName) ?? string.Empty;
+				this.fileWatcher.Path = path;
 				this.fileWatcher.Filter = Path.GetFileName(fileName);
 				this.IsEnabled = true;
+				Debug.WriteLine($"*** Watching {this.fileWatcher.Path} with filter {this.fileWatcher.Filter} ***");
 			}
 			else
 			{
-				this.fileWatcher.Path = string.Empty;
-				this.fileWatcher.Filter = string.Empty;
 				this.IsEnabled = false;
 			}
 		}

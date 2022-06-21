@@ -1526,7 +1526,7 @@ namespace MegaBuild
 		{
 			// We can't set Modified = true here because some callers (e.g. Run-time status properties)
 			// broadcast changes that don't imply persistent project changes.
-			Debug.WriteLine("*** FileNameSet ***");
+			Debug.WriteLine("*** Changed ***");
 			if (this.ProjectStepsChanged != null && !this.loading)
 			{
 				ProjectStepsChangedEventArgs e = new(changeType, step, oldIndex, newIndex);
