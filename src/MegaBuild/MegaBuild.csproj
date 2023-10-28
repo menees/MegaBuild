@@ -5,6 +5,7 @@
 		<UseWpf>true</UseWpf>
 		<Description>A utility for automating build processes.</Description>
 		<ApplicationIcon>Images\MegaBuild.ico</ApplicationIcon>
+		<IsPublishable>true</IsPublishable>
 	</PropertyGroup>
 
 	<ItemGroup>
