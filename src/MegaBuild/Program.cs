@@ -5,6 +5,7 @@ namespace MegaBuild
 	using System;
 	using System.Collections.Generic;
 	using System.Linq;
+	using System.Text;
 	using System.Threading.Tasks;
 	using System.Windows.Forms;
 	using Menees.Windows.Forms;
@@ -21,6 +22,9 @@ namespace MegaBuild
 		[STAThread]
 		private static int Main()
 		{
+			// Allow modern .NET builds to use all the code pages that .NET Framework builds can.
+			Encoding.RegisterProvider(CodePagesEncodingProvider.Instance);
+
 			// I'm intentionally not setting TaskbarManager.Instance.ApplicationId.  We want Windows
 			// to assign a default application ID to each executable path, so they can have their own
 			// private lists of recent files (just like we store in our .stgx files).  Then it will also make

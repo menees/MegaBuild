@@ -30,6 +30,9 @@
 			this.InitializeComponent();
 			this.cbStyle.Items.AddRange(((OutputStyle[])Enum.GetValues(typeof(OutputStyle))).OrderBy(v => v).Select(v => v.ToString()).ToArray());
 
+			EncodingDisplay[] encodings = Encoding.GetEncodings().Select(e => new EncodingDisplay(e.GetEncoding())).OrderBy(e => e.ToString()).ToArray();
+			this.cbEncoding.Items.AddRange(encodings);
+
 			// Turn off ExtendedListView's default sorting so ListViewItemMover will work with it.
 			this.lstPatterns.ListViewItemSorter = null;
 		}
@@ -48,6 +51,10 @@
 				{
 					this.step = value;
 					this.chkAutoColorErrorsAndWarnings.Checked = this.step.AutoColorErrorsAndWarnings;
+
+					EncodingDisplay? encodingDisplay = this.cbEncoding.Items.Cast<EncodingDisplay>()
+						.FirstOrDefault(ed => ed.Encoding == this.step.StandardStreamEncoding);
+					this.cbEncoding.SelectedItem = encodingDisplay;
 
 					ListView.ListViewItemCollection items = this.lstPatterns.Items;
 					this.lstPatterns.BeginUpdate();
@@ -123,9 +130,16 @@
 				}
 			}
 
+			if (result && this.cbEncoding.SelectedItem == null)
+			{
+				WindowsUtility.ShowError(this, "The selected encoding is invalid.");
+				result = false;
+			}
+
 			if (result && this.step != null)
 			{
 				this.step.AutoColorErrorsAndWarnings = this.chkAutoColorErrorsAndWarnings.Checked;
+				this.step.StandardStreamEncoding = ((EncodingDisplay)this.cbEncoding.SelectedItem!).Encoding;
 				this.step.CustomOutputStyles = list;
 			}
 
@@ -174,10 +188,7 @@
 		private void Delete_Click(object sender, EventArgs e)
 		{
 			ListViewItem? item = this.SelectedItem;
-			if (item != null)
-			{
-				item.Remove();
-			}
+			item?.Remove();
 		}
 
 		private void Style_SelectedIndexChanged(object sender, EventArgs e)
@@ -196,6 +207,31 @@
 			if (item != null)
 			{
 				item.SubItems[subItemIndex].Text = text;
+			}
+		}
+
+		#endregion
+
+		#region Private Types
+
+		private sealed class EncodingDisplay
+		{
+			public EncodingDisplay(Encoding encoding)
+			{
+				this.Encoding = encoding;
+			}
+
+			public Encoding Encoding { get; }
+
+			public override string ToString()
+			{
+				// There are two encodings with EncodingName == "IBM Latin-1", but they differ by WebName (i.e., IBM01047 vs. IBM00924).
+				string encodingName = this.Encoding.EncodingName;
+				string webName = this.Encoding.WebName;
+				string result = encodingName.Contains(webName, StringComparison.OrdinalIgnoreCase)
+					? encodingName
+					: $"{encodingName} [{webName}]";
+				return result;
 			}
 		}
 

@@ -11,6 +11,7 @@ namespace MegaBuild
 	using System.Drawing;
 	using System.IO;
 	using System.Linq;
+	using System.Text;
 	using System.Text.RegularExpressions;
 	using System.Threading;
 	using System.Threading.Tasks;
@@ -39,6 +40,7 @@ namespace MegaBuild
 		private int timeoutMinutes = 10;
 		private TimeSpan totalTime;
 		private List<(OutputStyle Style, Regex Pattern)>? customOutputStyles;
+		private Encoding standardStreamEncoding;
 
 		#endregion
 
@@ -53,6 +55,7 @@ namespace MegaBuild
 			: base(project, category, info)
 		{
 			this.supportFlags = supports;
+			this.standardStreamEncoding = Encoding.UTF8;
 		}
 
 		#endregion
@@ -183,6 +186,12 @@ namespace MegaBuild
 			set => this.SetValue(ref this.waitForCompletion, value);
 		}
 
+		public Encoding StandardStreamEncoding
+		{
+			get => this.standardStreamEncoding;
+			set => this.SetValue(ref this.standardStreamEncoding, value);
+		}
+
 		#endregion
 
 		#region Internal Properties
@@ -308,6 +317,7 @@ namespace MegaBuild
 			this.Timeout = key.GetValue(nameof(this.Timeout), this.timeout);
 			this.TimeoutMinutes = key.GetValue(nameof(this.TimeoutMinutes), this.timeoutMinutes);
 			this.AutoColorErrorsAndWarnings = key.GetValue(nameof(this.AutoColorErrorsAndWarnings), this.autoColorErrorsAndWarnings);
+			this.StandardStreamEncoding = Encoding.GetEncoding(key.GetValue(nameof(this.StandardStreamEncoding), this.standardStreamEncoding.WebName));
 			if (this.MayRequireAdministrator)
 			{
 				this.IsAdministratorRequired = key.GetValue(nameof(this.IsAdministratorRequired), this.isAdministratorRequired);
@@ -336,6 +346,7 @@ namespace MegaBuild
 			key.SetValue(nameof(this.Timeout), this.timeout);
 			key.SetValue(nameof(this.TimeoutMinutes), this.timeoutMinutes);
 			key.SetValue(nameof(this.AutoColorErrorsAndWarnings), this.autoColorErrorsAndWarnings);
+			key.SetValue(nameof(this.StandardStreamEncoding), this.standardStreamEncoding.WebName);
 			key.SetValue(nameof(this.IsAdministratorRequired), this.isAdministratorRequired);
 
 			if (this.customOutputStyles != null && this.customOutputStyles.Count > 0)
@@ -522,6 +533,22 @@ namespace MegaBuild
 			this.DebugProperty("RedirectStandardOutput", startInfo.RedirectStandardOutput);
 			startInfo.RedirectStandardError = (args.RedirectStandardStreams & RedirectStandardStreams.Error) != 0;
 			this.DebugProperty("RedirectStandardError", startInfo.RedirectStandardError);
+
+			if (startInfo.RedirectStandardOutput)
+			{
+				startInfo.StandardOutputEncoding = this.StandardStreamEncoding;
+			}
+
+			if (startInfo.RedirectStandardError)
+			{
+				startInfo.StandardErrorEncoding = this.StandardStreamEncoding;
+			}
+#if NET
+			if (startInfo.RedirectStandardInput)
+			{
+				startInfo.StandardInputEncoding = this.StandardStreamEncoding;
+			}
+#endif
 
 			startInfo.WindowStyle = args.WindowStyle;
 			this.DebugProperty("WindowStyle", startInfo.WindowStyle);

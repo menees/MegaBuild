@@ -9,6 +9,7 @@ namespace MegaBuild
 	using System.Diagnostics.CodeAnalysis;
 	using System.Drawing;
 	using System.IO;
+	using System.Linq;
 	using Menees;
 	using Menees.Windows.Forms;
 
@@ -20,6 +21,8 @@ namespace MegaBuild
 	internal sealed class CommandStep : ExecutableStep
 	{
 		#region Private Data Members
+
+		private static readonly char[] InvalidPathCharacters = Path.GetInvalidPathChars();
 
 		private bool useShellExecute;
 		private RedirectStandardStreams redirectStreams;
@@ -197,8 +200,10 @@ namespace MegaBuild
 
 		internal static bool HasBatchFileExt(string fileName)
 		{
-			string ext = Path.GetExtension(fileName).ToLower();
-			return ext == ".bat" || ext == ".cmd";
+			const StringComparison comparison = StringComparison.OrdinalIgnoreCase;
+			bool result = (fileName.EndsWith(".bat", comparison) || fileName.EndsWith(".cmd", comparison))
+				&& !fileName.Any(ch => InvalidPathCharacters.Contains(ch));
+			return result;
 		}
 
 		#endregion

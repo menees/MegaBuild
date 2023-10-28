@@ -8,6 +8,7 @@
 	</PropertyGroup>
 
 	<ItemGroup>
+		<PackageReference Include="System.Text.Encoding.CodePages" Version="6.0.0" />
 		<!-- I picked these Windows API Code Pack packages because they were the first ones I found that were strongly-named. -->
 		<PackageReference Include="Windows7APICodePack-Core" Version="1.1.0">
 			<NoWarn>NU1701</NoWarn>
