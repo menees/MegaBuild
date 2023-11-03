@@ -24,6 +24,10 @@
 		// Don't use \t because the Text Object Model (in OutputWindow) uses huge tab stops, so indents don't line up with tab stops.
 		private const string TimestampPrefixSeparator = "    ";
 
+		// https://jkorpela.fi/chars/spaces.html
+		private const char FigureSpace = '\u2007';
+		private const char PunctuationSpace = '\u2008';
+
 		// The article below says 100ms feels like direct manipulation, and 1000ms
 		// is still a short enough delay for users to stay focused on a continuous flow.
 		// So we'll go with a quarter of a second to lean toward responsiveness
@@ -86,6 +90,9 @@
 			return result;
 		}
 
+		public static string UseStandardSpaces(string text)
+			=> text.Replace(FigureSpace, ' ').Replace(PunctuationSpace, ' ');
+
 		// This method will typically be invoked from a non-UI worker thread, so it can't render immediately.
 		public void Add(OutputAddedEventArgs e)
 		{
@@ -122,14 +129,13 @@
 			{
 				// Use special space characters to try to make the invisible timestamp
 				// take the same horizontal space as a visible timestamp.
-				// https://jkorpela.fi/chars/spaces.html
 				if (char.IsLetterOrDigit(ch))
 				{
-					sb.Append('\u2007'); // Figure Space
+					sb.Append(FigureSpace);
 				}
 				else if (char.IsPunctuation(ch))
 				{
-					sb.Append('\u2008'); // Punctuation Space
+					sb.Append(PunctuationSpace);
 				}
 				else
 				{

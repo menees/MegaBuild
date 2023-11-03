@@ -55,6 +55,8 @@ namespace MegaBuild
 			this.outputWindow.OwnerWindow = this;
 			this.findTarget = this.outputWindow;
 			this.outputQueue = new(this.outputWindow, this.ansiCodeHandler);
+			ExtendedRichTextBox richText = this.outputWindow.Controls.OfType<ExtendedRichTextBox>().First();
+			richText.KeyDown += this.RichText_KeyDown;
 
 			this.OnIdle(this, EventArgs.Empty);
 		}
@@ -684,7 +686,39 @@ namespace MegaBuild
 
 		private void CopyOutput_Click(object? sender, EventArgs e)
 		{
-			this.outputWindow.Copy();
+			if (this.outputWindow.HasSelection)
+			{
+				IDataObject beforeCopy = Clipboard.GetDataObject();
+				this.outputWindow.Copy();
+				IDataObject afterCopy = Clipboard.GetDataObject();
+				if (beforeCopy != afterCopy && afterCopy != null)
+				{
+					// Replace the special "figure space" and "punctuation space" characters
+					// with regular spaces in the plain text on the clipboard.
+					DataObject? final = null;
+					if (afterCopy.GetDataPresent(DataFormats.UnicodeText))
+					{
+						final ??= new();
+						string input = afterCopy.GetData(DataFormats.UnicodeText).ToString() ?? string.Empty;
+						string output = OutputQueue.UseStandardSpaces(input);
+						final.SetData(DataFormats.UnicodeText, true, output);
+					}
+
+					// Preserve the special spaces in the RTF since it will only be pasted into
+					// a rich text editor, which can render special spaces correctly.
+					if (afterCopy.GetDataPresent(DataFormats.Rtf))
+					{
+						final ??= new();
+						object rtf = afterCopy.GetData(DataFormats.Rtf);
+						final.SetData(DataFormats.Rtf, false, rtf);
+					}
+
+					if (final != null)
+					{
+						Clipboard.SetDataObject(final);
+					}
+				}
+			}
 		}
 
 		private void CopyStep_Click(object? sender, EventArgs e)
@@ -1515,6 +1549,15 @@ namespace MegaBuild
 				// so users can glance at the taskbar and see whether the build succeeded or failed.  Now that
 				// we know the app is active again, we need to clear the build's state from the taskbar.
 				this.ProgressPercentage = 0;
+			}
+		}
+
+		private void RichText_KeyDown(object? sender, KeyEventArgs e)
+		{
+			if (e.Modifiers == Keys.Control && (e.KeyCode == Keys.C || e.KeyCode == Keys.Insert))
+			{
+				e.Handled = true;
+				this.CopyOutput_Click(sender, e);
 			}
 		}
 
