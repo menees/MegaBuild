@@ -18,7 +18,7 @@ namespace MegaBuild
 	{
 		#region Private Data Members
 
-		private static readonly Type[] TabsToSkipOnEdit = { typeof(GeneralStepCtrl), typeof(ExecStepCtrl), typeof(ExecOutputCtrl) };
+		private static readonly Type[] TabsToSkipOnEdit = [typeof(GeneralStepCtrl), typeof(ExecStepCtrl), typeof(ExecOutputCtrl)];
 
 		private ICollection<StepEditorControl> editorControls = Array.Empty<StepEditorControl>();
 
@@ -48,7 +48,7 @@ namespace MegaBuild
 				bool defaultTabSelected = false;
 
 				// Add a tab for each editor control returned
-				this.editorControls = new List<StepEditorControl>();
+				this.editorControls = [];
 				step.GetStepEditorControls(this.editorControls);
 				foreach (StepEditorControl editCtrl in this.editorControls)
 				{

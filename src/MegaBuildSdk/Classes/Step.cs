@@ -52,10 +52,7 @@ namespace MegaBuild
 		{
 			get
 			{
-				if (this.categorySteps == null)
-				{
-					this.categorySteps = this.category == StepCategory.Build ? this.project.BuildSteps : this.project.FailureSteps;
-				}
+				this.categorySteps ??= this.category == StepCategory.Build ? this.project.BuildSteps : this.project.FailureSteps;
 
 				return this.categorySteps;
 			}
@@ -231,7 +228,7 @@ namespace MegaBuild
 		{
 			bool result = false;
 
-			if (!object.Equals(data, value))
+			if (!Equals(data, value))
 			{
 				data = value;
 				this.SetModified();

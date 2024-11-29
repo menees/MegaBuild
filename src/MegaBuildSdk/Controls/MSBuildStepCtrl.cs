@@ -22,7 +22,7 @@
 	{
 		#region Private Data Members
 
-		private static readonly string[] BaseSolutionTargets = { string.Empty, "Rebuild", "Clean" };
+		private static readonly string[] BaseSolutionTargets = [string.Empty, "Rebuild", "Clean"];
 
 		private MSBuildStep? step;
 
@@ -42,6 +42,7 @@
 
 		public override string DisplayName => "MSBuild";
 
+		[DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
 		public MSBuildStep Step
 		{
 			set
@@ -83,7 +84,7 @@
 
 		public static void AddVersions(ComboBox comboBox, Predicate<MSBuildToolsVersion> include)
 		{
-			List<KeyValuePair<MSBuildToolsVersion, string>> versionDescriptions = new();
+			List<KeyValuePair<MSBuildToolsVersion, string>> versionDescriptions = [];
 
 			// https://www.codementor.io/cerkit/giving-an-enum-a-string-value-using-the-description-attribute-6b4fwdle0
 			Type type = typeof(MSBuildToolsVersion);
@@ -121,7 +122,7 @@
 			}
 			else
 			{
-				List<string> targets = new();
+				List<string> targets = [];
 				foreach (string line in this.txtTargets.Lines)
 				{
 					string target = line.Trim();
@@ -132,10 +133,10 @@
 				}
 
 				result = true;
-				Dictionary<string, string> properties = new();
+				Dictionary<string, string> properties = [];
 				foreach (string line in this.txtProperties.Lines)
 				{
-					string[] parts = line.Trim().Split(new[] { '=' }, StringSplitOptions.RemoveEmptyEntries);
+					string[] parts = line.Trim().Split(['='], StringSplitOptions.RemoveEmptyEntries);
 					if (parts.Length == 2)
 					{
 						properties[parts[0].Trim()] = parts[1].Trim();
@@ -152,10 +153,10 @@
 				{
 					this.step.ProjectFile = projectFile;
 					this.step.WorkingDirectory = this.edtWorkingDirectory.Text.Trim();
-					this.step.Targets = targets.ToArray();
+					this.step.Targets = [.. targets];
 					this.step.Properties = properties;
 					this.step.Verbosity = (MSBuildVerbosity)this.cbVerbosity.SelectedIndex;
-					this.step.ToolsVersion = (MSBuildToolsVersion)this.cbToolsVersion.SelectedValue;
+					this.step.ToolsVersion = (MSBuildToolsVersion?)this.cbToolsVersion.SelectedValue ?? default;
 					this.step.CommandLineOptions = this.edtOtherOptions.Text;
 					this.step.Use32BitProcess = this.chk32Bit.Checked;
 				}
@@ -338,7 +339,7 @@
 					}
 
 					sb.AppendLine("Default Target(s):");
-					foreach (string target in defaultTargets.Split(new[] { ';' }, StringSplitOptions.RemoveEmptyEntries))
+					foreach (string target in defaultTargets.Split([';'], StringSplitOptions.RemoveEmptyEntries))
 					{
 						sb.AppendLine(target);
 					}

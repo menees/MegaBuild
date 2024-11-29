@@ -33,7 +33,8 @@
 
 		private const double DimBrightTolerance = 0.1;
 
-		// According to https://en.wikipedia.org/wiki/ANSI_escape_code#CSI_(Control_Sequence_Introducer)_sequences, all args are optional.
+		// Based on https://en.wikipedia.org/wiki/ANSI_escape_code#Select_Graphic_Rendition_parameters.
+		// According to https://en.wikipedia.org/wiki/ANSI_escape_code#Control_Sequence_Introducer_commands, all args are optional.
 		private static readonly Regex ColorExpression = new(@"(?n)\e\[(?<args>\d*(;\d*)*)m", RegexOptions.Compiled | RegexOptions.CultureInvariant);
 
 		private Mode mode;
@@ -198,7 +199,7 @@
 
 		#region Private Types
 
-		private struct AnsiColor
+		private readonly struct AnsiColor
 		{
 			#region Private Data Members
 

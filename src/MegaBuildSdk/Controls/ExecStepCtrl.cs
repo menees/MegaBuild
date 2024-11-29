@@ -32,6 +32,7 @@ namespace MegaBuild
 
 		public override string DisplayName => "Execution";
 
+		[DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
 		public ExecutableStep Step
 		{
 			set

@@ -34,6 +34,7 @@ namespace MegaBuild
 
 		public override string DisplayName => "Command";
 
+		[DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
 		public CommandStep Step
 		{
 			set

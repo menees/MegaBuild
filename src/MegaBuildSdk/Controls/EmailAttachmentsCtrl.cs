@@ -36,6 +36,7 @@ namespace MegaBuild
 
 		public override string DisplayName => "Attachments";
 
+		[DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
 		public EmailStep Step
 		{
 			set
@@ -69,7 +70,7 @@ namespace MegaBuild
 				// Don't call Manager.UnexpandVariables.  We called it when files
 				// were added with the Add File button, but if the user manually
 				// edited any entries, then they're responsible for them now.
-				List<string> attachments = new();
+				List<string> attachments = [];
 				foreach (ListViewItem item in this.lstAttachments.Items)
 				{
 					string text = item.Text.Trim();

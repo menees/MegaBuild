@@ -37,6 +37,7 @@ namespace MegaBuild
 
 		public override string DisplayName => "C# Interactive";
 
+		[DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
 		public CsiStep Step
 		{
 			set
@@ -72,7 +73,7 @@ namespace MegaBuild
 				this.step.ScriptFile = this.edtScript.Text;
 				this.step.ScriptArguments = ScrubLines(this.edtScriptArgs.Text);
 				this.step.WorkingDirectory = this.edtWorkingDirectory.Text;
-				this.step.CsiVersion = (MSBuildToolsVersion)this.cbToolsVersion.SelectedValue;
+				this.step.CsiVersion = (MSBuildToolsVersion?)this.cbToolsVersion.SelectedValue ?? default;
 				this.step.TreatErrorStreamAsOutput = this.treatErrorAsOutput.Checked;
 				this.step.CsiOptions = ScrubLines(this.edtCsiOptions.Text);
 				result = true;
@@ -209,7 +210,7 @@ namespace MegaBuild
 				null,
 				entered =>
 				{
-					List<string> errors = new();
+					List<string> errors = [];
 					string[] parts = entered.Split('.');
 					foreach (string part in parts)
 					{

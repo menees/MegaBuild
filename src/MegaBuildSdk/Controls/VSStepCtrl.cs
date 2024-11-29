@@ -41,6 +41,7 @@ namespace MegaBuild
 
 		public override string DisplayName => "Visual Studio";
 
+		[DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
 		public VSStep Step
 		{
 			set
@@ -191,7 +192,7 @@ namespace MegaBuild
 
 		private static string[] GetConfigurationsFromLines(string[] lines)
 		{
-			List<string> result = new();
+			List<string> result = [];
 			int numLines = lines.Length;
 
 			// Find the start of the configurations block.
@@ -232,7 +233,7 @@ namespace MegaBuild
 				}
 			}
 
-			return result.ToArray();
+			return [.. result];
 		}
 
 		private void Browse_Click(object sender, EventArgs e)

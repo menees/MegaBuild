@@ -39,7 +39,7 @@ namespace MegaBuild
 
 				foreach (StepTypeInfo info in typeInfos)
 				{
-					string[] items = { info.Name, info.Description };
+					string[] items = [info.Name, info.Description];
 					ListViewItem item = new(items, info.ImageIndex)
 					{
 						Tag = info,
@@ -58,8 +58,8 @@ namespace MegaBuild
 			bool result = false;
 			if (this.ShowDialog(owner) == DialogResult.OK)
 			{
-				resultInfo = (StepTypeInfo)this.List.SelectedItems[0].Tag;
-				result = true;
+				resultInfo = (StepTypeInfo?)this.List.SelectedItems[0].Tag;
+				result = resultInfo != null;
 			}
 
 			return result;

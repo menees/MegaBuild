@@ -39,6 +39,7 @@ namespace MegaBuild
 
 		public override string DisplayName => "Sound";
 
+		[DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
 		public SoundStep Step
 		{
 			set
@@ -103,7 +104,7 @@ namespace MegaBuild
 					this.step.Style = SoundStyle.Beep;
 				}
 
-				this.step.SystemSound = (SystemSound)this.cbSystemSound.SelectedItem;
+				this.step.SystemSound = (SystemSound?)this.cbSystemSound.SelectedItem ?? default;
 				this.step.WavFile = this.edtWavFile.Text.Trim();
 				this.step.Frequency = (int)this.edtFrequency.Value;
 				this.step.Duration = (int)this.edtDuration.Value;

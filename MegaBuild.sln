@@ -19,7 +19,6 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Src", "Src", "{C941C910-009
 	ProjectSection(SolutionItems) = preProject
 		src\Directory.Build.props = src\Directory.Build.props
 		src\Directory.Build.targets = src\Directory.Build.targets
-		src\MegaBuild.ruleset = src\MegaBuild.ruleset
 	EndProjectSection
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MegaBuildSdk.Tests", "tests\MegaBuildSdk.Tests\MegaBuildSdk.Tests.csproj", "{02C2D215-1241-43FF-B9B3-8E94AA2E65D8}"

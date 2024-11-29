@@ -58,11 +58,11 @@
 
 		public Dictionary<string, string> Properties
 		{
-			get => this.properties ?? new Dictionary<string, string>();
+			get => this.properties ?? [];
 			set
 			{
 				var currentValues = this.Properties;
-				var newValues = value ?? new Dictionary<string, string>();
+				var newValues = value ?? [];
 				bool areEqual = currentValues.Count == newValues.Count;
 				if (areEqual)
 				{
@@ -104,8 +104,8 @@
 			get => this.targets ?? CollectionUtility.EmptyArray<string>();
 			set
 			{
-				HashSet<string> currentValues = this.targets != null ? new HashSet<string>(this.targets) : new HashSet<string>();
-				HashSet<string> newValues = value != null ? new HashSet<string>(value) : new HashSet<string>();
+				HashSet<string> currentValues = this.targets != null ? new HashSet<string>(this.targets) : [];
+				HashSet<string> newValues = value != null ? new HashSet<string>(value) : [];
 				var areEqual = currentValues.Count == newValues.Count && currentValues.IsSubsetOf(newValues);
 				if (!areEqual)
 				{
@@ -231,7 +231,7 @@
 			this.CommandLineOptions = key.GetValueN(nameof(this.CommandLineOptions), this.commandLineOptions);
 			this.Use32BitProcess = key.GetValue(nameof(this.Use32BitProcess), this.use32BitProcess);
 
-			List<string> targets = new();
+			List<string> targets = [];
 			XmlKey targetsKey = key.GetSubkey(nameof(this.Targets));
 			foreach (XmlKey targetKey in targetsKey.GetSubkeys())
 			{
@@ -244,9 +244,9 @@
 				}
 			}
 
-			this.Targets = targets.ToArray();
+			this.Targets = [.. targets];
 
-			Dictionary<string, string> properties = new();
+			Dictionary<string, string> properties = [];
 			XmlKey propertiesKey = key.GetSubkey(nameof(this.Properties));
 			foreach (XmlKey propertyKey in propertiesKey.GetSubkeys())
 			{

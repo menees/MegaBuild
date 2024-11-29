@@ -33,6 +33,7 @@ namespace MegaBuild
 
 		public override string DisplayName => "General";
 
+		[DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
 		public Step Step
 		{
 			set

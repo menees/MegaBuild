@@ -12,12 +12,11 @@
 		<LangVersion>latest</LangVersion>
 		<Copyright>Copyright © 2003-$([System.DateTime]::UtcNow.ToString(`yyyy`)) Bill Menees</Copyright>
 
-		<!-- When TargetFrameworks changes, also update the app's Properties\PublishProfiles\*.pubxml files. -->
-		<TargetFrameworks>net48;net6.0-windows</TargetFrameworks>
+		<!-- When TargetFramework changes, also update the app's Properties\PublishProfiles\*.pubxml files. -->
+		<TargetFramework>net9.0-windows</TargetFramework>
 		<UseWindowsForms>true</UseWindowsForms>
 
 		<RepoSrcFolder>$(MSBuildThisFileDirectory)</RepoSrcFolder>
-		<CodeAnalysisRuleSet>$(RepoSrcFolder)MegaBuild.ruleset</CodeAnalysisRuleSet>
 		<AssemblyOriginatorKeyFile>$(RepoSrcFolder)MegaBuild.snk</AssemblyOriginatorKeyFile>
 		<GenerateResourceUsePreserializedResources>true</GenerateResourceUsePreserializedResources>
 		<UseCustomCodeAnalyzers>true</UseCustomCodeAnalyzers>
@@ -26,9 +25,11 @@
 		<ProduceReferenceAssembly>false</ProduceReferenceAssembly>
 		<_SkipUpgradeNetAnalyzersNuGetWarning>true</_SkipUpgradeNetAnalyzersNuGetWarning>
 		<IsPublishable>false</IsPublishable>
+		<!-- .NET 9 deprecates BinaryFormatter, but WinForms .resx still make limited trusted use of it. -->
+		<GenerateResourceWarnOnBinaryFormatterUse>false</GenerateResourceWarnOnBinaryFormatterUse>
 
 		<!-- Make the assembly, file, and NuGet package versions the same. -->
-		<Version>4.9.1</Version>
+		<Version>5.0.0</Version>
 	</PropertyGroup>
 
 	<PropertyGroup Condition="'$(Configuration)'=='Debug'">
@@ -52,7 +53,7 @@
 	</ItemGroup>
 
 	<ItemGroup>
-		<PackageReference Include="System.Resources.Extensions" Version="6.0.0"/>
+		<PackageReference Include="System.Resources.Extensions" Version="9.0.0"/>
 	</ItemGroup>
 
 	<ItemGroup Condition="$(UseCustomCodeAnalyzers)">
@@ -60,22 +61,22 @@
 			<PrivateAssets>all</PrivateAssets>
 			<IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
 		</PackageReference>
-		<PackageReference Include="Menees.Analyzers" Version="3.0.11">
+		<PackageReference Include="Menees.Analyzers" Version="3.2.2">
 			<PrivateAssets>all</PrivateAssets>
 			<IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
 		</PackageReference>
-		<PackageReference Include="Microsoft.CodeAnalysis.NetAnalyzers" Version="6.0.0">
+		<PackageReference Include="Microsoft.CodeAnalysis.NetAnalyzers" Version="9.0.0">
 			<PrivateAssets>all</PrivateAssets>
 			<IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
 		</PackageReference>
-		<PackageReference Include="StyleCop.Analyzers" Version="1.2.0-beta.507">
+		<PackageReference Include="StyleCop.Analyzers" Version="1.2.0-beta.556">
 			<PrivateAssets>all</PrivateAssets>
 			<IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
 		</PackageReference>
 	</ItemGroup>
 
 	<ItemGroup>
-		<PackageReference Include="Meziantou.Polyfill" Version="1.0.26">
+		<PackageReference Include="Meziantou.Polyfill" Version="1.0.42">
 			<PrivateAssets>all</PrivateAssets>
 			<IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
 		</PackageReference>

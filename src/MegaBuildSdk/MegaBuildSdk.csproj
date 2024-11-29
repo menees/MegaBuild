@@ -1,9 +1,12 @@
-﻿<Project Sdk="Microsoft.NET.Sdk.WindowsDesktop">
+﻿<Project Sdk="Microsoft.NET.Sdk">
 
 	<PropertyGroup>
 		<AssemblyTitle>MegaBuild SDK</AssemblyTitle>
 		<Description>Toolkit for developing MegaBuild extension assemblies</Description>
 		<RootNamespace>MegaBuild</RootNamespace>
+
+		<!-- IDE0130: Namespace should match folder structure - Unfortunately, I didn't do that in this project. -->
+		<NoWarn>IDE0130</NoWarn>
 	</PropertyGroup>
 
 	<ItemGroup>
@@ -49,22 +52,5 @@
 	    <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
 	  </PackageReference>
 	</ItemGroup>
-
-	<Choose>
-		<When Condition=" '$(TargetFramework)' == 'net48' ">
-			<ItemGroup>
-				<Compile Remove="Classes\JavaScriptUtility.Core.cs" />
-				<None Include="Classes\JavaScriptUtility.Core.cs" />
-
-				<Reference Include="Microsoft.JScript" />
-			</ItemGroup>
-		</When>
-		<Otherwise>
-			<ItemGroup>
-				<Compile Remove="Classes\JavaScriptUtility.Framework.cs" />
-				<None Include="Classes\JavaScriptUtility.Framework.cs" />
-			</ItemGroup>
-		</Otherwise>
-	</Choose>
 
 </Project>

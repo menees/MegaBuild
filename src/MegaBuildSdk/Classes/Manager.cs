@@ -75,7 +75,7 @@ namespace MegaBuild
 			{
 				if (mainForm != null)
 				{
-					mainForm.BeginInvoke(outputCleared, new object?[] { null, EventArgs.Empty });
+					mainForm.BeginInvoke(outputCleared, [null, EventArgs.Empty]);
 				}
 				else
 				{

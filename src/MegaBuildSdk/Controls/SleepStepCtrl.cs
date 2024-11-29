@@ -33,6 +33,7 @@ namespace MegaBuild
 
 		public override string DisplayName => "Sleep";
 
+		[DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
 		public SleepStep Step
 		{
 			set

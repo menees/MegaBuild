@@ -240,11 +240,11 @@ namespace MegaBuild
 
 			if (this.Project.Building)
 			{
-				result = new string[] { "Open Solution" };
+				result = ["Open Solution"];
 			}
 			else
 			{
-				result = new string[] { "Open Solution", "Build Solution", "Rebuild Solution", "Clean Solution", "Deploy Solution" };
+				result = ["Open Solution", "Build Solution", "Rebuild Solution", "Clean Solution", "Deploy Solution"];
 			}
 
 			return result;
@@ -362,7 +362,7 @@ namespace MegaBuild
 
 		private void ExecuteActionVerb(VSAction verbAction)
 		{
-			this.Project.Build(new Step[] { this }, true, new VSStepExecuteArgs(verbAction));
+			this.Project.Build([this], true, new VSStepExecuteArgs(verbAction));
 		}
 
 		private string GenerateArguments(VSVersionInfo executableVersion, string configuration)
@@ -509,32 +509,32 @@ namespace MegaBuild
 					// http://connect.microsoft.com/VisualStudio/feedback/details/636760/ (continued on next line...
 					// 	...) devenv-com-fails-with-visualstudio-qualitytools-testcasemanagement
 					// http://social.msdn.microsoft.com/Forums/eu/tfsbuild/thread/cbfb80ed-0c8f-4f2a-889c-635ccca9db8c
-					packageErrorsToIgnore = new[]
-					{
+					packageErrorsToIgnore =
+					[
 						"Package 'Microsoft.VisualStudio.TestTools.TestCaseManagement.QualityToolsPackage, " +
 						"Microsoft.VisualStudio.QualityTools.TestCaseManagement, Version=10.0.0.0, Culture=neutral, " +
 						"PublicKeyToken=b03f5f7f11d50a3a' failed to load.",
-					};
+					];
 					break;
 
 				case VSVersion.V2015:
-					packageErrorsToIgnore = new[]
-					{
-						// As of VS 2015, Microsoft has a new "faux" error, "Package 'Code Analysis Package' failed to load."
-						// even though Code Analysis does load and runs fine.
+					// As of VS 2015, Microsoft has a new "faux" error, "Package 'Code Analysis Package' failed to load."
+					// even though Code Analysis does load and runs fine.
+					packageErrorsToIgnore =
+					[
 						"Package 'Code Analysis Package' failed to load.",
 
 						// This shows up when building solutions for analyzers (e.g., with vsix projects).
 						"Package 'TestWindowPackage' failed to load.",
-					};
+					];
 					break;
 
 				case VSVersion.V2019:
-					packageErrorsToIgnore = new[]
-					{
+					packageErrorsToIgnore =
+					[
 						"Package 'Task Status Center' failed to load.",
 						"Package 'Operation Progress Service Package' failed to load.",
-					};
+					];
 					break;
 			}
 

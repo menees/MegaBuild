@@ -31,7 +31,9 @@ namespace MegaBuild
 
 		private readonly CommandLineArgs commandLineArgs = new();
 		private readonly FindData findData = new();
+#pragma warning disable CA1859 // Use concrete types when possible for improved performance. The interface makes the intent clearer.
 		private readonly IFindTarget findTarget;
+#pragma warning restore CA1859 // Use concrete types when possible for improved performance
 		private readonly ToolStripMenuItem firstListContextMenuItem;
 		private readonly Stopwatch currentStepTimer = new();
 		private readonly OutputQueue outputQueue;
@@ -161,7 +163,7 @@ namespace MegaBuild
 				EnableComponents(!building && numSteps > 0, this.mnuBuildSelectedStepsOnly1, this.mnuBuildSelectedStepsOnly2, this.tbBuildSelected);
 				EnableComponents(
 					!building && isBuildStep && numBuildSteps == 1,
-					new Component[] { this.mnuBuildFromSelectedStep1, this.mnuBuildFromSelectedStep2, this.tbBuildFrom });
+					[this.mnuBuildFromSelectedStep1, this.mnuBuildFromSelectedStep2, this.tbBuildFrom]);
 				EnableComponents(!building && isBuildStep && numBuildSteps == 1, this.mnuBuildToSelectedStep1, this.mnuBuildToSelectedStep2, this.tbBuildTo);
 				EnableComponents(building, this.mnuStopBuild, this.tbStopBuild);
 
@@ -197,10 +199,7 @@ namespace MegaBuild
 		{
 			if (disposing)
 			{
-				if (this.components != null)
-				{
-					this.components.Dispose();
-				}
+				this.components?.Dispose();
 
 				this.outputQueue.Dispose();
 			}
@@ -277,7 +276,8 @@ namespace MegaBuild
 			return steps;
 		}
 
-		private static Step GetStepForItem(ListViewItem item) => (Step)item.Tag;
+		private static Step GetStepForItem(ListViewItem item) => (Step?)item.Tag
+			?? throw new InvalidOperationException("List view item's Tag should have a Step.");
 
 		private static void OutputMessage(string message, string caption)
 		{
@@ -478,7 +478,7 @@ namespace MegaBuild
 			// Use BeginInvoke to do a "PostMessage" so that the FinishedLoading
 			// "event" will fire after any project event messages are processed
 			// (e.g. Project_ContentsResetting).
-			this.BeginInvoke(new EventHandler(this.OnFinishedLoading), new object[] { this, EventArgs.Empty });
+			this.BeginInvoke(new EventHandler(this.OnFinishedLoading), [this, EventArgs.Empty]);
 		}
 
 		private void FormSave_SaveSettings(object? sender, SettingsEventArgs e)
@@ -594,8 +594,8 @@ namespace MegaBuild
 		{
 			if (e.Data != null && e.Data.GetDataPresent(DataFormats.FileDrop))
 			{
-				string[] files = (string[])e.Data.GetData(DataFormats.FileDrop);
-				if (files.Length == 1)
+				string[]? files = (string[]?)e.Data.GetData(DataFormats.FileDrop);
+				if (files?.Length == 1)
 				{
 					// Post a message back to ourselves to process these files.
 					// It isn't safe to pop up a modal during an OLE/shell drop,
@@ -688,9 +688,9 @@ namespace MegaBuild
 		{
 			if (this.outputWindow.HasSelection)
 			{
-				IDataObject beforeCopy = Clipboard.GetDataObject();
+				IDataObject? beforeCopy = Clipboard.GetDataObject();
 				this.outputWindow.Copy();
-				IDataObject afterCopy = Clipboard.GetDataObject();
+				IDataObject? afterCopy = Clipboard.GetDataObject();
 				if (beforeCopy != afterCopy && afterCopy != null)
 				{
 					// Replace the special "figure space" and "punctuation space" characters
@@ -699,7 +699,7 @@ namespace MegaBuild
 					if (afterCopy.GetDataPresent(DataFormats.UnicodeText))
 					{
 						final ??= new();
-						string input = afterCopy.GetData(DataFormats.UnicodeText).ToString() ?? string.Empty;
+						string input = afterCopy.GetData(DataFormats.UnicodeText)?.ToString() ?? string.Empty;
 						string output = OutputQueue.UseStandardSpaces(input);
 						final.SetData(DataFormats.UnicodeText, true, output);
 					}
@@ -709,7 +709,7 @@ namespace MegaBuild
 					if (afterCopy.GetDataPresent(DataFormats.Rtf))
 					{
 						final ??= new();
-						object rtf = afterCopy.GetData(DataFormats.Rtf);
+						object? rtf = afterCopy.GetData(DataFormats.Rtf);
 						final.SetData(DataFormats.Rtf, false, rtf);
 					}
 
@@ -1000,13 +1000,10 @@ namespace MegaBuild
 
 		private void OnCustomVerbClicked(object? sender, EventArgs e)
 		{
-			if (sender is ToolStripMenuItem mi)
+			if (sender is ToolStripMenuItem mi && mi.Text.IsNotEmpty())
 			{
 				Step? step = this.SelectedStep;
-				if (step != null)
-				{
-					step.ExecuteCustomVerb(mi.Text);
-				}
+				step?.ExecuteCustomVerb(mi.Text);
 			}
 		}
 
@@ -1224,7 +1221,7 @@ namespace MegaBuild
 		{
 			if (this.IsHandleCreated && TaskbarManager.IsPlatformSupported)
 			{
-				List<IDisposable> disposables = new();
+				List<IDisposable> disposables = [];
 				try
 				{
 					// http://visualstudiomagazine.com/articles/2010/07/29/getting-the-jump-on-jump-lists.aspx

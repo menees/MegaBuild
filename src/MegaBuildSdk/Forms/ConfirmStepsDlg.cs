@@ -55,7 +55,7 @@ namespace MegaBuild
 		{
 			foreach (ExecutableStep step in steps)
 			{
-				ListViewItem item = new(new string[] { step.Name, type, step.Description }, step.StepTypeInfo.ImageIndex)
+				ListViewItem item = new([step.Name, type, step.Description], step.StepTypeInfo.ImageIndex)
 				{
 					Tag = step,
 					Checked = step.IncludeInBuild,
@@ -66,17 +66,17 @@ namespace MegaBuild
 
 		private ExecutableStep[] GetCheckedSteps(StepCategory category)
 		{
-			List<ExecutableStep> steps = new();
+			List<ExecutableStep> steps = [];
 			foreach (ListViewItem item in this.List.CheckedItems)
 			{
-				ExecutableStep step = (ExecutableStep)item.Tag;
-				if (step.Category == category)
+				ExecutableStep? step = (ExecutableStep?)item.Tag;
+				if (step?.Category == category)
 				{
 					steps.Add(step);
 				}
 			}
 
-			ExecutableStep[] result = steps.ToArray();
+			ExecutableStep[] result = [.. steps];
 			return result;
 		}
 

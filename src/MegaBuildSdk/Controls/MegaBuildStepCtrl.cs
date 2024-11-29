@@ -34,6 +34,7 @@ namespace MegaBuild
 
 		public override string DisplayName => nameof(MegaBuild);
 
+		[DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
 		public MegaBuildStep Step
 		{
 			set

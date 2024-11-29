@@ -13,14 +13,14 @@
 	{
 		#region Private Data Members
 
-		private static readonly (string Original, string Escaped)[] TestCases = new[]
-		{
+		private static readonly (string Original, string Escaped)[] TestCases =
+		[
 			(string.Empty, string.Empty),
 			("X Y", "X Y"),
 			("  X Y  ", "%20%20X Y%20%20"),
 			("%", "%25"),
 			(" \r X  Y Z \n ", "%20%0D X%20%20Y Z %0A%20"),
-		};
+		];
 
 		#endregion
 

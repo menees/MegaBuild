@@ -156,7 +156,7 @@
 				if (this.outputWindow.InvokeRequired)
 				{
 					// The Timer control creates a hidden window, so it can only be started and stopped on the UI thread.
-					this.outputWindow.BeginInvoke(EnableTimer, new object[] { enable });
+					this.outputWindow.BeginInvoke(EnableTimer, [enable]);
 				}
 				else
 				{
@@ -196,7 +196,7 @@
 
 		private List<OutputAddedEventArgs> GetOutputSegments()
 		{
-			List<OutputAddedEventArgs> segments = new();
+			List<OutputAddedEventArgs> segments = [];
 
 			bool useTimestamps = Options.UseTimestampPrefix;
 			string? invisibleTimestamp = null;

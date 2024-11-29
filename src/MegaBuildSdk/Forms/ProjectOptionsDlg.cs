@@ -42,7 +42,7 @@ namespace MegaBuild
 			this.lstVariables.Items.Clear();
 			foreach (var definition in variableDefinitions)
 			{
-				this.lstVariables.Items.Add(new ListViewItem(new[] { definition.Name, definition.Value, definition.ExpandPath.ToString() }));
+				this.lstVariables.Items.Add(new ListViewItem([definition.Name, definition.Value, definition.ExpandPath.ToString()]));
 			}
 		}
 
@@ -96,7 +96,7 @@ namespace MegaBuild
 
 		private void Add_Click(object sender, EventArgs e)
 		{
-			ListViewItem item = new(new string[] { "%%", string.Empty, "False" });
+			ListViewItem item = new(["%%", string.Empty, "False"]);
 			this.lstVariables.Items.Add(item);
 			item.Selected = true;
 			this.edtName.Focus();
@@ -105,10 +105,7 @@ namespace MegaBuild
 		private void Delete_Click(object sender, EventArgs e)
 		{
 			ListViewItem? item = this.SelectedItem;
-			if (item != null)
-			{
-				item.Remove();
-			}
+			item?.Remove();
 		}
 
 		private void LogFile_Click(object sender, EventArgs e)

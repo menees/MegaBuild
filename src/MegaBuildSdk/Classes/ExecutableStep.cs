@@ -330,7 +330,7 @@ namespace MegaBuild
 				string pattern = subKey.GetValue("Pattern", string.Empty);
 				if (!string.IsNullOrEmpty(pattern) && TryParseRegex(pattern, out Regex? regex))
 				{
-					this.customOutputStyles ??= new();
+					this.customOutputStyles ??= [];
 					this.customOutputStyles.Add((style, regex));
 				}
 			}
@@ -492,7 +492,7 @@ namespace MegaBuild
 
 		private static List<Regex> ParseRegexes(StringCollection regexStrings)
 		{
-			List<Regex> result = new();
+			List<Regex> result = [];
 
 			foreach (string? regexString in regexStrings)
 			{
@@ -543,12 +543,11 @@ namespace MegaBuild
 			{
 				startInfo.StandardErrorEncoding = this.StandardStreamEncoding;
 			}
-#if NET
+
 			if (startInfo.RedirectStandardInput)
 			{
 				startInfo.StandardInputEncoding = this.StandardStreamEncoding;
 			}
-#endif
 
 			startInfo.WindowStyle = args.WindowStyle;
 			this.DebugProperty("WindowStyle", startInfo.WindowStyle);
@@ -634,7 +633,7 @@ namespace MegaBuild
 
 		private bool StartProcess(Process process)
 		{
-			const int E_FAIL = -2147467259; // 0x80004005
+			const int E_FAIL = -2_147_467_259; // 0x80004005
 			try
 			{
 				bool result = process.Start();

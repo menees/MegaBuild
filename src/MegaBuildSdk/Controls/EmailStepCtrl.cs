@@ -34,6 +34,7 @@ namespace MegaBuild
 
 		public override string DisplayName => "Email";
 
+		[DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
 		public EmailStep Step
 		{
 			set

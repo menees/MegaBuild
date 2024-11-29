@@ -15,8 +15,8 @@ namespace MegaBuild
 	{
 		#region Private Data Members
 
-		private List<string> names = new();
-		private Dictionary<string, bool> nameToState = new();
+		private List<string> names = [];
+		private Dictionary<string, bool> nameToState = [];
 
 		#endregion
 
@@ -46,8 +46,8 @@ namespace MegaBuild
 		public bool GetFromListView(ListView listView)
 		{
 			// Build new collections
-			List<string> newNames = new();
-			Dictionary<string, bool> newNameToState = new();
+			List<string> newNames = [];
+			Dictionary<string, bool> newNameToState = [];
 			foreach (ListViewItem item in listView.Items)
 			{
 				newNames.Add(item.Text);
@@ -117,7 +117,7 @@ namespace MegaBuild
 			// The names in this.names are currently in the order they were added. We need them to be in
 			// the order they were in the passed in list. If we have any configurations that weren't in the
 			// old list, then they should come at the end.
-			List<string> newNames = new();
+			List<string> newNames = [];
 
 			// Add the old entries that still exist.
 			foreach (string name in configurations.names)

@@ -23,7 +23,7 @@ namespace MegaBuild
 		public ApplicationOptionsDlg()
 		{
 			this.InitializeComponent();
-			this.timestampFormat.Items.AddRange(Options.SupportedTimestampFormats.ToArray<object>());
+			this.timestampFormat.Items.AddRange([.. Options.SupportedTimestampFormats]);
 		}
 
 		#endregion
@@ -73,7 +73,7 @@ namespace MegaBuild
 			this.lstVariables.Items.Clear();
 			foreach (KeyValuePair<string, string> entry in Manager.Variables)
 			{
-				this.lstVariables.Items.Add(new ListViewItem(new string[] { entry.Key, entry.Value }));
+				this.lstVariables.Items.Add(new ListViewItem([entry.Key, entry.Value]));
 			}
 
 			bool result = false;
@@ -119,7 +119,7 @@ namespace MegaBuild
 
 		private void Add_Click(object sender, EventArgs e)
 		{
-			ListViewItem item = new(new string[] { "%%", string.Empty });
+			ListViewItem item = new(["%%", string.Empty]);
 			this.lstVariables.Items.Add(item);
 			item.Selected = true;
 			this.edtName.Focus();
@@ -128,10 +128,7 @@ namespace MegaBuild
 		private void Delete_Click(object sender, EventArgs e)
 		{
 			ListViewItem? item = this.SelectedItem;
-			if (item != null)
-			{
-				item.Remove();
-			}
+			item?.Remove();
 		}
 
 		private void OK_Click(object sender, EventArgs e)

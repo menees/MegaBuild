@@ -34,6 +34,7 @@ namespace SampleStep
 
 		public override string DisplayName => "Beep";
 
+		[DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
 		public BeepStep? Step
 		{
 			get => this.step;

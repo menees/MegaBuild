@@ -101,7 +101,7 @@ namespace MegaBuild
 
 		public XmlKey[] GetSubkeys()
 		{
-			List<XmlKey> lstKeys = new();
+			List<XmlKey> lstKeys = [];
 			if (this.element.HasElements)
 			{
 				foreach (XElement child in this.element.Elements())
@@ -110,7 +110,7 @@ namespace MegaBuild
 				}
 			}
 
-			return lstKeys.ToArray();
+			return [.. lstKeys];
 		}
 
 		public string GetValue(string name, string defaultValue)
@@ -285,10 +285,7 @@ namespace MegaBuild
 			XElement? result = this.element.Elements(subkeyType)
 				.FirstOrDefault(e => e.GetAttributeValue(nameof(this.XmlKeyName), string.Empty) == (xmlKeyName ?? string.Empty));
 
-			if (result == null)
-			{
-				result = this.AddSubkeyNode(subkeyType, xmlKeyName);
-			}
+			result ??= this.AddSubkeyNode(subkeyType, xmlKeyName);
 
 			return result;
 		}

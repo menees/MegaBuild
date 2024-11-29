@@ -35,6 +35,7 @@ namespace MegaBuild
 
 		public override string DisplayName => nameof(PowerShell);
 
+		[DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
 		public PowerShellStep Step
 		{
 			set

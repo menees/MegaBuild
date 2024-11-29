@@ -21,7 +21,7 @@ namespace MegaBuild
 	{
 		#region Private Data Members
 
-		private readonly List<string> attachments = new();
+		private readonly List<string> attachments = [];
 		private bool appendOutput = true;
 		private MailPriority priority = MailPriority.Normal;
 		private string cc = string.Empty;

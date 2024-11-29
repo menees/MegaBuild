@@ -30,7 +30,7 @@
 			this.InitializeComponent();
 			this.cbStyle.Items.AddRange(((OutputStyle[])Enum.GetValues(typeof(OutputStyle))).OrderBy(v => v).Select(v => v.ToString()).ToArray());
 
-			EncodingDisplay[] encodings = Encoding.GetEncodings().Select(e => new EncodingDisplay(e.GetEncoding())).OrderBy(e => e.ToString()).ToArray();
+			EncodingDisplay[] encodings = [.. Encoding.GetEncodings().Select(e => new EncodingDisplay(e.GetEncoding())).OrderBy(e => e.ToString())];
 			this.cbEncoding.Items.AddRange(encodings);
 
 			// Turn off ExtendedListView's default sorting so ListViewItemMover will work with it.
@@ -43,6 +43,7 @@
 
 		public override string DisplayName => "Output";
 
+		[DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
 		public ExecutableStep Step
 		{
 			set
@@ -65,7 +66,7 @@
 						{
 							foreach ((OutputStyle style, Regex pattern) in this.step.CustomOutputStyles)
 							{
-								ListViewItem item = new(new[] { style.ToString(), pattern.ToString() });
+								ListViewItem item = new([style.ToString(), pattern.ToString()]);
 								items.Add(item);
 							}
 						}
@@ -115,7 +116,7 @@
 				if (Enum.TryParse(item.SubItems[0].Text, out OutputStyle style) &&
 					ExecutableStep.TryParseRegex(item.SubItems[1].Text, out Regex? regex))
 				{
-					list ??= new();
+					list ??= [];
 					list.Add((style, regex));
 				}
 				else
@@ -178,7 +179,7 @@
 
 		private void Add_Click(object sender, EventArgs e)
 		{
-			ListViewItem item = new(new string[] { nameof(OutputStyle.Normal), "^.*Match.*$" });
+			ListViewItem item = new([nameof(OutputStyle.Normal), "^.*Match.*$"]);
 			this.lstPatterns.Items.Add(item);
 			this.lstPatterns.AutoSizeColumns();
 			item.Selected = true;

@@ -117,7 +117,7 @@ namespace MegaBuild
 			}
 		}
 
-		public override string[] GetCustomVerbs() => new[] { "Open Project", "Open Project In New Instance", "Build Project In New Instance" };
+		public override string[] GetCustomVerbs() => ["Open Project", "Open Project In New Instance", "Build Project In New Instance"];
 
 		[SuppressMessage("Usage", "CC0022:Should dispose object", Justification = "Caller disposes new controls.")]
 		public override void GetStepEditorControls(ICollection<StepEditorControl> controls)

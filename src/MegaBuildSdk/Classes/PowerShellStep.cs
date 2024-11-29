@@ -165,7 +165,7 @@ namespace MegaBuild
 		}
 
 		public override string[]? GetCustomVerbs()
-			=> this.IsScript ? new string[] { "Edit Script" } : base.GetCustomVerbs();
+			=> this.IsScript ? ["Edit Script"] : base.GetCustomVerbs();
 
 		[SuppressMessage("Usage", "CC0022:Should dispose object", Justification = "Caller disposes new controls.")]
 		public override void GetStepEditorControls(ICollection<StepEditorControl> controls)
@@ -205,7 +205,7 @@ namespace MegaBuild
 			string? result = null;
 
 			string[] pathEntries = (Environment.GetEnvironmentVariable("PATH") ?? string.Empty)
-				.Split(new[] { ';' }, StringSplitOptions.RemoveEmptyEntries)
+				.Split([';'], StringSplitOptions.RemoveEmptyEntries)
 				.Select(entry => entry.Trim())
 				.Where(entry => !string.IsNullOrWhiteSpace(entry))
 				.ToArray();

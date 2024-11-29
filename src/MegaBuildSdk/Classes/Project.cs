@@ -29,10 +29,10 @@ namespace MegaBuild
 		private const decimal ProjectVersion = 5M;
 		private readonly int baseIndentLevel;
 
-		private readonly StepCollection buildSteps = new();
+		private readonly StepCollection buildSteps = [];
 		private readonly Dictionary<string, string> cachedVariables = new(StringComparer.CurrentCultureIgnoreCase);
 		private readonly object[] eventHandlerParams;
-		private readonly StepCollection failureSteps = new();
+		private readonly StepCollection failureSteps = [];
 		private readonly ProjectFileWatcher fileWatcher;
 
 		// Build Data
@@ -67,7 +67,7 @@ namespace MegaBuild
 		private bool showComments;
 		private bool showDebugOutput;
 		private BuildStatus status = BuildStatus.None;
-		private List<VariableDefinition> variableDefinitions = new();
+		private List<VariableDefinition> variableDefinitions = [];
 
 		#endregion
 
@@ -77,7 +77,7 @@ namespace MegaBuild
 		{
 			container.Add(this);
 			this.InitializeComponent();
-			this.eventHandlerParams = new object[] { this, EventArgs.Empty };
+			this.eventHandlerParams = [this, EventArgs.Empty];
 			this.fileWatcher = new(this);
 			Manager.AddProject(this);
 		}
@@ -85,7 +85,7 @@ namespace MegaBuild
 		internal Project(int baseIndentLevel)
 		{
 			this.InitializeComponent();
-			this.eventHandlerParams = new object[] { this, EventArgs.Empty };
+			this.eventHandlerParams = [this, EventArgs.Empty];
 			this.baseIndentLevel = baseIndentLevel;
 			this.fileWatcher = new(this);
 			Manager.AddProject(this);
@@ -141,7 +141,7 @@ namespace MegaBuild
 					// CanPasteSteps should just eat the exception and return false.
 					// If the clipboard is still locked when Paste is called, then that
 					// should throw the exception on up to the caller.
-					IDataObject data = Clipboard.GetDataObject();
+					IDataObject? data = Clipboard.GetDataObject();
 					if (data != null)
 					{
 						result = data.GetDataPresent(CopiedStepFormat);
@@ -176,6 +176,7 @@ namespace MegaBuild
 		public StepCollection FailureSteps => this.failureSteps;
 
 		[Browsable(false)]
+		[DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
 		public string FileName
 		{
 			get => this.fileName;
@@ -199,6 +200,7 @@ namespace MegaBuild
 		}
 
 		[Browsable(false)]
+		[DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
 		public bool Modified
 		{
 			get => this.modified;
@@ -218,7 +220,7 @@ namespace MegaBuild
 		{
 			get
 			{
-				bool result = this.status != BuildStatus.Started && this.status != MegaBuild.BuildStatus.Failing;
+				bool result = this.status != BuildStatus.Started && this.status != BuildStatus.Failing;
 				return result;
 			}
 		}
@@ -239,7 +241,7 @@ namespace MegaBuild
 
 					// Currently, we only support the $(ProjectDir) token.
 					string? projectDir = Path.GetDirectoryName(this.FileName);
-					if (!string.IsNullOrEmpty(projectDir) && projectDir.EndsWith(@"\"))
+					if (!string.IsNullOrEmpty(projectDir) && projectDir.EndsWith('\\'))
 					{
 						projectDir = projectDir.Substring(0, projectDir.Length - 1);
 					}
@@ -321,11 +323,7 @@ namespace MegaBuild
 		public static void CopySteps(Step[] steps)
 		{
 			// Put all the steps into a new collection.
-			StepCollection stepColl = new();
-			foreach (Step step in steps)
-			{
-				stepColl.Add(step);
-			}
+			StepCollection stepColl = [.. steps];
 
 			// Save the new collection into an XML document.
 			XElement doc = new("MegaBuildCopiedSteps", new XAttribute("CopyVersion", ProjectVersion));
@@ -363,10 +361,7 @@ namespace MegaBuild
 			{
 				// Store the execute args and make sure they're non-null.
 				this.executeArgs = args;
-				if (this.executeArgs == null)
-				{
-					this.executeArgs = StepExecuteArgs.Empty;
-				}
+				this.executeArgs ??= StepExecuteArgs.Empty;
 
 				// If the user selectively built different steps last time,
 				// make sure we reset statuses for all steps.
@@ -949,16 +944,16 @@ namespace MegaBuild
 			if (CanPasteSteps)
 			{
 				// Get the steps from the clipboard in XML format.
-				IDataObject data = Clipboard.GetDataObject();
-				string stepXml = (string)data.GetData(CopiedStepFormat);
-				XElement doc = XElement.Parse(stepXml);
+				IDataObject? data = Clipboard.GetDataObject();
+				string? stepXml = (string?)data?.GetData(CopiedStepFormat);
+				XElement doc = XElement.Parse(stepXml ?? string.Empty);
 				XmlKey docKey = new(doc);
 
 				// We can't paste steps from a newer version of MegaBuild, but we can paste from older versions.
 				if (decimal.TryParse(docKey.GetValue("CopyVersion", string.Empty), out decimal copyVersion) && copyVersion <= ProjectVersion)
 				{
 					// Convert the XML back into a step collection.
-					StepCollection stepColl = new();
+					StepCollection stepColl = [];
 
 					// Set flags so edited and inserted events don't fire.
 					this.loading = true;
@@ -1129,7 +1124,7 @@ namespace MegaBuild
 
 		internal Step CreateStep(StepCategory category, StepTypeInfo info)
 		{
-			object[] constructorParams = { this, category, info };
+			object[] constructorParams = [this, category, info];
 			return (Step?)Activator.CreateInstance(info.StepType, constructorParams)
 				?? throw Exceptions.NewArgumentException($"Unable to create instance of {info.StepType}.");
 		}
@@ -1178,8 +1173,8 @@ namespace MegaBuild
 
 		private static void GetExecutableSteps(Step[] steps, bool forceIncludeInBuild, out ExecutableStep[] stepsToBuild, out ExecutableStep[] stepsToConfirm)
 		{
-			List<ExecutableStep> stepsToBuildList = new();
-			List<ExecutableStep> stepsToConfirmList = new();
+			List<ExecutableStep> stepsToBuildList = [];
+			List<ExecutableStep> stepsToConfirmList = [];
 
 			foreach (Step step in steps)
 			{
@@ -1196,8 +1191,8 @@ namespace MegaBuild
 				}
 			}
 
-			stepsToBuild = stepsToBuildList.ToArray();
-			stepsToConfirm = stepsToConfirmList.ToArray();
+			stepsToBuild = [.. stepsToBuildList];
+			stepsToConfirm = [.. stepsToConfirmList];
 		}
 
 		private static void SetInCurrentBuild(ExecutableStep[]? steps, bool state)
@@ -1215,7 +1210,7 @@ namespace MegaBuild
 		{
 			int result = 0;
 
-			if (!object.Equals(member, value))
+			if (!Equals(member, value))
 			{
 				member = value;
 				result = 1;
@@ -1471,7 +1466,7 @@ namespace MegaBuild
 
 				if (this.Form != null)
 				{
-					this.Form.BeginInvoke(this.BuildProgress, new object[] { this, e });
+					this.Form.BeginInvoke(this.BuildProgress, [this, e]);
 				}
 				else
 				{
@@ -1533,7 +1528,7 @@ namespace MegaBuild
 
 				if (this.Form != null)
 				{
-					this.Form.BeginInvoke(this.ProjectStepsChanged, new object[] { this, e });
+					this.Form.BeginInvoke(this.ProjectStepsChanged, [this, e]);
 				}
 				else
 				{
