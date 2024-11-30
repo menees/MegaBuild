@@ -4,14 +4,15 @@
 
 MegaBuild is an automated build utility. It is primarily intended to build multiple Visual Studio solutions (versions 2002 – 2022), but it also includes steps to run batch files, run PowerShell scripts, build MSBuild projects, send email, add output, wait a specified amount of time, or play sounds. You can also write your own custom step types that integrate into MegaBuild using the provided MegaBuild SDK.
 
-MegaBuild was written in C# and requires the .NET Framework or .NET Core. To add custom step types you can use any .NET language to inherit from the MegaBuild.ExecutableStep type.
+<!-- DOTNET_VERSION: Keep in sync with Directory.Build.props -->
+MegaBuild was written in C# and requires .NET 9. To add custom step types you can use any .NET language to inherit from the MegaBuild.ExecutableStep type.
 
 This software is CharityWare. If you use it, I ask that you donate something to the charity of your choice.
 
 ![MegaBuild](http://www.menees.com/Images/MegaBuild.png)
 
 ## Installation
-Make sure you have the required version of the .NET Framework or .NET Core installed.  Then unzip the MegaBuild release to a directory of your choice.  Once the files are unzipped into a directory, then MegaBuild.exe should be ready to run.
+Make sure you have the required version of .NET installed.  Then unzip the MegaBuild release to a directory of your choice.  Once the files are unzipped into a directory, then MegaBuild.exe should be ready to run.
 
 To uninstall MegaBuild, delete the directory you unzipped it to.
 

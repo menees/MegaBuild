@@ -12,7 +12,7 @@
 		<LangVersion>latest</LangVersion>
 		<Copyright>Copyright © 2003-$([System.DateTime]::UtcNow.ToString(`yyyy`)) Bill Menees</Copyright>
 
-		<!-- When TargetFramework changes, also update the app's Properties\PublishProfiles\*.pubxml files. -->
+		<!-- DOTNET_VERSION: Set the primary .NET target version. -->
 		<TargetFramework>net9.0-windows</TargetFramework>
 		<UseWindowsForms>true</UseWindowsForms>
 
