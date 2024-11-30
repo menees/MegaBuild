@@ -121,7 +121,7 @@
 							break;
 
 						// Note: We'll silently ignore other element types like:
-						// AnsiEscapeSequnce, AnsiPrivateControlSequence, and AnsiControlString.
+						// AnsiEscapeSequnce, AnsiPrivateControlSequence, AnsiControlString, and non-SGR AnsiControlSequence.
 						// https://www.microlithix.com/AnsiParser/docs/Elements.html
 					}
 				}
