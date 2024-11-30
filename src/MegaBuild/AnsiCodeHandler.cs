@@ -4,13 +4,17 @@
 
 	using System;
 	using System.Collections.Generic;
+	using System.Diagnostics;
 	using System.Diagnostics.CodeAnalysis;
 	using System.Drawing;
 	using System.Linq;
 	using System.Text;
 	using System.Text.RegularExpressions;
 	using System.Windows.Forms;
+	using Menees;
 	using Menees.Windows.Forms;
+	using Microlithix.Text.Ansi;
+	using Microlithix.Text.Ansi.Element;
 
 	#endregion
 
@@ -33,9 +37,7 @@
 
 		private const double DimBrightTolerance = 0.1;
 
-		// Based on https://en.wikipedia.org/wiki/ANSI_escape_code#Select_Graphic_Rendition_parameters.
-		// According to https://en.wikipedia.org/wiki/ANSI_escape_code#Control_Sequence_Introducer_commands, all args are optional.
-		private static readonly Regex ColorExpression = new(@"(?n)\e\[(?<args>\d*(;\d*)*)m", RegexOptions.Compiled | RegexOptions.CultureInvariant);
+		private readonly AnsiStringParser parser = new();
 
 		private Mode mode;
 		private Color? foregroundColor;
@@ -59,46 +61,69 @@
 		{
 			this.mode = default;
 			this.foregroundColor = null;
+			this.parser.Reset();
 		}
 
 		public IEnumerable<(string Text, Color Color)> Split(string text, Color defaultColor, Func<Color>? getCurrentBackground)
 		{
 			// Most text won't contain ANSI escape codes, so try to short circuit and return quickly.
-			MatchCollection matches;
-			if (string.IsNullOrWhiteSpace(text) || !text.Contains('\u001B') || (matches = ColorExpression.Matches(text)).Count == 0)
+			if (string.IsNullOrWhiteSpace(text) || !text.Contains('\e'))
 			{
 				yield return (text, this.foregroundColor ?? defaultColor);
 			}
 			else
 			{
-				int startIndex = 0;
-				foreach (Match match in matches)
+				this.parser.Reset();
+				List<IAnsiStringParserElement> elements = this.parser.Parse(text);
+				foreach (IAnsiStringParserElement element in elements)
 				{
-					if (match.Index > startIndex)
+					switch (element)
 					{
-						yield return (text.Substring(startIndex, match.Index - startIndex), this.foregroundColor ?? defaultColor);
-					}
-
-					// According to https://en.wikipedia.org/wiki/ANSI_escape_code#CSI_(Control_Sequence_Introducer)_sequences,
-					// missing args should be treated as 0 (e.g., in \e[1;;3m the middle arg is 0). Also, no arg (i.e., \e[m) should be treated as 0.
-					// For simplicity, we'll treat any unparsable arg as 0 (e.g., 999 => 0).
-					IEnumerable<byte> args = match.Groups[1].Value.Split(';').Select(arg => byte.TryParse(arg, out byte value) ? value : byte.MinValue);
-					foreach (byte arg in args)
-					{
-						// If we encounter an unsupported arg, we'll quit processing this escape sequence
-						// (e.g., for background colors, 256 color ids, 24-bit color components, or other font effects).
-						if (!this.TryProcessArg(arg, defaultColor, getCurrentBackground))
-						{
+						case AnsiPrintableString printableString:
+							yield return (printableString.Text, this.foregroundColor ?? defaultColor);
 							break;
-						}
+
+						case AnsiSolitaryControlCode controlCode:
+							// These are single control character like TAB, BEL, CR, LF.
+							char printableControlCode = controlCode.Code switch
+							{
+								'\t' or '\r' or '\n' => controlCode.Code,
+								_ => TextUtility.GetPrintableCharacter(controlCode.Code),
+							};
+							yield return (printableControlCode.ToString(), this.foregroundColor ?? defaultColor);
+							break;
+
+						case AnsiControlSequence controlSequence:
+							if (controlSequence.Function == ControlFunction.SGR)
+							{
+								// According to https://en.wikipedia.org/wiki/ANSI_escape_code#CSI_(Control_Sequence_Introducer)_sequences,
+								// missing args should be treated as 0 (e.g., in \e[1;;3m the middle arg is 0). Also, no arg
+								// (i.e., \e[m) should be treated as 0. For simplicity, we'll treat any unparsable arg as 0 (e.g., 999 => 0).
+								if (controlSequence.Parameters.Count == 0)
+								{
+									this.TryProcessArg(0, defaultColor, getCurrentBackground);
+								}
+								else
+								{
+									foreach (Parameter parameter in controlSequence.Parameters)
+									{
+										byte arg = (byte)Math.Clamp(parameter.Value, byte.MinValue, byte.MaxValue);
+										if (!this.TryProcessArg(arg, defaultColor, getCurrentBackground))
+										{
+											// If we encounter an unsupported arg, we'll quit processing this control sequence
+											// (e.g., for background colors, 256 color ids, 24-bit color components, or other font effects).
+											break;
+										}
+									}
+								}
+							}
+
+							break;
+
+						// Note: We'll silently ignore other element types like:
+						// AnsiEscapeSequnce, AnsiPrivateControlSequence, and AnsiControlString.
+						// https://www.microlithix.com/AnsiParser/docs/Elements.html
 					}
-
-					startIndex = match.Index + match.Length;
-				}
-
-				if (startIndex < text.Length)
-				{
-					yield return (text.Substring(startIndex), this.foregroundColor ?? defaultColor);
 				}
 			}
 		}
