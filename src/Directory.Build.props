@@ -17,7 +17,6 @@
 		<UseWindowsForms>true</UseWindowsForms>
 
 		<RepoSrcFolder>$(MSBuildThisFileDirectory)</RepoSrcFolder>
-		<AssemblyOriginatorKeyFile>$(RepoSrcFolder)MegaBuild.snk</AssemblyOriginatorKeyFile>
 		<GenerateResourceUsePreserializedResources>true</GenerateResourceUsePreserializedResources>
 		<UseCustomCodeAnalyzers>true</UseCustomCodeAnalyzers>
 		<Nullable>enable</Nullable>
