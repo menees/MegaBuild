@@ -73,7 +73,7 @@ namespace MegaBuild
 			var outputCleared = OutputCleared;
 			if (outputCleared != null)
 			{
-				if (mainForm != null)
+				if (mainForm != null && mainForm.InvokeRequired)
 				{
 					mainForm.BeginInvoke(outputCleared, [null, EventArgs.Empty]);
 				}
