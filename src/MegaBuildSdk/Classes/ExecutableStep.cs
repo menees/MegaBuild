@@ -361,6 +361,24 @@ public abstract class ExecutableStep : Step
 		}
 	}
 
+	protected static bool AreFoldersDifferent(string? filePath, string? workingDirectory)
+	{
+		bool result = false;
+
+		if (filePath.IsNotEmpty() && workingDirectory.IsNotEmpty())
+		{
+			string? fileDirectory = Path.GetDirectoryName(filePath);
+			if (fileDirectory.IsNotEmpty())
+			{
+				fileDirectory = Manager.ExpandVariables(fileDirectory);
+				workingDirectory = Manager.ExpandVariables(workingDirectory);
+				result = !string.Equals(fileDirectory, workingDirectory, StringComparison.OrdinalIgnoreCase);
+			}
+		}
+
+		return result;
+	}
+
 	protected bool ExecuteCommand(ExecuteCommandArgs args)
 	{
 		bool result = true;

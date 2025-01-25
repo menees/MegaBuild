@@ -216,6 +216,44 @@ internal sealed class MSBuildStep : ExecutableStep
 		controls.Add(new MSBuildStepCtrl { Step = this });
 	}
 
+	public override void ExecuteCustomVerb(string verb)
+	{
+		switch (verb)
+		{
+			case "Open Project":
+				SystemUtility.TryOpenFile(this.ProjectFile);
+				break;
+
+			case "Open Project Folder In Explorer":
+				SystemUtility.TryOpenExplorerForFile(this.ProjectFile);
+				break;
+
+			case "Open Project Folder In Terminal":
+				SystemUtility.TryOpenTerminalForFile(this.ProjectFile);
+				break;
+
+			case "Open Working Directory In Explorer":
+				SystemUtility.TryOpenExplorerForFolder(this.WorkingDirectory);
+				break;
+
+			case "Open Working Directory In Terminal":
+				SystemUtility.TryOpenTerminalForFolder(this.WorkingDirectory);
+				break;
+		}
+	}
+
+	public override string[]? GetCustomVerbs()
+	{
+		List<string> result = ["Open Project", SeparatorVerb, "Open Project Folder In Explorer", "Open Project Folder In Terminal"];
+
+		if (AreFoldersDifferent(this.ProjectFile, this.WorkingDirectory))
+		{
+			result.AddRange(["Open Working Directory In Explorer", "Open Working Directory In Terminal"]);
+		}
+
+		return [.. result];
+	}
+
 	#endregion
 
 	#region Protected Methods

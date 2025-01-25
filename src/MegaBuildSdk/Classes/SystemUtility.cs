@@ -146,16 +146,38 @@ public static class SystemUtility
 		return result;
 	}
 
+	public static bool TryOpenFile(string? filePath)
+	{
+		bool result = false;
+
+		if (filePath.IsNotEmpty())
+		{
+			filePath = GetFullyQualifiedPath(filePath);
+			if (File.Exists(filePath))
+			{
+				result = WindowsUtility.ShellExecute(null, filePath);
+			}
+			else
+			{
+				WindowsUtility.ShowError(null, $"The file '{filePath}' does not exist.");
+			}
+		}
+
+		return result;
+	}
+
 	#endregion
 
 	#region Private Methods
 
 	private static string? GetFullyQualifiedPath(string? path)
 	{
+		path = Manager.ExpandVariables(path);
+
 		// If the path is rooted but doesn't exist, we want to return the rooted path as is.
 		// If the path is relative or just a file name, then we need to fully qualify it to
 		// safely pass it to external processes (e.g., explorer.exe).
-		string? result = path is null || Path.IsPathRooted(path) ? path : Path.GetFullPath(path);
+		string? result = Path.IsPathRooted(path) ? path : Path.GetFullPath(path);
 		return result;
 	}
 
