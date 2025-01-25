@@ -1,0 +1,67 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<MegaBuildProject
+	ProjectVersion="5">
+	<Options
+		OverrideVSStepConfigurations="False"
+		LogOutput="False"
+		OverwriteLog="True"
+		LogTimestamp="True"
+		ShowComments="False"
+		ShowDebugOutput="False"
+		OverrideVSActions="False"
+		OverrideVSVersions="False"
+		OverrideVSActionValue="Build"
+		OverrideVSVersionValue="V2022">
+		<Variables>
+			<Variable
+				XmlKeyName="%25MB.Configuration%25"
+				Value="Debug"
+				ExpandPath="False" />
+			<Variable
+				XmlKeyName="%25MB.Target%25"
+				Value="Build"
+				ExpandPath="False" />
+		</Variables>
+	</Options>
+	<Steps
+		XmlKeyName="BuildSteps">
+		<Step
+			StepTypeName="MegaBuild.OutputStep"
+			Name="Set Target = Rebuild"
+			IncludeInBuild="False"
+			Level="0"
+			WaitForCompletion="True"
+			IgnoreFailure="False"
+			PromptFirst="False"
+			OnlyIfParentSucceeded="True"
+			Timeout="False"
+			TimeoutMinutes="10"
+			AutoColorErrorsAndWarnings="True"
+			StandardStreamEncoding="utf-8"
+			IsAdministratorRequired="False"
+			Message="MegaBuild.Set MB.Target=Rebuild"
+			IncludeTimestamp="False"
+			IndentOutput="0"
+			TextColor="-16777216"
+			IsHighlight="False" />
+		<Step
+			StepTypeName="MegaBuild.OutputStep"
+			Name="Show Target &amp; Configuration"
+			IncludeInBuild="True"
+			Level="0"
+			WaitForCompletion="True"
+			IgnoreFailure="False"
+			PromptFirst="False"
+			OnlyIfParentSucceeded="True"
+			Timeout="False"
+			TimeoutMinutes="10"
+			AutoColorErrorsAndWarnings="True"
+			StandardStreamEncoding="utf-8"
+			IsAdministratorRequired="False"
+			Message="%25MB.Target%25 %25MB.Configuration%25"
+			IncludeTimestamp="False"
+			IndentOutput="0"
+			TextColor="-16777216"
+			IsHighlight="False" />
+	</Steps>
+</MegaBuildProject>

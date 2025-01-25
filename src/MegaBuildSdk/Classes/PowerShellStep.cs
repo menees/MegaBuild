@@ -200,37 +200,6 @@ namespace MegaBuild
 
 		#region Private Methods
 
-		private static string? SearchPath(string fileName)
-		{
-			string? result = null;
-
-			string[] pathEntries = (Environment.GetEnvironmentVariable("PATH") ?? string.Empty)
-				.Split([';'], StringSplitOptions.RemoveEmptyEntries)
-				.Select(entry => entry.Trim())
-				.Where(entry => !string.IsNullOrWhiteSpace(entry))
-				.ToArray();
-
-			// The check for duplicates saves time here. On my system, 12 of the 55 entries in PATH are duplicates (ignoring case).
-			// Unfortunately, we can't use LINQ's Distinct() because it returns an unordered sequence, and we have to preserve order.
-			// Note: Windows 10 supports case-sensitive folders, but the PowerShell folders shouldn't be configured that way.
-			HashSet<string> checkedPaths = new(StringComparer.OrdinalIgnoreCase);
-			foreach (string path in pathEntries)
-			{
-				if (!checkedPaths.Contains(path))
-				{
-					checkedPaths.Add(path);
-					string fullyQualifiedName = Path.Combine(path, fileName);
-					if (File.Exists(fullyQualifiedName))
-					{
-						result = fullyQualifiedName;
-						break;
-					}
-				}
-			}
-
-			return result;
-		}
-
 		private string GetExpandedCommand(bool forShellExecute)
 		{
 			string result = Manager.ExpandVariables(this.Command);

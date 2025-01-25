@@ -1,7 +1,19 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
+	<PropertyGroup>
+		<RootNamespace>MegaBuild</RootNamespace>
+	</PropertyGroup>
 
-  <ItemGroup>
-    <ProjectReference Include="..\..\src\MegaBuildSdk\MegaBuildSdk.csproj" />
-  </ItemGroup>
+	<ItemGroup>
+		<None Remove="Content\MegaBuild.Set Project Variable.mgb" />
+	</ItemGroup>
 
+	<ItemGroup>
+		<Content Include="Content\MegaBuild.Set Project Variable.mgb">
+			<CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+		</Content>
+	</ItemGroup>
+
+	<ItemGroup>
+		<ProjectReference Include="..\..\src\MegaBuildSdk\MegaBuildSdk.csproj" />
+	</ItemGroup>
 </Project>
