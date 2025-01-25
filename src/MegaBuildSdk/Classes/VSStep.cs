@@ -209,7 +209,7 @@ internal sealed class VSStep : ExecutableStep
 		{
 			case "Open Solution":
 				// Use .exe so it won't popup a command window
-				using (Process.Start(this.GenerateCommand(this.GetExecutableVersion(), true), this.GenerateSolutionPath()))
+				using (Process.Start(this.GenerateCommand(this.GetExecutableVersion(), true), this.GenerateSolutionPath(true)))
 				{
 					// We'll dispose of the process handle, but we'll leave the process running.
 				}
@@ -231,23 +231,29 @@ internal sealed class VSStep : ExecutableStep
 			case "Deploy Solution":
 				this.ExecuteActionVerb(VSAction.Deploy);
 				break;
+
+			case "Open Solution Folder In Explorer":
+				SystemUtility.TryOpenExplorerForFile(this.GenerateSolutionPath(false));
+				break;
+
+			case "Open Solution Folder In Terminal":
+				SystemUtility.TryOpenTerminalForFile(this.GenerateSolutionPath(false));
+				break;
 		}
 	}
 
 	public override string[] GetCustomVerbs()
 	{
-		string[] result;
+		List<string> result = ["Open Solution"];
 
-		if (this.Project.Building)
+		if (!this.Project.Building)
 		{
-			result = ["Open Solution"];
-		}
-		else
-		{
-			result = ["Open Solution", "Build Solution", "Rebuild Solution", "Clean Solution", "Deploy Solution"];
+			result.AddRange(["Build Solution", "Rebuild Solution", "Clean Solution", "Deploy Solution"]);
 		}
 
-		return result;
+		result.AddRange([SeparatorVerb, "Open Solution Folder In Explorer", "Open Solution Folder In Terminal"]);
+
+		return [.. result];
 	}
 
 	[SuppressMessage("Usage", "CC0022:Should dispose object", Justification = "Caller disposes new controls.")]
@@ -406,7 +412,7 @@ internal sealed class VSStep : ExecutableStep
 		}
 
 		// Solution
-		sb.Append(this.GenerateSolutionPath());
+		sb.Append(this.GenerateSolutionPath(true));
 
 		return sb.ToString();
 	}
@@ -425,7 +431,16 @@ internal sealed class VSStep : ExecutableStep
 		return TextUtility.EnsureQuotes(devEnvPath ?? string.Empty);
 	}
 
-	private string GenerateSolutionPath() => TextUtility.EnsureQuotes(Manager.ExpandVariables(this.Solution));
+	private string GenerateSolutionPath(bool ensureQuotes)
+	{
+		string result = Manager.ExpandVariables(this.Solution);
+		if (ensureQuotes)
+		{
+			result = TextUtility.EnsureQuotes(result);
+		}
+
+		return result;
+	}
 
 	private VSAction GetExecutableAction()
 	{

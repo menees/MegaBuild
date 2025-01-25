@@ -16,6 +16,12 @@ using Menees;
 	Justification = "Legacy support.  Also, I don't care about conflicting with a VB keyword.")]
 public abstract class Step
 {
+	#region Public Constants
+
+	public const string SeparatorVerb = "-";
+
+	#endregion
+
 	#region Private Data Members
 
 	private readonly StepCategory category = StepCategory.Build;

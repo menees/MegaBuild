@@ -10,6 +10,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Menees;
+using Menees.Windows.Forms;
 
 #endregion
 
@@ -56,60 +57,118 @@ public static class SystemUtility
 		return result;
 	}
 
-	public static bool TryOpenFileExplorer(string? startingFolderOrFileLocation)
+	public static bool TryOpenExplorerForFile(string? path)
 	{
 		bool result = false;
 
-		string arguments = string.Empty;
-		if (startingFolderOrFileLocation.IsNotEmpty())
+		path = GetFullyQualifiedPath(path);
+		if (File.Exists(path))
 		{
-			if (File.Exists(startingFolderOrFileLocation))
-			{
-				// Start Explorer with the file selected.
-				// https://stackoverflow.com/a/13680458/1882616
-				arguments = $"/select,\"{Path.GetFullPath(startingFolderOrFileLocation)}\"";
-			}
-			else
-			{
-				string? absoluteFolder = Path.GetFullPath(startingFolderOrFileLocation);
-				arguments = $"\"{absoluteFolder}\"";
-			}
+			// Start Explorer with the file selected.
+			// https://stackoverflow.com/a/13680458/1882616
+			string arguments = $"/select,\"{path}\"";
+			result = TryOpenExplorer(arguments);
 		}
-
-		using (Process? process = Process.Start("explorer.exe", arguments))
+		else if (path.IsNotEmpty())
 		{
-			result = process != null;
+			WindowsUtility.ShowError(null, $"The file '{path}' does not exist.");
 		}
 
 		return result;
 	}
 
-	public static bool TryOpenWindowsTerminal(string? startingFolderOrFileLocation)
+	public static bool TryOpenExplorerForFolder(string? path)
 	{
 		bool result = false;
 
-		string? terminal = FindWindowsTerminal();
-		if (terminal.IsNotEmpty())
+		path = GetFullyQualifiedPath(path);
+		if (Directory.Exists(path))
 		{
-			string? folder = null;
-			if (startingFolderOrFileLocation.IsNotEmpty())
-			{
-				string? absoluteFolder = File.Exists(startingFolderOrFileLocation)
-					? Path.GetDirectoryName(Path.GetFullPath(startingFolderOrFileLocation))
-					: Path.GetFullPath(startingFolderOrFileLocation);
-				folder = absoluteFolder;
-			}
-
-			// https://learn.microsoft.com/en-us/windows/terminal/command-line-arguments?tabs=windows#new-tab-command
-			string arguments = folder.IsEmpty() ? string.Empty : $"--startingDirectory \"{folder}\"";
-
-			using (Process? process = Process.Start(terminal, arguments))
-			{
-				result = process != null;
-			}
+			string arguments = $"\"{path}\"";
+			result = TryOpenExplorer(arguments);
+		}
+		else if (path.IsNotEmpty())
+		{
+			WindowsUtility.ShowError(null, $"The folder '{path}' does not exist.");
 		}
 
 		return result;
+	}
+
+	public static bool TryOpenTerminalForFile(string? path)
+	{
+		bool result = false;
+
+		path = GetFullyQualifiedPath(path);
+		if (File.Exists(path))
+		{
+			string? folder = Path.GetDirectoryName(path);
+			if (folder.IsNotEmpty())
+			{
+				result = TryOpenTerminalForFolder(folder);
+			}
+		}
+		else if (path.IsNotEmpty())
+		{
+			WindowsUtility.ShowError(null, $"The file '{path}' does not exist.");
+		}
+
+		return result;
+	}
+
+	public static bool TryOpenTerminalForFolder(string? path)
+	{
+		bool result = false;
+
+		path = GetFullyQualifiedPath(path);
+		if (Directory.Exists(path))
+		{
+			string? terminal = FindWindowsTerminal();
+			if (terminal.IsNotEmpty())
+			{
+				// https://learn.microsoft.com/en-us/windows/terminal/command-line-arguments?tabs=windows#new-tab-command
+				string arguments = $"--startingDirectory \"{path}\"";
+				result = TryStartProcess(terminal, arguments);
+			}
+			else
+			{
+				// https://en.wikipedia.org/wiki/COMSPEC
+				string cmdExe = Environment.GetEnvironmentVariable("ComSpec") ?? "cmd.exe";
+				string arguments = $"/K cd /d \"{path}\"";
+				result = TryStartProcess(cmdExe, arguments);
+			}
+		}
+		else if (path.IsNotEmpty())
+		{
+			WindowsUtility.ShowError(null, $"The folder '{path}' does not exist.");
+		}
+
+		return result;
+	}
+
+	#endregion
+
+	#region Private Methods
+
+	private static string? GetFullyQualifiedPath(string? path)
+	{
+		// If the path is rooted but doesn't exist, we want to return the rooted path as is.
+		// If the path is relative or just a file name, then we need to fully qualify it to
+		// safely pass it to external processes (e.g., explorer.exe).
+		string? result = path is null || Path.IsPathRooted(path) ? path : Path.GetFullPath(path);
+		return result;
+	}
+
+	private static bool TryOpenExplorer(string arguments)
+		=> TryStartProcess("explorer.exe", arguments);
+
+	private static bool TryStartProcess(string fileName, string arguments)
+	{
+		using (Process? process = Process.Start(fileName, arguments))
+		{
+			bool result = process != null;
+			return result;
+		}
 	}
 
 	#endregion

@@ -520,15 +520,18 @@ internal sealed partial class MainForm : ExtendedForm
 			// These verbs will all be enabled, even if we're building.
 			// If a verb isn't appropriate to use while building, then
 			// it shouldn't be returned.
-			string[]? verbs = step.GetCustomVerbs();
-			int numVerbs = verbs != null ? verbs.Length : 0;
+			string[] verbs = step.GetCustomVerbs() ?? [];
+			int numVerbs = verbs.Length;
 			if (numVerbs > 0)
 			{
 				EventHandler eh = new(this.OnCustomVerbClicked);
 				for (int i = 0; i < numVerbs; i++)
 				{
-					ToolStripMenuItem mi = new(verbs![i], null, eh);
-					this.listContextMenu.Items.Insert(i, mi);
+					string verb = verbs[i];
+					ToolStripItem item = verb == Step.SeparatorVerb
+						? new ToolStripSeparator()
+						: new ToolStripMenuItem(verb, null, eh);
+					this.listContextMenu.Items.Insert(i, item);
 				}
 
 				// Add a separator
@@ -1487,11 +1490,8 @@ internal sealed partial class MainForm : ExtendedForm
 		this.mnuOpenProjectSeparator.Visible = hasProjectFolder;
 		this.mnuOpenProjectFolderInExplorer.Visible = hasProjectFolder;
 		this.mnuOpenProjectFolderInExplorer.Enabled = hasProjectFolder;
-
-		string? terminal = SystemUtility.FindWindowsTerminal();
-		bool showTerminal = hasProjectFolder && terminal.IsNotEmpty();
-		this.mnuOpenProjectFolderInTerminal.Visible = showTerminal;
-		this.mnuOpenProjectFolderInTerminal.Enabled = showTerminal;
+		this.mnuOpenProjectFolderInTerminal.Visible = hasProjectFolder;
+		this.mnuOpenProjectFolderInTerminal.Enabled = hasProjectFolder;
 	}
 
 	private void UpdateTaskbarProgress()
@@ -1577,12 +1577,12 @@ internal sealed partial class MainForm : ExtendedForm
 
 	private void OpenProjectFolderInExplorer_Click(object sender, EventArgs e)
 	{
-		SystemUtility.TryOpenFileExplorer(this.project.FileName);
+		SystemUtility.TryOpenExplorerForFile(this.project.FileName);
 	}
 
 	private void OpenProjectFolderInTerminal_Click(object sender, EventArgs e)
 	{
-		SystemUtility.TryOpenWindowsTerminal(this.project.FileName);
+		SystemUtility.TryOpenTerminalForFile(this.project.FileName);
 	}
 
 	#endregion
