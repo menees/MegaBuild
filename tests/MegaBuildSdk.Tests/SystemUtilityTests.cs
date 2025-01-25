@@ -6,7 +6,7 @@ using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Shouldly;
 
 [TestClass]
-public class UtilityTests
+public class SystemUtilityTests
 {
 	[TestMethod]
 	public void SearchPathTest()
