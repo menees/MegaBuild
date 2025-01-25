@@ -11,12 +11,12 @@ public class SystemUtilityTests
 	[TestMethod]
 	public void SearchPathTest()
 	{
-		string? cmdExe = Utility.SearchPath("cmd.exe");
+		string? cmdExe = SystemUtility.SearchPath("cmd.exe");
 		cmdExe.ShouldNotBeNullOrWhiteSpace();
 		cmdExe.ShouldEndWith($"{Path.DirectorySeparatorChar}cmd.exe");
 		cmdExe.ShouldStartWith(Environment.ExpandEnvironmentVariables("%SystemRoot%"), Case.Insensitive);
 
-		Utility.SearchPath($"{Guid.NewGuid():N}.exe").ShouldBeNull();
+		SystemUtility.SearchPath($"{Guid.NewGuid():N}.exe").ShouldBeNull();
 	}
 
 	[TestMethod]
@@ -24,7 +24,7 @@ public class SystemUtilityTests
 	{
 		// Windows Terminal may not be available on the GitHub build agent.
 		// See https://stackoverflow.com/a/68006153/1882616 for info on wt.exe.
-		string? actual = Utility.FindWindowsTerminal();
+		string? actual = SystemUtility.FindWindowsTerminal();
 		string expected = Environment.ExpandEnvironmentVariables(@"%LocalAppData%\Microsoft\WindowsApps\wt.exe");
 		if (File.Exists(expected))
 		{

@@ -129,7 +129,7 @@ internal sealed class PowerShellStep : ExecutableStep
 				break;
 
 			default:
-				fileName = Utility.SearchPath(CoreFileName) ?? WindowsFileName;
+				fileName = SystemUtility.SearchPath(CoreFileName) ?? WindowsFileName;
 				break;
 		}
 

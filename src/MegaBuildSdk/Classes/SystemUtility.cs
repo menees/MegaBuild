@@ -13,7 +13,7 @@ using Menees;
 
 #endregion
 
-public static class Utility
+public static class SystemUtility
 {
 	#region Public Methods
 

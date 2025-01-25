@@ -1488,7 +1488,7 @@ internal sealed partial class MainForm : ExtendedForm
 		this.mnuOpenProjectFolderInExplorer.Visible = hasProjectFolder;
 		this.mnuOpenProjectFolderInExplorer.Enabled = hasProjectFolder;
 
-		string? terminal = Utility.FindWindowsTerminal();
+		string? terminal = SystemUtility.FindWindowsTerminal();
 		bool showTerminal = hasProjectFolder && terminal.IsNotEmpty();
 		this.mnuOpenProjectFolderInTerminal.Visible = showTerminal;
 		this.mnuOpenProjectFolderInTerminal.Enabled = showTerminal;
@@ -1577,12 +1577,12 @@ internal sealed partial class MainForm : ExtendedForm
 
 	private void OpenProjectFolderInExplorer_Click(object sender, EventArgs e)
 	{
-		Utility.TryOpenFileExplorer(this.project.FileName);
+		SystemUtility.TryOpenFileExplorer(this.project.FileName);
 	}
 
 	private void OpenProjectFolderInTerminal_Click(object sender, EventArgs e)
 	{
-		Utility.TryOpenWindowsTerminal(this.project.FileName);
+		SystemUtility.TryOpenWindowsTerminal(this.project.FileName);
 	}
 
 	#endregion
