@@ -249,7 +249,7 @@ internal sealed class OutputQueue : IDisposable
 		return segments;
 	}
 
-	private void CoalesceAndAppendSegments(IReadOnlyList<OutputAddedEventArgs> segments)
+	private void CoalesceAndAppendSegments(List<OutputAddedEventArgs> segments)
 	{
 		if (segments.Count > 0)
 		{

@@ -28,7 +28,7 @@ internal sealed partial class ExecOutputCtrl : StepEditorControl
 	public ExecOutputCtrl()
 	{
 		this.InitializeComponent();
-		this.cbStyle.Items.AddRange(((OutputStyle[])Enum.GetValues(typeof(OutputStyle))).OrderBy(v => v).Select(v => v.ToString()).ToArray());
+		this.cbStyle.Items.AddRange(Enum.GetValues<OutputStyle>().OrderBy(v => v).Select(v => v.ToString()).ToArray());
 
 		EncodingDisplay[] encodings = [.. Encoding.GetEncodings().Select(e => new EncodingDisplay(e.GetEncoding())).OrderBy(e => e.ToString())];
 		this.cbEncoding.Items.AddRange(encodings);

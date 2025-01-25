@@ -15,7 +15,7 @@ internal static class Options
 {
 	#region Internal Constants
 
-	internal static readonly IReadOnlyList<string> SupportedTimestampFormats = new[] { "(none)", "HH:mm:ss.fff", "HH:mm:ss", "mm:ss.fff", "mm:ss" };
+	internal static readonly IReadOnlyList<string> SupportedTimestampFormats = ["(none)", "HH:mm:ss.fff", "HH:mm:ss", "mm:ss.fff", "mm:ss"];
 
 	internal static readonly string DefaultTimestampFormat = SupportedTimestampFormats[1];
 

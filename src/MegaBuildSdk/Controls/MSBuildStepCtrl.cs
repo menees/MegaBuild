@@ -88,13 +88,13 @@ internal partial class MSBuildStepCtrl : StepEditorControl
 
 		// https://www.codementor.io/cerkit/giving-an-enum-a-string-value-using-the-description-attribute-6b4fwdle0
 		Type type = typeof(MSBuildToolsVersion);
-		foreach (MSBuildToolsVersion version in Enum.GetValues(typeof(MSBuildToolsVersion)))
+		foreach (MSBuildToolsVersion version in Enum.GetValues<MSBuildToolsVersion>())
 		{
 			if (include(version))
 			{
 				string value = version.ToString();
 				DescriptionAttribute? description = type.GetMember(value)
-					.Select(m => (DescriptionAttribute?)m.GetCustomAttribute(typeof(DescriptionAttribute)))
+					.Select(m => m.GetCustomAttribute<DescriptionAttribute>())
 					.FirstOrDefault();
 				if (description != null)
 				{

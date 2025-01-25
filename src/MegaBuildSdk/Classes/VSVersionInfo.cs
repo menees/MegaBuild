@@ -21,8 +21,8 @@ internal sealed class VSVersionInfo
 {
 	#region Public Fields
 
-	public static readonly IReadOnlyList<VSVersionInfo> AllVersions = new[]
-	{
+	public static readonly IReadOnlyList<VSVersionInfo> AllVersions =
+	[
 		new VSVersionInfo(VSVersion.V2002, "%VSCOMNTOOLS%", 7, 7),
 		new VSVersionInfo(VSVersion.V2003, "%VS71COMNTOOLS%", 7.1m, 8),
 		new VSVersionInfo(VSVersion.V2005, "%VS80COMNTOOLS%", 8, 9),
@@ -34,7 +34,7 @@ internal sealed class VSVersionInfo
 		new VSVersionInfo(VSVersion.V2017, null, 15, 12, "Visual Studio 15"),
 		new VSVersionInfo(VSVersion.V2019, null, 16, 12, "Visual Studio Version 16"),
 		new VSVersionInfo(VSVersion.V2022, null, 17, 12, "Visual Studio Version 17"),
-	};
+	];
 
 	public static readonly VSVersionInfo LatestVersion = AllVersions[AllVersions.Count - 1];
 

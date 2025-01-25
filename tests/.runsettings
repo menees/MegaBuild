@@ -9,5 +9,9 @@
 
 	<MSTest>
 		<DeploymentEnabled>False</DeploymentEnabled>
+		<Parallelize>
+			<Workers>8</Workers>
+			<Scope>MethodLevel</Scope>
+		</Parallelize>
 	</MSTest>
 </RunSettings>

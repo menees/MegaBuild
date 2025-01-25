@@ -29,7 +29,7 @@ internal sealed partial class SoundStepCtrl : StepEditorControl
 		this.InitializeComponent();
 
 		// Get all the SystemSound enum values, but order by name instead of binary value.
-		var items = ((SystemSound[])Enum.GetValues(typeof(SystemSound))).OrderBy(s => s.ToString()).Select(s => (object)s).ToArray();
+		var items = Enum.GetValues<SystemSound>().OrderBy(s => s.ToString()).Select(s => (object)s).ToArray();
 		this.cbSystemSound.Items.AddRange(items);
 	}
 
