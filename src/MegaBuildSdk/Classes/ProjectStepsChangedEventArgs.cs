@@ -1,35 +1,34 @@
-namespace MegaBuild
-{
-	#region Using Directives
+namespace MegaBuild;
 
-	using System;
+#region Using Directives
+
+using System;
+
+#endregion
+
+public sealed class ProjectStepsChangedEventArgs : EventArgs
+{
+	#region Constructors
+
+	internal ProjectStepsChangedEventArgs(ProjectStepsChangedType changeType, Step step, int oldIndex, int newIndex)
+	{
+		this.ChangeType = changeType;
+		this.Step = step;
+		this.OldIndex = oldIndex;
+		this.NewIndex = newIndex;
+	}
 
 	#endregion
 
-	public sealed class ProjectStepsChangedEventArgs : EventArgs
-	{
-		#region Constructors
+	#region Public Properties
 
-		internal ProjectStepsChangedEventArgs(ProjectStepsChangedType changeType, Step step, int oldIndex, int newIndex)
-		{
-			this.ChangeType = changeType;
-			this.Step = step;
-			this.OldIndex = oldIndex;
-			this.NewIndex = newIndex;
-		}
+	public ProjectStepsChangedType ChangeType { get; }
 
-		#endregion
+	public int NewIndex { get; }
 
-		#region Public Properties
+	public int OldIndex { get; }
 
-		public ProjectStepsChangedType ChangeType { get; }
+	public Step Step { get; }
 
-		public int NewIndex { get; }
-
-		public int OldIndex { get; }
-
-		public Step Step { get; }
-
-		#endregion
-	}
+	#endregion
 }

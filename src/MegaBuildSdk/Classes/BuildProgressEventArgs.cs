@@ -1,40 +1,39 @@
-namespace MegaBuild
-{
-	#region Using Directives
+namespace MegaBuild;
 
-	using System;
+#region Using Directives
+
+using System;
+
+#endregion
+
+public sealed class BuildProgressEventArgs : EventArgs
+{
+	#region Constructors
+
+	internal BuildProgressEventArgs(string message)
+	{
+		this.Message = message;
+	}
+
+	internal BuildProgressEventArgs(string message, int currentStep, int totalSteps)
+	{
+		this.Message = message;
+		this.CurrentStep = currentStep;
+		this.TotalSteps = totalSteps;
+		this.UseStepNumbers = true;
+	}
 
 	#endregion
 
-	public sealed class BuildProgressEventArgs : EventArgs
-	{
-		#region Constructors
+	#region Public Properties
 
-		internal BuildProgressEventArgs(string message)
-		{
-			this.Message = message;
-		}
+	public int CurrentStep { get; }
 
-		internal BuildProgressEventArgs(string message, int currentStep, int totalSteps)
-		{
-			this.Message = message;
-			this.CurrentStep = currentStep;
-			this.TotalSteps = totalSteps;
-			this.UseStepNumbers = true;
-		}
+	public string Message { get; }
 
-		#endregion
+	public int TotalSteps { get; }
 
-		#region Public Properties
+	public bool UseStepNumbers { get; }
 
-		public int CurrentStep { get; }
-
-		public string Message { get; }
-
-		public int TotalSteps { get; }
-
-		public bool UseStepNumbers { get; }
-
-		#endregion
-	}
+	#endregion
 }

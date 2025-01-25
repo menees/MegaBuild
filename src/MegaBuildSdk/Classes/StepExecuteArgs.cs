@@ -1,26 +1,25 @@
-namespace MegaBuild
-{
-	#region Using Directives
+namespace MegaBuild;
 
-	using System;
-	using System.Diagnostics.CodeAnalysis;
+#region Using Directives
+
+using System;
+using System.Diagnostics.CodeAnalysis;
+
+#endregion
+
+public class StepExecuteArgs
+{
+	#region Public Fields
+
+	public static readonly StepExecuteArgs Empty = new();
 
 	#endregion
 
-	public class StepExecuteArgs
+	#region Constructors
+
+	protected StepExecuteArgs()
 	{
-		#region Public Fields
-
-		public static readonly StepExecuteArgs Empty = new();
-
-		#endregion
-
-		#region Constructors
-
-		protected StepExecuteArgs()
-		{
-		}
-
-		#endregion
 	}
+
+	#endregion
 }

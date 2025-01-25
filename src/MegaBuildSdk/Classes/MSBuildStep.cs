@@ -1,416 +1,415 @@
-﻿namespace MegaBuild
-{
-	#region Using Directives
+﻿namespace MegaBuild;
 
-	using System;
-	using System.Collections.Generic;
-	using System.Diagnostics;
-	using System.Diagnostics.CodeAnalysis;
-	using System.Drawing;
-	using System.IO;
-	using System.Linq;
-	using System.Runtime.InteropServices;
-	using System.Text;
-	using Menees;
+#region Using Directives
+
+using System;
+using System.Collections.Generic;
+using System.Diagnostics;
+using System.Diagnostics.CodeAnalysis;
+using System.Drawing;
+using System.IO;
+using System.Linq;
+using System.Runtime.InteropServices;
+using System.Text;
+using Menees;
+
+#endregion
+
+[StepDisplay("MSBuild", "Builds one or more targets in an MSBuild project.", "Images.MSBuildStep.ico")]
+[MayRequireAdministrator]
+[SuppressMessage("Microsoft.Performance", "CA1812:AvoidUninstantiatedInternalClasses", Justification = "Called by Reflection.")]
+internal sealed class MSBuildStep : ExecutableStep
+{
+	#region Private Data Members
+
+	private string? commandLineOptions;
+	private string? projectFile;
+	private Dictionary<string, string>? properties;
+	private string[]? targets;
+	private MSBuildToolsVersion toolsVersion;
+	private bool use32BitProcess;
+	private MSBuildVerbosity verbosity = MSBuildVerbosity.Normal;
+	private string? workingDirectory;
 
 	#endregion
 
-	[StepDisplay("MSBuild", "Builds one or more targets in an MSBuild project.", "Images.MSBuildStep.ico")]
-	[MayRequireAdministrator]
-	[SuppressMessage("Microsoft.Performance", "CA1812:AvoidUninstantiatedInternalClasses", Justification = "Called by Reflection.")]
-	internal sealed class MSBuildStep : ExecutableStep
+	#region Constructors
+
+	public MSBuildStep(Project project, StepCategory category, StepTypeInfo info)
+		: base(project, category, info)
 	{
-		#region Private Data Members
+	}
 
-		private string? commandLineOptions;
-		private string? projectFile;
-		private Dictionary<string, string>? properties;
-		private string[]? targets;
-		private MSBuildToolsVersion toolsVersion;
-		private bool use32BitProcess;
-		private MSBuildVerbosity verbosity = MSBuildVerbosity.Normal;
-		private string? workingDirectory;
+	#endregion
 
-		#endregion
+	#region Public Properties
 
-		#region Constructors
+	public string? CommandLineOptions
+	{
+		get => this.commandLineOptions;
+		set => this.SetValue(ref this.commandLineOptions, value);
+	}
 
-		public MSBuildStep(Project project, StepCategory category, StepTypeInfo info)
-			: base(project, category, info)
+	public string? ProjectFile
+	{
+		get => this.projectFile;
+		set => this.SetValue(ref this.projectFile, value);
+	}
+
+	public Dictionary<string, string> Properties
+	{
+		get => this.properties ?? [];
+		set
 		{
-		}
-
-		#endregion
-
-		#region Public Properties
-
-		public string? CommandLineOptions
-		{
-			get => this.commandLineOptions;
-			set => this.SetValue(ref this.commandLineOptions, value);
-		}
-
-		public string? ProjectFile
-		{
-			get => this.projectFile;
-			set => this.SetValue(ref this.projectFile, value);
-		}
-
-		public Dictionary<string, string> Properties
-		{
-			get => this.properties ?? [];
-			set
+			var currentValues = this.Properties;
+			var newValues = value ?? [];
+			bool areEqual = currentValues.Count == newValues.Count;
+			if (areEqual)
 			{
-				var currentValues = this.Properties;
-				var newValues = value ?? [];
-				bool areEqual = currentValues.Count == newValues.Count;
-				if (areEqual)
+				foreach (KeyValuePair<string, string> pair in currentValues)
 				{
-					foreach (KeyValuePair<string, string> pair in currentValues)
+					if (!newValues.TryGetValue(pair.Key, out string? newValue) || pair.Value != newValue)
 					{
-						if (!newValues.TryGetValue(pair.Key, out string? newValue) || pair.Value != newValue)
-						{
-							areEqual = false;
-							break;
-						}
+						areEqual = false;
+						break;
 					}
 				}
+			}
 
-				if (!areEqual)
-				{
-					this.properties = value;
-					this.SetModified();
-				}
+			if (!areEqual)
+			{
+				this.properties = value;
+				this.SetModified();
 			}
 		}
+	}
 
-		public override string StepInformation
+	public override string StepInformation
+	{
+		get
 		{
-			get
+			string result = string.Empty;
+
+			if (this.targets != null && this.targets.Length > 0)
 			{
-				string result = string.Empty;
-
-				if (this.targets != null && this.targets.Length > 0)
-				{
-					result = string.Join(", ", this.targets);
-				}
-
-				return result;
-			}
-		}
-
-		public string[] Targets
-		{
-			get => this.targets ?? CollectionUtility.EmptyArray<string>();
-			set
-			{
-				HashSet<string> currentValues = this.targets != null ? new HashSet<string>(this.targets) : [];
-				HashSet<string> newValues = value != null ? new HashSet<string>(value) : [];
-				var areEqual = currentValues.Count == newValues.Count && currentValues.IsSubsetOf(newValues);
-				if (!areEqual)
-				{
-					this.targets = value;
-					this.SetModified();
-				}
-			}
-		}
-
-		public MSBuildToolsVersion ToolsVersion
-		{
-			get => this.toolsVersion;
-			set => this.SetValue(ref this.toolsVersion, value);
-		}
-
-		public bool Use32BitProcess
-		{
-			get => this.use32BitProcess;
-			set => this.SetValue(ref this.use32BitProcess, value);
-		}
-
-		public MSBuildVerbosity Verbosity
-		{
-			get => this.verbosity;
-			set => this.SetValue(ref this.verbosity, value);
-		}
-
-		public string? WorkingDirectory
-		{
-			get => this.workingDirectory;
-			set => this.SetValue(ref this.workingDirectory, value);
-		}
-
-		#endregion
-
-		#region Public Methods
-
-		public override bool Execute(StepExecuteArgs args)
-		{
-			bool result = false;
-
-			if (!this.StopBuilding)
-			{
-				string directory;
-				switch (this.ToolsVersion)
-				{
-					case MSBuildToolsVersion.Twelve:
-						directory = this.GetProgramFilesMsBuildBinPath("12.0");
-						break;
-
-					case MSBuildToolsVersion.Fourteen:
-						directory = this.GetProgramFilesMsBuildBinPath("14.0");
-						break;
-
-					case MSBuildToolsVersion.Fifteen:
-						directory = this.GetVsMsBuildBinPath("15.0", VSVersion.V2017);
-						break;
-
-					case MSBuildToolsVersion.Sixteen:
-						directory = this.GetVsMsBuildBinPath("Current", VSVersion.V2019);
-						break;
-
-					case MSBuildToolsVersion.Seventeen:
-						directory = this.GetVsMsBuildBinPath("Current", VSVersion.V2022);
-						break;
-
-					case MSBuildToolsVersion.Current:
-						directory = this.GetVsMsBuildBinPath("Current", VSVersion.V2022, VSVersion.V2019);
-						break;
-
-					default:
-						directory = RuntimeEnvironment.GetRuntimeDirectory();
-						if (Environment.Is64BitProcess && this.Use32BitProcess)
-						{
-							directory = directory.Replace(@"\Framework64\", @"\Framework\");
-						}
-
-						break;
-				}
-
-				string exePath = Path.Combine(directory, "MSBuild.exe");
-				string commandLineArguments = this.BuildCommandLineArguments();
-
-				ExecuteCommandArgs cmdArgs = new()
-				{
-					FileName = exePath,
-					Arguments = commandLineArguments,
-					WorkingDirectory = this.WorkingDirectory,
-					WindowStyle = ProcessWindowStyle.Hidden,
-					RedirectStandardStreams = RedirectStandardStreams.All,
-				};
-
-				result = this.ExecuteCommand(cmdArgs);
-
-				if (!result)
-				{
-					this.Project.OutputLine("MSBuild returned exit code: " + cmdArgs.ExitCode, OutputColors.Heading);
-				}
+				result = string.Join(", ", this.targets);
 			}
 
 			return result;
 		}
+	}
 
-		[SuppressMessage("Usage", "CC0022:Should dispose object", Justification = "Caller disposes new controls.")]
-		public override void GetStepEditorControls(ICollection<StepEditorControl> controls)
+	public string[] Targets
+	{
+		get => this.targets ?? CollectionUtility.EmptyArray<string>();
+		set
 		{
-			base.GetStepEditorControls(controls);
-			controls.Add(new MSBuildStepCtrl { Step = this });
-		}
-
-		#endregion
-
-		#region Protected Methods
-
-		protected internal override void Load(XmlKey key)
-		{
-			base.Load(key);
-
-			this.ProjectFile = key.GetValueN(nameof(this.ProjectFile), this.ProjectFile);
-			this.WorkingDirectory = key.GetValueN(nameof(this.WorkingDirectory), this.WorkingDirectory);
-			this.Verbosity = key.GetValue(nameof(this.Verbosity), this.verbosity);
-			this.ToolsVersion = key.GetValue(nameof(this.ToolsVersion), this.toolsVersion);
-			this.CommandLineOptions = key.GetValueN(nameof(this.CommandLineOptions), this.commandLineOptions);
-			this.Use32BitProcess = key.GetValue(nameof(this.Use32BitProcess), this.use32BitProcess);
-
-			List<string> targets = [];
-			XmlKey targetsKey = key.GetSubkey(nameof(this.Targets));
-			foreach (XmlKey targetKey in targetsKey.GetSubkeys())
+			HashSet<string> currentValues = this.targets != null ? new HashSet<string>(this.targets) : [];
+			HashSet<string> newValues = value != null ? new HashSet<string>(value) : [];
+			var areEqual = currentValues.Count == newValues.Count && currentValues.IsSubsetOf(newValues);
+			if (!areEqual)
 			{
-				Debug.Assert(targetKey.KeyType == "Target", "Key type must be Target.");
-
-				string target = targetKey.GetValue(nameof(this.Name), string.Empty);
-				if (!string.IsNullOrEmpty(target))
-				{
-					targets.Add(target);
-				}
-			}
-
-			this.Targets = [.. targets];
-
-			Dictionary<string, string> properties = [];
-			XmlKey propertiesKey = key.GetSubkey(nameof(this.Properties));
-			foreach (XmlKey propertyKey in propertiesKey.GetSubkeys())
-			{
-				Debug.Assert(propertyKey.KeyType == "Property", "Key type must be Property.");
-
-				string name = propertyKey.GetValue(nameof(this.Name), string.Empty);
-				if (!string.IsNullOrEmpty(name))
-				{
-					string value = propertyKey.GetValue("Value", string.Empty);
-					properties[name] = value;
-				}
-			}
-
-			this.Properties = properties;
-		}
-
-		protected internal override void Save(XmlKey key)
-		{
-			base.Save(key);
-
-			key.SetValue(nameof(this.ProjectFile), this.ProjectFile);
-			key.SetValue(nameof(this.WorkingDirectory), this.WorkingDirectory);
-			key.SetValue(nameof(this.Verbosity), this.Verbosity);
-			key.SetValue(nameof(this.ToolsVersion), this.ToolsVersion);
-			key.SetValue(nameof(this.CommandLineOptions), this.CommandLineOptions);
-			key.SetValue(nameof(this.Use32BitProcess), this.Use32BitProcess);
-
-			var targets = this.Targets;
-			XmlKey targetsKey = key.GetSubkey(nameof(this.Targets));
-			int numTargets = targets.Length;
-			for (int i = 0; i < numTargets; i++)
-			{
-				XmlKey targetKey = targetsKey.GetSubkey("Target", i.ToString());
-				targetKey.SetValue(nameof(this.Name), targets[i]);
-			}
-
-			var properties = this.Properties.ToList();
-			XmlKey propertiesKey = key.GetSubkey(nameof(this.Properties));
-			int numKeys = properties.Count;
-			for (int i = 0; i < numKeys; i++)
-			{
-				XmlKey propertyKey = propertiesKey.GetSubkey("Property", i.ToString());
-				var pair = properties[i];
-				propertyKey.SetValue(nameof(this.Name), pair.Key);
-				propertyKey.SetValue("Value", pair.Value);
+				this.targets = value;
+				this.SetModified();
 			}
 		}
+	}
 
-		#endregion
+	public MSBuildToolsVersion ToolsVersion
+	{
+		get => this.toolsVersion;
+		set => this.SetValue(ref this.toolsVersion, value);
+	}
 
-		#region Private Methods
+	public bool Use32BitProcess
+	{
+		get => this.use32BitProcess;
+		set => this.SetValue(ref this.use32BitProcess, value);
+	}
 
-		private string BuildCommandLineArguments()
+	public MSBuildVerbosity Verbosity
+	{
+		get => this.verbosity;
+		set => this.SetValue(ref this.verbosity, value);
+	}
+
+	public string? WorkingDirectory
+	{
+		get => this.workingDirectory;
+		set => this.SetValue(ref this.workingDirectory, value);
+	}
+
+	#endregion
+
+	#region Public Methods
+
+	public override bool Execute(StepExecuteArgs args)
+	{
+		bool result = false;
+
+		if (!this.StopBuilding)
 		{
-			StringBuilder sb = new();
-			sb.Append("/nologo ");
-
-			var targets = this.Targets;
-			if (targets.Length > 0)
+			string directory;
+			switch (this.ToolsVersion)
 			{
-				foreach (string target in targets)
-				{
-					// Use quotes in case the target name contains a space.
-					sb.Append("\"/t:").Append(target).Append("\" ");
-				}
-			}
-
-			var properties = this.Properties;
-			if (properties.Count > 0)
-			{
-				foreach (var pair in properties)
-				{
-					// Use quotes in case the property name or value contains a space.
-					sb.Append("\"/p:").Append(pair.Key).Append('=').Append(pair.Value).Append("\" ");
-				}
-			}
-
-			switch (this.verbosity)
-			{
-				case MSBuildVerbosity.Quiet:
-					sb.Append("/v:q ");
-					break;
-
-				case MSBuildVerbosity.Minimal:
-					sb.Append("/v:m ");
-					break;
-
-				case MSBuildVerbosity.Detailed:
-					sb.Append("/v:d ");
-					break;
-
-				case MSBuildVerbosity.Diagnostic:
-					sb.Append("/v:diag ");
-					break;
-			}
-
-			switch (this.toolsVersion)
-			{
-				case MSBuildToolsVersion.Two:
-					sb.Append("/ToolsVersion:2.0 ");
-					break;
-
-				case MSBuildToolsVersion.Three:
-					sb.Append("/ToolsVersion:3.0 ");
-					break;
-
-				case MSBuildToolsVersion.ThreeFive:
-					sb.Append("/ToolsVersion:3.5 ");
-					break;
-
-				case MSBuildToolsVersion.Four:
-					sb.Append("/ToolsVersion:4.0 ");
-					break;
-
 				case MSBuildToolsVersion.Twelve:
-					sb.Append("/ToolsVersion:12.0 ");
+					directory = this.GetProgramFilesMsBuildBinPath("12.0");
 					break;
 
 				case MSBuildToolsVersion.Fourteen:
-					sb.Append("/ToolsVersion:14.0 ");
+					directory = this.GetProgramFilesMsBuildBinPath("14.0");
 					break;
 
 				case MSBuildToolsVersion.Fifteen:
-					sb.Append("/ToolsVersion:15.0 ");
+					directory = this.GetVsMsBuildBinPath("15.0", VSVersion.V2017);
 					break;
 
 				case MSBuildToolsVersion.Sixteen:
+					directory = this.GetVsMsBuildBinPath("Current", VSVersion.V2019);
+					break;
+
 				case MSBuildToolsVersion.Seventeen:
+					directory = this.GetVsMsBuildBinPath("Current", VSVersion.V2022);
+					break;
+
 				case MSBuildToolsVersion.Current:
-					sb.Append("/ToolsVersion:Current ");
+					directory = this.GetVsMsBuildBinPath("Current", VSVersion.V2022, VSVersion.V2019);
+					break;
+
+				default:
+					directory = RuntimeEnvironment.GetRuntimeDirectory();
+					if (Environment.Is64BitProcess && this.Use32BitProcess)
+					{
+						directory = directory.Replace(@"\Framework64\", @"\Framework\");
+					}
+
 					break;
 			}
 
-			if (!string.IsNullOrEmpty(this.commandLineOptions))
+			string exePath = Path.Combine(directory, "MSBuild.exe");
+			string commandLineArguments = this.BuildCommandLineArguments();
+
+			ExecuteCommandArgs cmdArgs = new()
 			{
-				sb.Append(this.commandLineOptions).Append(' ');
-			}
+				FileName = exePath,
+				Arguments = commandLineArguments,
+				WorkingDirectory = this.WorkingDirectory,
+				WindowStyle = ProcessWindowStyle.Hidden,
+				RedirectStandardStreams = RedirectStandardStreams.All,
+			};
 
-			sb.Append(TextUtility.EnsureQuotes(this.ProjectFile ?? string.Empty));
+			result = this.ExecuteCommand(cmdArgs);
 
-			return sb.ToString();
-		}
-
-		private string GetProgramFilesMsBuildBinPath(string version)
-		{
-			var programFilesFolder = Environment.Is64BitOperatingSystem ? Environment.SpecialFolder.ProgramFilesX86 : Environment.SpecialFolder.ProgramFiles;
-			string programFilesPath = Environment.GetFolderPath(programFilesFolder);
-			string msbuildVersionBinPath = Path.Combine(programFilesPath, "MSBuild", version, "Bin");
-			string result = Environment.Is64BitProcess && !this.Use32BitProcess ? Path.Combine(msbuildVersionBinPath, "amd64") : msbuildVersionBinPath;
-			return result;
-		}
-
-		private string GetVsMsBuildBinPath(string msbuildVersion, params VSVersion[] vsVersionsInPreferenceOrder)
-		{
-			string relativeFolder = Path.Combine(@"..\..\MSBuild", msbuildVersion, "Bin");
-			if (!this.Use32BitProcess)
+			if (!result)
 			{
-				relativeFolder = Path.Combine(relativeFolder, "amd64");
+				this.Project.OutputLine("MSBuild returned exit code: " + cmdArgs.ExitCode, OutputColors.Heading);
 			}
-
-			string result = VSVersionInfo.GetUtilityPath(this.Project, $"MSBuild {msbuildVersion}", relativeFolder, vsVersionsInPreferenceOrder);
-			return result;
 		}
 
-		#endregion
+		return result;
 	}
+
+	[SuppressMessage("Usage", "CC0022:Should dispose object", Justification = "Caller disposes new controls.")]
+	public override void GetStepEditorControls(ICollection<StepEditorControl> controls)
+	{
+		base.GetStepEditorControls(controls);
+		controls.Add(new MSBuildStepCtrl { Step = this });
+	}
+
+	#endregion
+
+	#region Protected Methods
+
+	protected internal override void Load(XmlKey key)
+	{
+		base.Load(key);
+
+		this.ProjectFile = key.GetValueN(nameof(this.ProjectFile), this.ProjectFile);
+		this.WorkingDirectory = key.GetValueN(nameof(this.WorkingDirectory), this.WorkingDirectory);
+		this.Verbosity = key.GetValue(nameof(this.Verbosity), this.verbosity);
+		this.ToolsVersion = key.GetValue(nameof(this.ToolsVersion), this.toolsVersion);
+		this.CommandLineOptions = key.GetValueN(nameof(this.CommandLineOptions), this.commandLineOptions);
+		this.Use32BitProcess = key.GetValue(nameof(this.Use32BitProcess), this.use32BitProcess);
+
+		List<string> targets = [];
+		XmlKey targetsKey = key.GetSubkey(nameof(this.Targets));
+		foreach (XmlKey targetKey in targetsKey.GetSubkeys())
+		{
+			Debug.Assert(targetKey.KeyType == "Target", "Key type must be Target.");
+
+			string target = targetKey.GetValue(nameof(this.Name), string.Empty);
+			if (!string.IsNullOrEmpty(target))
+			{
+				targets.Add(target);
+			}
+		}
+
+		this.Targets = [.. targets];
+
+		Dictionary<string, string> properties = [];
+		XmlKey propertiesKey = key.GetSubkey(nameof(this.Properties));
+		foreach (XmlKey propertyKey in propertiesKey.GetSubkeys())
+		{
+			Debug.Assert(propertyKey.KeyType == "Property", "Key type must be Property.");
+
+			string name = propertyKey.GetValue(nameof(this.Name), string.Empty);
+			if (!string.IsNullOrEmpty(name))
+			{
+				string value = propertyKey.GetValue("Value", string.Empty);
+				properties[name] = value;
+			}
+		}
+
+		this.Properties = properties;
+	}
+
+	protected internal override void Save(XmlKey key)
+	{
+		base.Save(key);
+
+		key.SetValue(nameof(this.ProjectFile), this.ProjectFile);
+		key.SetValue(nameof(this.WorkingDirectory), this.WorkingDirectory);
+		key.SetValue(nameof(this.Verbosity), this.Verbosity);
+		key.SetValue(nameof(this.ToolsVersion), this.ToolsVersion);
+		key.SetValue(nameof(this.CommandLineOptions), this.CommandLineOptions);
+		key.SetValue(nameof(this.Use32BitProcess), this.Use32BitProcess);
+
+		var targets = this.Targets;
+		XmlKey targetsKey = key.GetSubkey(nameof(this.Targets));
+		int numTargets = targets.Length;
+		for (int i = 0; i < numTargets; i++)
+		{
+			XmlKey targetKey = targetsKey.GetSubkey("Target", i.ToString());
+			targetKey.SetValue(nameof(this.Name), targets[i]);
+		}
+
+		var properties = this.Properties.ToList();
+		XmlKey propertiesKey = key.GetSubkey(nameof(this.Properties));
+		int numKeys = properties.Count;
+		for (int i = 0; i < numKeys; i++)
+		{
+			XmlKey propertyKey = propertiesKey.GetSubkey("Property", i.ToString());
+			var pair = properties[i];
+			propertyKey.SetValue(nameof(this.Name), pair.Key);
+			propertyKey.SetValue("Value", pair.Value);
+		}
+	}
+
+	#endregion
+
+	#region Private Methods
+
+	private string BuildCommandLineArguments()
+	{
+		StringBuilder sb = new();
+		sb.Append("/nologo ");
+
+		var targets = this.Targets;
+		if (targets.Length > 0)
+		{
+			foreach (string target in targets)
+			{
+				// Use quotes in case the target name contains a space.
+				sb.Append("\"/t:").Append(target).Append("\" ");
+			}
+		}
+
+		var properties = this.Properties;
+		if (properties.Count > 0)
+		{
+			foreach (var pair in properties)
+			{
+				// Use quotes in case the property name or value contains a space.
+				sb.Append("\"/p:").Append(pair.Key).Append('=').Append(pair.Value).Append("\" ");
+			}
+		}
+
+		switch (this.verbosity)
+		{
+			case MSBuildVerbosity.Quiet:
+				sb.Append("/v:q ");
+				break;
+
+			case MSBuildVerbosity.Minimal:
+				sb.Append("/v:m ");
+				break;
+
+			case MSBuildVerbosity.Detailed:
+				sb.Append("/v:d ");
+				break;
+
+			case MSBuildVerbosity.Diagnostic:
+				sb.Append("/v:diag ");
+				break;
+		}
+
+		switch (this.toolsVersion)
+		{
+			case MSBuildToolsVersion.Two:
+				sb.Append("/ToolsVersion:2.0 ");
+				break;
+
+			case MSBuildToolsVersion.Three:
+				sb.Append("/ToolsVersion:3.0 ");
+				break;
+
+			case MSBuildToolsVersion.ThreeFive:
+				sb.Append("/ToolsVersion:3.5 ");
+				break;
+
+			case MSBuildToolsVersion.Four:
+				sb.Append("/ToolsVersion:4.0 ");
+				break;
+
+			case MSBuildToolsVersion.Twelve:
+				sb.Append("/ToolsVersion:12.0 ");
+				break;
+
+			case MSBuildToolsVersion.Fourteen:
+				sb.Append("/ToolsVersion:14.0 ");
+				break;
+
+			case MSBuildToolsVersion.Fifteen:
+				sb.Append("/ToolsVersion:15.0 ");
+				break;
+
+			case MSBuildToolsVersion.Sixteen:
+			case MSBuildToolsVersion.Seventeen:
+			case MSBuildToolsVersion.Current:
+				sb.Append("/ToolsVersion:Current ");
+				break;
+		}
+
+		if (!string.IsNullOrEmpty(this.commandLineOptions))
+		{
+			sb.Append(this.commandLineOptions).Append(' ');
+		}
+
+		sb.Append(TextUtility.EnsureQuotes(this.ProjectFile ?? string.Empty));
+
+		return sb.ToString();
+	}
+
+	private string GetProgramFilesMsBuildBinPath(string version)
+	{
+		var programFilesFolder = Environment.Is64BitOperatingSystem ? Environment.SpecialFolder.ProgramFilesX86 : Environment.SpecialFolder.ProgramFiles;
+		string programFilesPath = Environment.GetFolderPath(programFilesFolder);
+		string msbuildVersionBinPath = Path.Combine(programFilesPath, "MSBuild", version, "Bin");
+		string result = Environment.Is64BitProcess && !this.Use32BitProcess ? Path.Combine(msbuildVersionBinPath, "amd64") : msbuildVersionBinPath;
+		return result;
+	}
+
+	private string GetVsMsBuildBinPath(string msbuildVersion, params VSVersion[] vsVersionsInPreferenceOrder)
+	{
+		string relativeFolder = Path.Combine(@"..\..\MSBuild", msbuildVersion, "Bin");
+		if (!this.Use32BitProcess)
+		{
+			relativeFolder = Path.Combine(relativeFolder, "amd64");
+		}
+
+		string result = VSVersionInfo.GetUtilityPath(this.Project, $"MSBuild {msbuildVersion}", relativeFolder, vsVersionsInPreferenceOrder);
+		return result;
+	}
+
+	#endregion
 }

@@ -1,73 +1,72 @@
-namespace SampleStep
-{
-	#region Using Directives
+namespace SampleStep;
 
-	using System;
-	using System.Collections;
-	using System.ComponentModel;
-	using System.Data;
-	using System.Drawing;
-	using System.Windows.Forms;
-	using MegaBuild;
-	using Menees.Windows.Forms;
+#region Using Directives
+
+using System;
+using System.Collections;
+using System.ComponentModel;
+using System.Data;
+using System.Drawing;
+using System.Windows.Forms;
+using MegaBuild;
+using Menees.Windows.Forms;
+
+#endregion
+
+public sealed partial class BeepStepCtrl : StepEditorControl
+{
+	#region Private Data Members
+
+	private BeepStep? step;
 
 	#endregion
 
-	public sealed partial class BeepStepCtrl : StepEditorControl
+	#region Constructors
+
+	public BeepStepCtrl()
 	{
-		#region Private Data Members
+		this.InitializeComponent();
+	}
 
-		private BeepStep? step;
+	#endregion
 
-		#endregion
+	#region Public Properties
 
-		#region Constructors
+	public override string DisplayName => "Beep";
 
-		public BeepStepCtrl()
+	[DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
+	public BeepStep? Step
+	{
+		get => this.step;
+
+		set
 		{
-			this.InitializeComponent();
-		}
-
-		#endregion
-
-		#region Public Properties
-
-		public override string DisplayName => "Beep";
-
-		[DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
-		public BeepStep? Step
-		{
-			get => this.step;
-
-			set
+			if (this.step != value)
 			{
-				if (this.step != value)
+				this.step = value;
+				if (this.step != null)
 				{
-					this.step = value;
-					if (this.step != null)
-					{
-						this.edtFrequency.Value = this.step.Frequency;
-						this.edtDuration.Value = this.step.Duration;
-					}
+					this.edtFrequency.Value = this.step.Frequency;
+					this.edtDuration.Value = this.step.Duration;
 				}
 			}
 		}
+	}
 
-		#endregion
+	#endregion
 
-		#region Public Methods
+	#region Public Methods
 
-		public override bool OnOk()
+	public override bool OnOk()
+	{
+		if (this.step != null)
 		{
-			if (this.step != null)
-			{
-				this.step.Frequency = (int)this.edtFrequency.Value;
-				this.step.Duration = (int)this.edtDuration.Value;
-			}
-
-			return this.step != null;
+			this.step.Frequency = (int)this.edtFrequency.Value;
+			this.step.Duration = (int)this.edtDuration.Value;
 		}
 
-		#endregion
+		return this.step != null;
 	}
+
+	#endregion
 }

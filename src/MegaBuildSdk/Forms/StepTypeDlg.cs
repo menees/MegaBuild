@@ -1,93 +1,92 @@
-namespace MegaBuild
-{
-	#region Using Directives
+namespace MegaBuild;
 
-	using System;
-	using System.Collections;
-	using System.ComponentModel;
-	using System.Diagnostics.CodeAnalysis;
-	using System.Drawing;
-	using System.Windows.Forms;
-	using Menees;
-	using Menees.Windows.Forms;
+#region Using Directives
+
+using System;
+using System.Collections;
+using System.ComponentModel;
+using System.Diagnostics.CodeAnalysis;
+using System.Drawing;
+using System.Windows.Forms;
+using Menees;
+using Menees.Windows.Forms;
+
+#endregion
+
+internal sealed partial class StepTypeDlg : ExtendedForm
+{
+	#region Constructors
+
+	public StepTypeDlg()
+	{
+		this.InitializeComponent();
+	}
 
 	#endregion
 
-	internal sealed partial class StepTypeDlg : ExtendedForm
+	#region Public Methods
+
+	public bool Execute(IWin32Window owner, [MaybeNullWhen(false)] out StepTypeInfo resultInfo)
 	{
-		#region Constructors
+		// Add all the available types to the list
+		StepTypeInfo[] typeInfos = Manager.GetStepTypeInfos();
 
-		public StepTypeDlg()
+		this.List.BeginUpdate();
+		try
 		{
-			this.InitializeComponent();
-		}
+			this.List.Items.Clear();
+			this.List.SmallImageList = Manager.StepImages;
 
-		#endregion
-
-		#region Public Methods
-
-		public bool Execute(IWin32Window owner, [MaybeNullWhen(false)] out StepTypeInfo resultInfo)
-		{
-			// Add all the available types to the list
-			StepTypeInfo[] typeInfos = Manager.GetStepTypeInfos();
-
-			this.List.BeginUpdate();
-			try
+			foreach (StepTypeInfo info in typeInfos)
 			{
-				this.List.Items.Clear();
-				this.List.SmallImageList = Manager.StepImages;
-
-				foreach (StepTypeInfo info in typeInfos)
+				string[] items = [info.Name, info.Description];
+				ListViewItem item = new(items, info.ImageIndex)
 				{
-					string[] items = [info.Name, info.Description];
-					ListViewItem item = new(items, info.ImageIndex)
-					{
-						Tag = info,
-					};
-					this.List.Items.Add(item);
-				}
-
-				this.List.AutoSizeColumns();
-			}
-			finally
-			{
-				this.List.EndUpdate();
+					Tag = info,
+				};
+				this.List.Items.Add(item);
 			}
 
-			resultInfo = null;
-			bool result = false;
-			if (this.ShowDialog(owner) == DialogResult.OK)
-			{
-				resultInfo = (StepTypeInfo?)this.List.SelectedItems[0].Tag;
-				result = resultInfo != null;
-			}
-
-			return result;
+			this.List.AutoSizeColumns();
 		}
-
-		#endregion
-
-		#region Private Methods
-
-		private void List_DoubleClick(object sender, EventArgs e)
+		finally
 		{
-			if (this.btnOK.Enabled)
-			{
-				this.DialogResult = DialogResult.OK;
-			}
+			this.List.EndUpdate();
 		}
 
-		private void List_SelectedIndexChanged(object sender, EventArgs e)
+		resultInfo = null;
+		bool result = false;
+		if (this.ShowDialog(owner) == DialogResult.OK)
 		{
-			this.btnOK.Enabled = this.List.SelectedIndices.Count > 0;
+			resultInfo = (StepTypeInfo?)this.List.SelectedItems[0].Tag;
+			result = resultInfo != null;
 		}
 
-		private void StepTypeDlg_Load(object sender, EventArgs e)
-		{
-			// I'm not checking Count here because I know this assembly has several types in it.
-			this.List.Items[0].Selected = true;
-		}
-
-		#endregion
+		return result;
 	}
+
+	#endregion
+
+	#region Private Methods
+
+	private void List_DoubleClick(object sender, EventArgs e)
+	{
+		if (this.btnOK.Enabled)
+		{
+			this.DialogResult = DialogResult.OK;
+		}
+	}
+
+	private void List_SelectedIndexChanged(object sender, EventArgs e)
+	{
+		this.btnOK.Enabled = this.List.SelectedIndices.Count > 0;
+	}
+
+	private void StepTypeDlg_Load(object sender, EventArgs e)
+	{
+		// I'm not checking Count here because I know this assembly has several types in it.
+		this.List.Items[0].Selected = true;
+	}
+
+	#endregion
 }
