@@ -24,7 +24,7 @@
 
 		private readonly Project project;
 		private readonly FileSystemWatcher fileWatcher = new();
-		private readonly object monitor = new();
+		private readonly Lock monitor = new();
 
 		private DateTime ignoreUntil;
 		private int updateCount;

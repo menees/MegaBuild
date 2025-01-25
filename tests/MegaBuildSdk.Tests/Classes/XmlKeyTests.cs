@@ -1,8 +1,9 @@
-﻿namespace MegaBuild.Tests
+﻿namespace MegaBuildSdk.Tests.Classes
 {
 	#region Using Directives
 
 	using System;
+	using MegaBuild;
 	using Microsoft.VisualStudio.TestTools.UnitTesting;
 	using Shouldly;
 
@@ -29,18 +30,18 @@
 		[TestMethod]
 		public void EscapeTest()
 		{
-			foreach (var testCase in TestCases)
+			foreach ((string original, string escaped) in TestCases)
 			{
-				XmlKey.Escape(testCase.Original).ShouldBe(testCase.Escaped, testCase.Original);
+				XmlKey.Escape(original).ShouldBe(escaped, original);
 			}
 		}
 
 		[TestMethod]
 		public void UnescapeTest()
 		{
-			foreach (var testCase in TestCases)
+			foreach ((string original, string escaped) in TestCases)
 			{
-				XmlKey.Unescape(testCase.Escaped).ShouldBe(testCase.Original, testCase.Escaped);
+				XmlKey.Unescape(escaped).ShouldBe(original, escaped);
 			}
 		}
 

@@ -995,6 +995,9 @@ namespace MegaBuild
 
 			this.status = BuildStatus.None;
 			this.buildStart = DateTime.MinValue;
+
+			// In case the MegaBuild.Set command was used.
+			this.cachedVariables.Clear();
 		}
 
 		public DialogResult Save(bool saveAs)

@@ -12,13 +12,15 @@ namespace MegaBuild
 	using System.Linq;
 	using System.Reflection;
 	using System.Text;
+	using System.Text.RegularExpressions;
+	using System.Threading;
 	using System.Windows.Forms;
 	using Menees;
 	using Menees.Windows.Forms;
 
 	#endregion
 
-	public static class Manager
+	public static partial class Manager
 	{
 		#region Public Fields
 
@@ -30,7 +32,7 @@ namespace MegaBuild
 
 		private static readonly char IndentChar = IndentString[0];
 
-		private static readonly object LockToken = new();
+		private static readonly Lock LockToken = new();
 		private static readonly ImageList Images = new() { ColorDepth = ColorDepth.Depth32Bit };
 		private static readonly Dictionary<string, string> VariablesMap = new(StringComparer.CurrentCultureIgnoreCase);
 		private static readonly List<Project> Projects = new(1);
@@ -359,55 +361,37 @@ namespace MegaBuild
 			return result;
 		}
 
+		[GeneratedRegex("""(?in)^MegaBuild\.Set[ \t]+(?<name>\S([^\r\n]*\S)?)[ \t]*=[ \t]*(?<value>\S([^\r\n]*\S)?)\s*$""", RegexOptions.Multiline)]
+		private static partial Regex MegaBuildSetCommand();
+
 		private static void ParseCommands(string message)
 		{
-			int currentIndex = 0;
-			string upperMessage = message.ToUpper();
-
-			// Only do the rest of the parsing if the message starts with a MegaBuild command prefix.
-			const int PrefixLength = 10; // Length of "MEGABUILD.".
-			if (upperMessage.Length > PrefixLength && upperMessage.StartsWith("MEGABUILD."))
+			// We only support the "SET" command, so just check for that.
+			// 	Format:
+			// 	MEGABUILD.SET %zipname%=c:\xyz\foo.zip
+			Match match = MegaBuildSetCommand().Match(message);
+			if (match.Success)
 			{
-				// Strip off the command prefix
-				upperMessage = upperMessage.Substring(PrefixLength);
-				currentIndex += PrefixLength;
+				string name = match.Groups["name"].Value.Trim();
+				string value = match.Groups["value"].Value.Trim();
 
-				// We only support the "SET" command for now, so just check for that.
-				// 	Format:
-				// 	MEGABUILD.SET %zipname%=c:\xyz\foo.zip
-				const int SetLength = 3;
-				if (upperMessage.StartsWith("SET") && upperMessage.Length > SetLength && char.IsWhiteSpace(upperMessage[SetLength]))
+				// Make sure the variable name is formatted correctly.
+				name = TextUtility.EnsureQuotes(name, "%");
+
+				// See if we should set a project variable or an application variable.
+				// Go backwards through the projects so we start with any sub-projects.
+				IDictionary<string, string> targetVariables = VariablesMap;
+				foreach (Project project in ((IEnumerable<Project>)Projects).Reverse())
 				{
-					// Strip off "SET".
-					upperMessage = upperMessage.Substring(SetLength);
-					currentIndex += SetLength;
-
-					if (upperMessage.Length > 0)
+					IDictionary<string, string> projectVariables = project.Variables;
+					if (projectVariables.ContainsKey(name))
 					{
-						// Note: At this point upperMessage has at least one leading whitespace character,
-						// but I'm not trimming the whitespace because it makes tracking the current
-						// position in the original string more difficult.
-						int equalIndex = upperMessage.IndexOf('=');
-						if (equalIndex >= 0 && message.Length > (currentIndex + equalIndex + 1))
-						{
-							// Now we pull from the original string (not the uppercase version)
-							// so the variables will have the case the user intended.  The
-							// ExpandVariables method is case-insensitive, but the variable's
-							// value might be used somewhere in a case-sensitive manner.
-							string name = message.Substring(currentIndex, equalIndex).Trim();
-							if (name.Length > 0)
-							{
-								string value = message.Substring(currentIndex + equalIndex + 1).Trim();
-
-								// Make sure the variable name is formatted correctly.
-								name = TextUtility.EnsureQuotes(name, "%");
-
-								// Put it in the map.  The index operator adds or overwrites.
-								VariablesMap[name] = value;
-							}
-						}
+						targetVariables = projectVariables;
+						break;
 					}
 				}
+
+				targetVariables[name] = value;
 			}
 		}
 
