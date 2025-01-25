@@ -1188,6 +1188,7 @@ internal sealed partial class MainForm : ExtendedForm
 	private void Project_FileNameSet(object? sender, EventArgs e)
 	{
 		this.UpdateWindowTitle();
+		this.UpdateOpenProjectFolderItems();
 	}
 
 	private void Project_ModifiedChanged(object? sender, EventArgs e)
@@ -1477,6 +1478,22 @@ internal sealed partial class MainForm : ExtendedForm
 		}
 	}
 
+	private void UpdateOpenProjectFolderItems()
+	{
+		string? fileName = this.project.FileName;
+		string? folder = fileName != null ? Path.GetDirectoryName(fileName) : null;
+		bool hasProjectFolder = folder != null && Directory.Exists(folder);
+
+		this.mnuOpenProjectSeparator.Visible = hasProjectFolder;
+		this.mnuOpenProjectFolderInExplorer.Visible = hasProjectFolder;
+		this.mnuOpenProjectFolderInExplorer.Enabled = hasProjectFolder;
+
+		string? terminal = Utility.FindWindowsTerminal();
+		bool showTerminal = hasProjectFolder && terminal.IsNotEmpty();
+		this.mnuOpenProjectFolderInTerminal.Visible = showTerminal;
+		this.mnuOpenProjectFolderInTerminal.Enabled = showTerminal;
+	}
+
 	private void UpdateTaskbarProgress()
 	{
 		if (this.IsHandleCreated && TaskbarManager.IsPlatformSupported)
@@ -1556,6 +1573,16 @@ internal sealed partial class MainForm : ExtendedForm
 			e.Handled = true;
 			this.CopyOutput_Click(sender, e);
 		}
+	}
+
+	private void OpenProjectFolderInExplorer_Click(object sender, EventArgs e)
+	{
+		Utility.TryOpenFileExplorer(this.project.FileName);
+	}
+
+	private void OpenProjectFolderInTerminal_Click(object sender, EventArgs e)
+	{
+		Utility.TryOpenWindowsTerminal(this.project.FileName);
 	}
 
 	#endregion
