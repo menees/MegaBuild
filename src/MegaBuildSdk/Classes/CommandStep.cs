@@ -181,11 +181,44 @@ internal sealed class CommandStep : ExecutableStep
 #pragma warning restore CC0004 // Catch block cannot be empty
 
 				break;
+
+			case "Open Batch Folder In Explorer":
+				SystemUtility.TryOpenExplorerForFile(this.IsBatchFile ? this.Command : null);
+				break;
+
+			case "Open Batch Folder In Terminal":
+				SystemUtility.TryOpenTerminalForFile(this.IsBatchFile ? this.Command : null);
+				break;
+
+			case "Open Working Directory In Explorer":
+				SystemUtility.TryOpenExplorerForFolder(this.WorkingDirectory);
+				break;
+
+			case "Open Working Directory In Terminal":
+				SystemUtility.TryOpenTerminalForFolder(this.WorkingDirectory);
+				break;
 		}
 	}
 
 	public override string[]? GetCustomVerbs()
-		=> this.IsBatchFile ? ["Edit Batch File"] : base.GetCustomVerbs();
+	{
+		List<string> result = [];
+
+		if (this.IsBatchFile)
+		{
+			result.AddRange(["Edit Batch File", SeparatorVerb, "Open Batch Folder In Explorer", "Open Batch Folder In Terminal"]);
+			if (AreFoldersDifferent(this.ExpandedCommand, this.WorkingDirectory))
+			{
+				result.AddRange(["Open Working Directory In Explorer", "Open Working Directory In Terminal"]);
+			}
+		}
+		else if (this.WorkingDirectory.IsNotEmpty())
+		{
+			result.AddRange(["Open Working Directory In Explorer", "Open Working Directory In Terminal"]);
+		}
+
+		return [.. result];
+	}
 
 	[SuppressMessage("Usage", "CC0022:Should dispose object", Justification = "Caller disposes new controls.")]
 	public override void GetStepEditorControls(ICollection<StepEditorControl> controls)
