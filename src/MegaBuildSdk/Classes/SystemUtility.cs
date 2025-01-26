@@ -66,8 +66,7 @@ public static class SystemUtility
 		{
 			// Start Explorer with the file selected.
 			// https://stackoverflow.com/a/13680458/1882616
-			string arguments = $"/select,\"{path}\"";
-			result = TryOpenExplorer(arguments);
+			result = TryOpenExplorer("/select,", path);
 		}
 		else if (path.IsNotEmpty())
 		{
@@ -84,8 +83,7 @@ public static class SystemUtility
 		path = GetFullyQualifiedPath(path);
 		if (Directory.Exists(path))
 		{
-			string arguments = $"\"{path}\"";
-			result = TryOpenExplorer(arguments);
+			result = TryOpenExplorer(path);
 		}
 		else if (path.IsNotEmpty())
 		{
@@ -127,15 +125,13 @@ public static class SystemUtility
 			if (terminal.IsNotEmpty())
 			{
 				// https://learn.microsoft.com/en-us/windows/terminal/command-line-arguments?tabs=windows#new-tab-command
-				string arguments = $"--startingDirectory \"{path}\"";
-				result = TryStartProcess(terminal, arguments);
+				result = TryStartProcess(terminal, "--startingDirectory", path);
 			}
 			else
 			{
 				// https://en.wikipedia.org/wiki/COMSPEC
 				string cmdExe = Environment.GetEnvironmentVariable("ComSpec") ?? "cmd.exe";
-				string arguments = $"/K cd /d \"{path}\"";
-				result = TryStartProcess(cmdExe, arguments);
+				result = TryStartProcess(cmdExe, "/K", "cd", "/d", path);
 			}
 		}
 		else if (path.IsNotEmpty())
@@ -181,11 +177,12 @@ public static class SystemUtility
 		return result;
 	}
 
-	private static bool TryOpenExplorer(string arguments)
+	private static bool TryOpenExplorer(params IEnumerable<string> arguments)
 		=> TryStartProcess("explorer.exe", arguments);
 
-	private static bool TryStartProcess(string fileName, string arguments)
+	private static bool TryStartProcess(string fileName, params IEnumerable<string> arguments)
 	{
+		// Use the overload that takes IEnumerable<string> so it will quote and escape each arg correctly.
 		using (Process? process = Process.Start(fileName, arguments))
 		{
 			bool result = process != null;
