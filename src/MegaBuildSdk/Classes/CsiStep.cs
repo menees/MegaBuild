@@ -134,6 +134,44 @@ internal sealed class CsiStep : ExecutableStep
 		controls.Add(new CsiStepCtrl { Step = this });
 	}
 
+	public override void ExecuteCustomVerb(string verb)
+	{
+		switch (verb)
+		{
+			case "Open Script":
+				SystemUtility.TryOpenFile(this.ScriptFile);
+				break;
+
+			case "Open Script Folder In Explorer":
+				SystemUtility.TryOpenExplorerForFile(this.ScriptFile);
+				break;
+
+			case "Open Script Folder In Terminal":
+				SystemUtility.TryOpenTerminalForFile(this.ScriptFile);
+				break;
+
+			case "Open Working Directory In Explorer":
+				SystemUtility.TryOpenExplorerForFolder(this.WorkingDirectory);
+				break;
+
+			case "Open Working Directory In Terminal":
+				SystemUtility.TryOpenTerminalForFolder(this.WorkingDirectory);
+				break;
+		}
+	}
+
+	public override string[]? GetCustomVerbs()
+	{
+		List<string> result = ["Open Script", SeparatorVerb, "Open Script Folder In Explorer", "Open Script Folder In Terminal"];
+
+		if (AreFoldersDifferent(this.ScriptFile, this.WorkingDirectory))
+		{
+			result.AddRange(["Open Working Directory In Explorer", "Open Working Directory In Terminal"]);
+		}
+
+		return [.. result];
+	}
+
 	#endregion
 
 	#region Protected Methods
