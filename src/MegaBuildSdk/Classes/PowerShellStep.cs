@@ -161,11 +161,44 @@ internal sealed class PowerShellStep : ExecutableStep
 			case "Edit Script":
 				WindowsUtility.ShellExecute(null, TextUtility.EnsureQuotes(this.GetExpandedCommand(true)));
 				break;
+
+			case "Open Script Folder In Explorer":
+				SystemUtility.TryOpenExplorerForFile(this.IsScript ? this.Command : null);
+				break;
+
+			case "Open Script Folder In Terminal":
+				SystemUtility.TryOpenTerminalForFile(this.IsScript ? this.Command : null);
+				break;
+
+			case "Open Working Directory In Explorer":
+				SystemUtility.TryOpenExplorerForFolder(this.WorkingDirectory);
+				break;
+
+			case "Open Working Directory In Terminal":
+				SystemUtility.TryOpenTerminalForFolder(this.WorkingDirectory);
+				break;
 		}
 	}
 
 	public override string[]? GetCustomVerbs()
-		=> this.IsScript ? ["Edit Script"] : base.GetCustomVerbs();
+	{
+		List<string> result = [];
+
+		if (this.IsScript)
+		{
+			result.AddRange(["Edit Script", SeparatorVerb, "Open Script Folder In Explorer", "Open Script Folder In Terminal"]);
+			if (AreFoldersDifferent(this.GetExpandedCommand(false), this.WorkingDirectory))
+			{
+				result.AddRange(["Open Working Directory In Explorer", "Open Working Directory In Terminal"]);
+			}
+		}
+		else if (this.WorkingDirectory.IsNotEmpty())
+		{
+			result.AddRange(["Open Working Directory In Explorer", "Open Working Directory In Terminal"]);
+		}
+
+		return [.. result];
+	}
 
 	[SuppressMessage("Usage", "CC0022:Should dispose object", Justification = "Caller disposes new controls.")]
 	public override void GetStepEditorControls(ICollection<StepEditorControl> controls)
