@@ -15,6 +15,9 @@ using System.Linq;
 using System.Windows.Forms;
 using Menees;
 using Menees.Windows.Forms;
+using Microsoft.VisualStudio.SolutionPersistence;
+using Microsoft.VisualStudio.SolutionPersistence.Model;
+using Microsoft.VisualStudio.SolutionPersistence.Serializer;
 
 #endregion
 
@@ -32,7 +35,7 @@ internal sealed partial class VSStepCtrl : StepEditorControl
 	{
 		this.InitializeComponent();
 
-		this.cbVersion.Items.AddRange(VSVersionInfo.AllVersions.Select(v => v.FullDisplayName).ToArray());
+		this.cbVersion.Items.AddRange([.. VSVersionInfo.AllVersions.Select(v => v.FullDisplayName)]);
 	}
 
 	#endregion
@@ -111,31 +114,50 @@ internal sealed partial class VSStepCtrl : StepEditorControl
 		solutionFile = Manager.ExpandVariables(solutionFile);
 		if (File.Exists(solutionFile))
 		{
-			string[] lines = File.ReadAllLines(solutionFile);
-			int numLines = lines.Length;
-
-			// We may have to look at lines 0 and 1.
-			if (numLines >= 2)
+			ISolutionSerializer? serializer = SolutionSerializers.GetSerializerByMoniker(solutionFile);
+			if (serializer != null)
 			{
-				// In VS2005 Beta 2 the Unicode byte marks are on an otherwise blank
-				// first line, and the version string is on the second line.
-				string version = lines[0];
-				if (string.IsNullOrEmpty(version))
-				{
-					version = lines[1];
-				}
+				SolutionModel solution = serializer.OpenAsync(solutionFile, default).GetAwaiter().GetResult();
 
-				const string VersionLinePrefix = "Microsoft Visual Studio Solution File, Format Version ";
-				if (version.StartsWith(VersionLinePrefix))
-				{
-					version = version.Substring(VersionLinePrefix.Length).Trim();
+				VisualStudioProperties properties = solution.VisualStudioProperties;
+				Version vsPropertyVersion = properties.Version ?? properties.MinimumVersion ?? new();
+				decimal vsInternalVersion = decimal.Parse(vsPropertyVersion.ToString(2));
+				VSVersionInfo solutionVersionInfo = VSVersionInfo.AllVersions
+					.FirstOrDefault(v => v.InternalVersion == vsInternalVersion)
+						?? VSVersionInfo.LatestVersion;
+				solutionVersion = solutionVersionInfo.Version;
 
-					// See if we support the solution version.
-					VSVersionInfo? versionInfo = GetSolutionVersion(version, lines);
-					if (versionInfo != null)
+				configurations = [.. solution.BuildTypes.SelectMany(buildType =>
+					solution.Platforms.Select(platform => $"{buildType}|{platform}"))];
+			}
+			else if (string.Equals(Path.GetExtension(solutionFile), ".sln", StringComparison.OrdinalIgnoreCase))
+			{
+				string[] lines = File.ReadAllLines(solutionFile);
+				int numLines = lines.Length;
+
+				// We may have to look at lines 0 and 1.
+				if (numLines >= 2)
+				{
+					// In VS2005 Beta 2 the Unicode byte marks are on an otherwise blank
+					// first line, and the version string is on the second line.
+					string version = lines[0];
+					if (string.IsNullOrEmpty(version))
 					{
-						solutionVersion = versionInfo.Version;
-						configurations = GetConfigurationsFromLines(lines);
+						version = lines[1];
+					}
+
+					const string VersionLinePrefix = "Microsoft Visual Studio Solution File, Format Version ";
+					if (version.StartsWith(VersionLinePrefix))
+					{
+						version = version.Substring(VersionLinePrefix.Length).Trim();
+
+						// See if we support the solution version.
+						VSVersionInfo? versionInfo = GetSolutionVersion(version, lines);
+						if (versionInfo != null)
+						{
+							solutionVersion = versionInfo.Version;
+							configurations = GetConfigurationsFromLines(lines);
+						}
 					}
 				}
 			}
@@ -151,7 +173,7 @@ internal sealed partial class VSStepCtrl : StepEditorControl
 		// blow up for international users that have different decimal separators.
 		decimal solutionVersionNumber = decimal.Parse(version, NumberFormatInfo.InvariantInfo);
 
-		VSVersionInfo[] versions = VSVersionInfo.AllVersions.Where(v => v.SolutionVersion == solutionVersionNumber).ToArray();
+		VSVersionInfo[] versions = [.. VSVersionInfo.AllVersions.Where(v => v.SolutionVersion == solutionVersionNumber)];
 		VSVersionInfo? result = null;
 		if (versions.Length > 0)
 		{

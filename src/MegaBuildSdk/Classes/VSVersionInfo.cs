@@ -67,6 +67,8 @@ internal sealed class VSVersionInfo
 
 	public string FullDisplayName { get; }
 
+	public decimal InternalVersion { get; }
+
 	public decimal SolutionVersion { get; }
 
 	public VSVersion Version { get; }
@@ -78,8 +80,6 @@ internal sealed class VSVersionInfo
 	#region Private Properties
 
 	private string? ToolsVariable { get; }
-
-	private decimal InternalVersion { get; }
 
 	private bool Is64Bit => this.Version >= VSVersion.V2022;
 
