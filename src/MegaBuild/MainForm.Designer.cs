@@ -1588,8 +1588,8 @@ namespace MegaBuild
 			this.Name = "MainForm";
 			this.Text = "MegaBuild";
 			this.Activated += this.MainForm_Activated;
-			this.Closing += this.MainForm_Closing;
-			this.Closed += this.MainForm_Closed;
+			this.FormClosing += this.MainForm_Closing;
+			this.FormClosed += this.MainForm_Closed;
 			this.DragDrop += this.MainForm_DragDrop;
 			this.DragEnter += this.MainForm_DragEnter;
 			this.mainMenuInst.ResumeLayout(false);

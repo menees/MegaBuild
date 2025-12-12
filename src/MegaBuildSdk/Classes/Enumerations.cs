@@ -135,6 +135,8 @@ public enum StepStatus
 // 			But: VS 2013 and 2015 did (12.0 and 14.0).  See C:\Program Files (x86)\MSBuild.
 // 			http://blogs.msdn.com/b/visualstudio/archive/2013/07/24/msbuild-is-now-part-of-visual-studio.aspx
 // 		Add a new enum field below with its Description attribute set to the ToolsVersion value.
+// 		Search for all places that the last numbered version is used.
+// 		Search for all places that Current is used.
 internal enum MSBuildToolsVersion
 {
 	Default,
@@ -166,7 +168,10 @@ internal enum MSBuildToolsVersion
 	[Description("17.0")]
 	Seventeen,
 
-	[Description("Current")] // 17.0 if installed, else 16.0
+	[Description("18.0")]
+	Eighteen,
+
+	[Description("Current")] // 18.0 or 17.0 if installed, else 16.0
 	Current,
 }
 
@@ -295,6 +300,8 @@ internal enum VSVersion
 	V2019,
 
 	V2022,
+
+	V2026,
 }
 
 #endregion

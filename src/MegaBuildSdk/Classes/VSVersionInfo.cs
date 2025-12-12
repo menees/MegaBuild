@@ -34,6 +34,7 @@ internal sealed class VSVersionInfo
 		new VSVersionInfo(VSVersion.V2017, null, 15, 12, "Visual Studio 15"),
 		new VSVersionInfo(VSVersion.V2019, null, 16, 12, "Visual Studio Version 16"),
 		new VSVersionInfo(VSVersion.V2022, null, 17, 12, "Visual Studio Version 17"),
+		new VSVersionInfo(VSVersion.V2026, null, 18, 12, "Visual Studio Version 18"),
 	];
 
 	public static readonly VSVersionInfo LatestVersion = AllVersions[AllVersions.Count - 1];

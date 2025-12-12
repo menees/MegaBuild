@@ -97,7 +97,8 @@ internal sealed class CsiStep : ExecutableStep
 			{
 				MinSupportedCsiVersion => this.GetCsiPath(VSVersion.V2019),
 				MSBuildToolsVersion.Seventeen => this.GetCsiPath(VSVersion.V2022),
-				_ => this.GetCsiPath(VSVersion.V2022, VSVersion.V2019),
+				MSBuildToolsVersion.Eighteen => this.GetCsiPath(VSVersion.V2026),
+				_ => this.GetCsiPath(VSVersion.V2026, VSVersion.V2022, VSVersion.V2019),
 			};
 
 			string commandLineArguments = this.BuildCommandLineArguments();

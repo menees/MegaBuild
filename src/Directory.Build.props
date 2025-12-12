@@ -13,7 +13,8 @@
 		<Copyright>Copyright © 2003-$([System.DateTime]::UtcNow.ToString(`yyyy`)) Bill Menees</Copyright>
 
 		<!-- DOTNET_VERSION: Set the primary .NET target version. -->
-		<TargetFramework>net9.0-windows</TargetFramework>
+		<BaseNetVersion>10</BaseNetVersion>
+		<TargetFramework>net$(BaseNetVersion).0-windows</TargetFramework>
 		<UseWindowsForms>true</UseWindowsForms>
 
 		<RepoSrcFolder>$(MSBuildThisFileDirectory)</RepoSrcFolder>
@@ -24,11 +25,9 @@
 		<ProduceReferenceAssembly>false</ProduceReferenceAssembly>
 		<_SkipUpgradeNetAnalyzersNuGetWarning>true</_SkipUpgradeNetAnalyzersNuGetWarning>
 		<IsPublishable>false</IsPublishable>
-		<!-- .NET 9 deprecates BinaryFormatter, but WinForms .resx still make limited trusted use of it. -->
-		<GenerateResourceWarnOnBinaryFormatterUse>false</GenerateResourceWarnOnBinaryFormatterUse>
 
 		<!-- Make the assembly, file, and NuGet package versions the same. -->
-		<Version>5.1.1</Version>
+		<Version>5.2.0</Version>
 	</PropertyGroup>
 
 	<PropertyGroup Condition="'$(Configuration)'=='Debug'">
@@ -51,20 +50,16 @@
 		<AssemblyMetadata Condition="'$(BuildTime)' != ''" Include="BuildTime" Value="$(BuildTime)" />
 	</ItemGroup>
 
-	<ItemGroup>
-		<PackageReference Include="System.Resources.Extensions" Version="9.0.0"/>
-	</ItemGroup>
-
 	<ItemGroup Condition="$(UseCustomCodeAnalyzers)">
 		<PackageReference Include="codecracker.CSharp" Version="1.1.0">
 			<PrivateAssets>all</PrivateAssets>
 			<IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
 		</PackageReference>
-		<PackageReference Include="Menees.Analyzers" Version="3.2.2">
+		<PackageReference Include="Menees.Analyzers" Version="3.3.4">
 			<PrivateAssets>all</PrivateAssets>
 			<IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
 		</PackageReference>
-		<PackageReference Include="Microsoft.CodeAnalysis.NetAnalyzers" Version="9.0.0">
+		<PackageReference Include="Microsoft.CodeAnalysis.NetAnalyzers" Version="$(BaseNetVersion).0.101">
 			<PrivateAssets>all</PrivateAssets>
 			<IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
 		</PackageReference>
@@ -75,7 +70,7 @@
 	</ItemGroup>
 
 	<ItemGroup>
-		<PackageReference Include="Meziantou.Polyfill" Version="1.0.42">
+		<PackageReference Include="Meziantou.Polyfill" Version="1.0.68">
 			<PrivateAssets>all</PrivateAssets>
 			<IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
 		</PackageReference>

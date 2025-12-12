@@ -91,8 +91,8 @@
 			// OpenDlg
 			// 
 			this.OpenDlg.DefaultExt = "proj";
-			this.OpenDlg.Filter = "Projects and Solutions (*.*proj;*.sln)|*.*proj;*.sln|Project Files (*.*proj)|*.*p" +
-    "roj|Solution Files (*.sln)|*.sln|All Files (*.*)|*.*";
+			this.OpenDlg.Filter = "Projects and Solutions (*.*proj;*.sln;*.slnx)|*.*proj;*.sln;*.slnx|Project Files (*.*proj)|*.*p" +
+    "roj|Solution Files (*.sln;*.slnx)|*.sln;*.slnx|All Files (*.*)|*.*";
 			this.OpenDlg.Title = "Select Project";
 			// 
 			// btnSelectWorkingDirectory

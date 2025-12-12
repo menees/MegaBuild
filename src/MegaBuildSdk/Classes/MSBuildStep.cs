@@ -172,8 +172,12 @@ internal sealed class MSBuildStep : ExecutableStep
 					directory = this.GetVsMsBuildBinPath("Current", VSVersion.V2022);
 					break;
 
+				case MSBuildToolsVersion.Eighteen:
+					directory = this.GetVsMsBuildBinPath("Current", VSVersion.V2026);
+					break;
+
 				case MSBuildToolsVersion.Current:
-					directory = this.GetVsMsBuildBinPath("Current", VSVersion.V2022, VSVersion.V2019);
+					directory = this.GetVsMsBuildBinPath("Current", VSVersion.V2026, VSVersion.V2022, VSVersion.V2019);
 					break;
 
 				default:
@@ -413,6 +417,7 @@ internal sealed class MSBuildStep : ExecutableStep
 
 			case MSBuildToolsVersion.Sixteen:
 			case MSBuildToolsVersion.Seventeen:
+			case MSBuildToolsVersion.Eighteen:
 			case MSBuildToolsVersion.Current:
 				sb.Append("/ToolsVersion:Current ");
 				break;

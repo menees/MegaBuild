@@ -6,7 +6,7 @@ using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Data;
-using System.Drawing;
+using System.Diagnostics.CodeAnalysis;
 using System.IO;
 using System.Linq;
 using System.Reflection;
@@ -21,6 +21,8 @@ using Menees.Windows.Forms;
 internal partial class MSBuildStepCtrl : StepEditorControl
 {
 	#region Private Data Members
+
+	private const StringComparison Comparison = StringComparison.OrdinalIgnoreCase;
 
 	private static readonly string[] BaseSolutionTargets = [string.Empty, "Rebuild", "Clean"];
 
@@ -169,11 +171,11 @@ internal partial class MSBuildStepCtrl : StepEditorControl
 
 	#region Private Methods
 
-	private static string? FindSolutionTargets(string fileName)
+	private static string? FindOldStyleSolutionTargets(string fileName)
 	{
 		// According to the MSBuild Command Line Reference (http://msdn.microsoft.com/en-us/library/ms164311.aspx)
 		// the projects referenced by a solution file can be listed as targets if they are colon-suffixed with one of VS's
-		// base targets (e.g., Rebuild, Clean): msbuild MegaBuild.sln /t:MegaBuildSDK /t:Menees:Clean
+		// base targets (e.g., Rebuild, Clean): msbuild MegaBuild.slnx /t:MegaBuildSDK /t:Menees:Clean
 		var projectLines = from line in File.ReadAllLines(fileName)
 							where line.StartsWith("Project(\"")
 							select line;
@@ -220,10 +222,11 @@ internal partial class MSBuildStepCtrl : StepEditorControl
 		return result;
 	}
 
-	private static bool IsSolutionFile(string fileName)
+	private static bool IsSolutionFile(string fileName, [NotNullWhen(true)] out string? extension)
 	{
-		string extension = Path.GetExtension(fileName);
-		bool result = string.Equals(extension, ".sln", StringComparison.CurrentCultureIgnoreCase);
+		extension = Path.GetExtension(fileName);
+		bool result = string.Equals(extension, ".sln", Comparison)
+			|| string.Equals(extension, ".slnx", Comparison);
 		return result;
 	}
 
@@ -254,7 +257,7 @@ internal partial class MSBuildStepCtrl : StepEditorControl
 		{
 			message = "The project file was not found.";
 		}
-		else if (!IsSolutionFile(fileName))
+		else if (!IsSolutionFile(fileName, out _))
 		{
 			XElement doc = XElement.Load(fileName);
 			XNamespace ns = doc.Name.Namespace;
@@ -304,9 +307,12 @@ internal partial class MSBuildStepCtrl : StepEditorControl
 		{
 			message = "The project file was not found.";
 		}
-		else if (IsSolutionFile(fileName))
+		else if (IsSolutionFile(fileName, out string? extension))
 		{
-			message = FindSolutionTargets(fileName);
+			if (string.Equals(extension, ".sln", Comparison))
+			{
+				message = FindOldStyleSolutionTargets(fileName);
+			}
 		}
 		else
 		{

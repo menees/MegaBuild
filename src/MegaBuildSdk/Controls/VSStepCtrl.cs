@@ -201,6 +201,9 @@ internal sealed partial class VSStepCtrl : StepEditorControl
 				// VS 2022
 				// 		Microsoft Visual Studio Solution File, Format Version 12.00
 				// 		# Visual Studio Version 17
+				// VS 2026
+				// 		Microsoft Visual Studio Solution File, Format Version 12.00
+				// 		# Visual Studio Version 18
 				string? versionComment = lines.FirstOrDefault(line => line.StartsWith("# Visual Studio "));
 				if (!string.IsNullOrEmpty(versionComment))
 				{
@@ -228,7 +231,7 @@ internal sealed partial class VSStepCtrl : StepEditorControl
 		// 		Debug = Debug
 		// 		Release = Release
 		// 	EndGlobalSection
-		// In 2005, 2008, 2010, 2012, 2013, 2015, 2017, 2019, and 2022 we're looking for a section like:
+		// In 2005, 2008, 2010, 2012, 2013, 2015, 2017, 2019, 2022, and 2026 we're looking for a section like:
 		// 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		// 		Debug|Any CPU = Debug|Any CPU
 		// 		Release|Any CPU = Release|Any CPU

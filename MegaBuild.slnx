@@ -1,0 +1,20 @@
+<Solution>
+  <Folder Name="/Solution Items/">
+    <File Path=".editorconfig" />
+    <File Path=".github/workflows/build.yml" />
+    <File Path="README.md" />
+  </Folder>
+  <Folder Name="/Src/">
+    <File Path="src/Directory.Build.props" />
+    <File Path="src/Directory.Build.targets" />
+  </Folder>
+  <Folder Name="/Tests/">
+    <File Path="tests/.runsettings" />
+    <File Path="tests/Directory.Build.props" />
+    <File Path="tests/Directory.Build.targets" />
+    <Project Path="tests/MegaBuildSdk.Tests/MegaBuildSdk.Tests.csproj" />
+  </Folder>
+  <Project Path="src/MegaBuild/MegaBuild.csproj" />
+  <Project Path="src/MegaBuildSdk/MegaBuildSdk.csproj" />
+  <Project Path="src/SampleStep/SampleStep.csproj" />
+</Solution>
