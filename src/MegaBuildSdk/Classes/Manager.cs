@@ -366,11 +366,11 @@ public static partial class Manager
 
 	private static void ParseCommands(string message)
 	{
-		// We only support the "SET" command, so just check for that.
+		// We only support the "SET" command, so just check for that on each message line.
 		// 	Format:
 		// 	MEGABUILD.SET %zipname%=c:\xyz\foo.zip
-		Match match = MegaBuildSetCommand().Match(message);
-		if (match.Success)
+		MatchCollection matches = MegaBuildSetCommand().Matches(message);
+		foreach (Match match in matches)
 		{
 			string name = match.Groups["name"].Value.Trim();
 			string value = match.Groups["value"].Value.Trim();
