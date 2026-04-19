@@ -270,7 +270,7 @@ public static partial class Manager
 	{
 		lock (LockToken)
 		{
-			return TypeNameToStepTypeInfo.Select(pair => pair.Value).ToArray();
+			return [.. TypeNameToStepTypeInfo.Select(pair => pair.Value)];
 		}
 	}
 

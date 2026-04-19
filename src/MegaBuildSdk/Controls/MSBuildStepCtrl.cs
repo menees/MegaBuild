@@ -56,9 +56,9 @@ internal partial class MSBuildStepCtrl : StepEditorControl
 				this.edtProject.Text = this.step.ProjectFile;
 				this.edtWorkingDirectory.Text = this.step.WorkingDirectory;
 				this.txtTargets.Lines = this.step.Targets;
-				this.txtProperties.Lines = (from p in this.step.Properties
+				this.txtProperties.Lines = [.. from p in this.step.Properties
 												orderby p.Key
-												select p.Key + "=" + p.Value).ToArray();
+												select p.Key + "=" + p.Value];
 				this.cbVerbosity.SelectedIndex = (int)this.step.Verbosity;
 				this.cbToolsVersion.SelectedValue = this.step.ToolsVersion;
 				this.edtOtherOptions.Text = this.step.CommandLineOptions;
@@ -109,8 +109,8 @@ internal partial class MSBuildStepCtrl : StepEditorControl
 
 		// https://stackoverflow.com/a/33749237/1882616
 		comboBox.DataSource = versionDescriptions;
-		comboBox.DisplayMember = nameof(KeyValuePair<MSBuildToolsVersion, string>.Value);
-		comboBox.ValueMember = nameof(KeyValuePair<MSBuildToolsVersion, string>.Key);
+		comboBox.DisplayMember = nameof(KeyValuePair<,>.Value);
+		comboBox.ValueMember = nameof(KeyValuePair<,>.Key);
 	}
 
 	public override bool OnOk()

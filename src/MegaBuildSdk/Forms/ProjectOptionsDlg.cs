@@ -23,7 +23,7 @@ internal sealed partial class ProjectOptionsDlg : ExtendedForm
 	{
 		this.InitializeComponent();
 
-		this.cbVersion.Items.AddRange(VSVersionInfo.AllVersions.Select(v => v.FullDisplayName).ToArray());
+		this.cbVersion.Items.AddRange([.. VSVersionInfo.AllVersions.Select(v => v.FullDisplayName)]);
 	}
 
 	#endregion
@@ -161,10 +161,7 @@ internal sealed partial class ProjectOptionsDlg : ExtendedForm
 	private void ExpandPath_CheckedChanged(object sender, EventArgs e)
 	{
 		ListViewItem? item = this.SelectedItem;
-		if (item != null)
-		{
-			item.SubItems[2].Text = this.chkExpandPath.Checked.ToString();
-		}
+		item?.SubItems[2].Text = this.chkExpandPath.Checked.ToString();
 	}
 
 	private void ControlStateChanged(object sender, EventArgs e)

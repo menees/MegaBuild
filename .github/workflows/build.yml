@@ -8,7 +8,7 @@ on:
 
 jobs:
   build:
-    runs-on: windows-2022
+    runs-on: windows-latest
 
     steps:
     - uses: actions/checkout@v4.1.5
@@ -17,7 +17,7 @@ jobs:
       uses: actions/setup-dotnet@v4.0.0
       with:
         # DOTNET_VERSION: Update to the correct .NET version.
-        dotnet-version: 9.0.x
+        dotnet-version: 10.0.x
 
     - name: Build everything
       run: |

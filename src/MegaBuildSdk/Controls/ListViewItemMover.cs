@@ -51,17 +51,11 @@ public partial class ListViewItemMover : ExtendedUserControl
 		{
 			if (this.listView != value)
 			{
-				if (this.listView != null)
-				{
-					this.listView.SelectedIndexChanged -= this.List_SelectedIndexChanged;
-				}
+				this.listView?.SelectedIndexChanged -= this.List_SelectedIndexChanged;
 
 				this.listView = value;
 
-				if (this.listView != null)
-				{
-					this.listView.SelectedIndexChanged += this.List_SelectedIndexChanged;
-				}
+				this.listView?.SelectedIndexChanged += this.List_SelectedIndexChanged;
 			}
 		}
 	}

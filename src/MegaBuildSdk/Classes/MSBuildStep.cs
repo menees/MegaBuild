@@ -104,8 +104,8 @@ internal sealed class MSBuildStep : ExecutableStep
 		get => this.targets ?? CollectionUtility.EmptyArray<string>();
 		set
 		{
-			HashSet<string> currentValues = this.targets != null ? new HashSet<string>(this.targets) : [];
-			HashSet<string> newValues = value != null ? new HashSet<string>(value) : [];
+			HashSet<string> currentValues = this.targets != null ? [.. this.targets] : [];
+			HashSet<string> newValues = value != null ? [.. value] : [];
 			var areEqual = currentValues.Count == newValues.Count && currentValues.IsSubsetOf(newValues);
 			if (!areEqual)
 			{

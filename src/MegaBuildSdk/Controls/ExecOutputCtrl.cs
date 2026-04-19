@@ -28,7 +28,7 @@ internal sealed partial class ExecOutputCtrl : StepEditorControl
 	public ExecOutputCtrl()
 	{
 		this.InitializeComponent();
-		this.cbStyle.Items.AddRange(Enum.GetValues<OutputStyle>().OrderBy(v => v).Select(v => v.ToString()).ToArray());
+		this.cbStyle.Items.AddRange([.. Enum.GetValues<OutputStyle>().OrderBy(v => v).Select(v => v.ToString())]);
 
 		EncodingDisplay[] encodings = [.. Encoding.GetEncodings().Select(e => new EncodingDisplay(e.GetEncoding())).OrderBy(e => e.ToString())];
 		this.cbEncoding.Items.AddRange(encodings);
@@ -205,10 +205,7 @@ internal sealed partial class ExecOutputCtrl : StepEditorControl
 	private void UpdateSelectedItem(string text, int subItemIndex)
 	{
 		ListViewItem? item = this.SelectedItem;
-		if (item != null)
-		{
-			item.SubItems[subItemIndex].Text = text;
-		}
+		item?.SubItems[subItemIndex].Text = text;
 	}
 
 	#endregion

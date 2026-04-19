@@ -190,8 +190,8 @@ public sealed class XmlKey
 	{
 		// Make sure "empty" sub-elements aren't saved out (e.g., if no child elements and no attributes other than XmlKeyName).
 		// Copy to an array first since we'll be removing nodes in the loop.
-		XElement[] emptyElements = this.element.Descendants().Where(e => !e.HasElements &&
-			(!e.HasAttributes || (e.Attributes().Count() == 1 && e.Attributes(nameof(this.XmlKeyName)) != null))).ToArray();
+		XElement[] emptyElements = [.. this.element.Descendants().Where(e => !e.HasElements &&
+			(!e.HasAttributes || (e.Attributes().Count() == 1 && e.Attributes(nameof(this.XmlKeyName)) != null)))];
 		foreach (XElement empty in emptyElements)
 		{
 			empty.Remove();
